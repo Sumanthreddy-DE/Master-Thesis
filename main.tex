@@ -19,6 +19,7 @@
 % --- 3. MATHEMATICS & SCIENCE ---
 \usepackage{amsmath, amssymb, amsthm, amsfonts}
 \usepackage{mathtools}
+\usepackage{empheq}
 \usepackage{siunitx}
 \usepackage{bm}              % Bold math symbols
 \usepackage{algorithm}
@@ -1776,11 +1777,7 @@ The average strain over phase $q$ (with inner radius $r_a$ and outer radius $r_b
 The concentration tensor components are:
 %
 \begin{align}
-    T_{\kappa}^{(q)} &= X_{2q-1} \label{eq:Tkappa_fiber} \\
-\end{align}
-\begin{align}
-    H_{\kappa}^{(q)} &= 2\kappa^{(q)} X_{2q-1} \label{eq:Hkappa_fiber}
-    T_{\kappa}^{(q)} &= X_{2q-1} \label{eq:Tkappa_fiber}\quad \quad \notag
+    T_{\kappa}^{(q)} &= X_{2q-1} \label{eq:Tkappa_fiber} \\[6pt]
     H_{\kappa}^{(q)} &= 2\kappa^{(q)} X_{2q-1} \label{eq:Hkappa_fiber}
 \end{align}
 %
@@ -1976,10 +1973,10 @@ For the radial expansion problem, the displacement ansatz remains Eq.~\eqref{eq:
 
 These conditions couple the interface parameters to the unknown coefficients, yielding:
 %
-\begin{align}[box=\fbox]{equation}
+\begin{empheq}[box=\fbox]{equation}
     \mathbb{T}^{\text{eq}} = \mathbb{T}^{\text{eq}}(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}; \kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, r_1)
     \label{eq:Teq_interface}
-\end{align}
+\end{empheq}
 
 \subsubsection{Transverse Shear with EGIM}
 
