@@ -2273,55 +2273,6 @@ The parameter identification neural network operates as follows:
 \end{enumerate}
 
 This framework enables identification of interface parameters that produce matching concentration tensors, thereby bridging the interphase and interface descriptions. The validation of this approach is presented in Chapter~\ref{ch:results}.
-% -------------------------------------------------------------------
-%   CHAPTER 3: METHODOLOGY
-% -------------------------------------------------------------------
-\chapter{Methodology}
-\label{ch:methodology}
-
-
-This chapter details the computational framework developed for parameter identification, including the numerical homogenization procedure and the inverse optimization algorithms.
-
-\section{Problem Formulation}
-
-\subsection{Forward Problem: Interphase Model}
-
-Consider a composite with a fiber of radius $r_f$ surrounded by an interphase of thickness $h$ and an infinite matrix. The interphase region $\interphase$ has spatially varying properties.
-
-\subsection{Forward Problem: Interface Model}
-
-The equivalent interface model replaces $\interphase$ with a zero-thickness surface $\interface$ at radius $r_\interface = r_f + \eta h$, endowed with parameters $\bs{K}$ and $\bs{L}$.
-
-\section{Extended Mori-Tanaka Framework}
-
-\subsection{Multi-Coated Inclusion Model}
-
-For composites with interphases, we employ the multi-coated inclusion approach where:
-\begin{equation}
-    \bar{\tens{C}} = \tens{C}_m + \sum_{i} f_i (\tens{C}_i - \tens{C}_m) : \bar{\tens{A}}_i
-\end{equation}
-
-\subsection{Implementation Details}
-
-% TODO: Add MATLAB implementation details
-
-\section{Inverse Parameter Identification}
-
-\subsection{Objective Function}
-
-The parameter identification is formulated as a minimization problem:
-\begin{equation}
-    \min_{\bs{K}, \bs{L}, \eta} \| \bar{\tens{C}}^{\text{interphase}} - \bar{\tens{C}}^{\text{interface}}(\bs{K}, \bs{L}, \eta) \|
-    \label{eq:objective}
-\end{equation}
-
-\subsection{Optimization Algorithms}
-
-% TODO: Add gradient-based and genetic algorithm descriptions
-
-\section{Numerical Implementation}
-
-% TODO: Add code structure and validation tests
 
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
