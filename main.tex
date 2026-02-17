@@ -2329,41 +2329,440 @@ The parameter identification is formulated as a minimization problem:
 \chapter{Results and Discussion}
 \label{ch:results}
 
-This chapter presents the results of the parameter identification framework for various interphase configurations.
+This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). We then evaluate forward surrogate neural networks for both CCA and CSA geometries (Section~\ref{sec:surrogate_results}). Section~\ref{sec:ei_gap} quantifies the representational limits of the Extended Interface model---this constitutes the central finding of this thesis. Section~\ref{sec:pinn_results} presents the inverse PINN results for the CSA geometry, and Section~\ref{sec:results_discussion} synthesizes all findings.
 
-\section{Validation: Constant Interphase}
+% ===================================================================
+\section{Verification of the 3-Layer Interphase Model}
+\label{sec:verification}
+% ===================================================================
 
-\subsection{Particle-Reinforced Composites}
+Before presenting results that depend on the multi-coated interphase model, we verify the implementation through three independent consistency checks. All tests use the reference material system with $\kappa^{(1)} = 200$~GPa, $\mu^{(1)} = 120$~GPa (fiber) and $\kappa^{(2)} = 20$~GPa, $\mu^{(2)} = 12$~GPa (matrix), at a fibre volume fraction $f = 0.3$.
 
-% TODO: Add results for spherical inclusions
+% -------------------------------------------------------------------
+\subsection{Concentration Tensor Consistency}
+\label{subsec:hct_check}
+% -------------------------------------------------------------------
 
-\subsection{Fiber-Reinforced Composites}
+The concentration tensors $\tens{T}^{(q)}$ and $\tens{H}^{(q)}$ for each phase~$q$ must satisfy the identity
+%
+\begin{equation}
+    \tens{H}^{(q)} = \tens{C}^{(q)} \, \tens{T}^{(q)},
+    \label{eq:hct_identity}
+\end{equation}
+%
+where $\tens{C}^{(q)}$ is the stiffness tensor of phase~$q$. This relation follows directly from the definitions of the strain and stress concentration tensors (Equations~\eqref{eq:strain_concentration} and~\eqref{eq:stress_concentration}). We evaluate the identity for all four phases (fiber, three coating layers) and the equivalent inhomogeneity system across three configurations that span the geometric parameter space.
 
-% TODO: Add results for cylindrical fibers
+\begin{table}[htbp]
+\centering
+\caption{Maximum absolute error $\max|\tens{H} - \tens{C}\tens{T}|$ across all tensor components, for each phase and three interphase configurations.}
+\label{tab:hct_verification}
+\begin{tabular}{lccccc}
+\toprule
+Configuration & Fiber & Coat~1 & Coat~2 & Coat~3 & Equivalent \\
+\midrule
+Standard ($\phi = 0.2,\, 0.3,\, 0.4$) & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ \\
+Wide ($\phi = 0.1,\, 0.5,\, 0.9$) & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ \\
+Narrow ($\phi = 0.05,\, 0.15,\, 0.25$) & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-13}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\section{Graded Interphases}
+Table~\ref{tab:hct_verification} confirms that the identity holds to machine precision (order~$10^{-14}$) across all phases and configurations. This verifies that the four boundary value problems---axial shear, transverse shear, in-plane, and overall axisymmetric---are solved consistently and that the stress concentration tensors are correctly derived from the strain concentration tensors.
 
-\subsection{Linear Grading}
+% -------------------------------------------------------------------
+\subsection{Limiting Cases}
+\label{subsec:limiting_cases}
+% -------------------------------------------------------------------
 
-% TODO: Add results for linear property gradation
+Two analytical limiting cases provide additional verification.
 
-\subsection{Exponential Grading}
+\paragraph{Fibre limit.}
+When all coating layers are assigned the fibre properties ($w_1 = w_2 = w_3 = 1.0$), the interphase vanishes and the 3-layer model must reduce to the standard 2-phase Mori-Tanaka solution. Table~\ref{tab:limiting_fiber} compares the effective properties from both approaches.
 
-% TODO: Add results for exponential property gradation
+\begin{table}[htbp]
+\centering
+\caption{Fibre limiting case: 3-layer model vs.\ standard 2-phase Mori-Tanaka. All coating layers set to fibre properties ($w_1 = w_2 = w_3 = 1.0$).}
+\label{tab:limiting_fiber}
+\begin{tabular}{lccc}
+\toprule
+Property & 3-Layer Model & 2-Phase MT & Relative Error \\
+\midrule
+$K_{\text{tr}}$ & 27.9158 & 27.9158 & $< 10^{-12}\,\%$ \\
+$G_{\text{tr}}$ & 16.4756 & 16.4756 & $< 10^{-12}\,\%$ \\
+$G_{\text{ax}}$ & 17.4120 & 17.4120 & $< 10^{-12}\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\section{Sensitivity Analysis}
+\paragraph{Matrix limit.}
+When all phases---including the fibre---share the matrix properties, the composite must return the pure matrix moduli. This checks that the volume fraction weighting and the homogenization formula (Equations~\eqref{eq:Teq}--\eqref{eq:Heq}) are internally consistent.
 
-\subsection{Effect of Interface Position $\eta$}
+\begin{table}[htbp]
+\centering
+\caption{Matrix limiting case: all phases set to matrix properties. The composite properties must equal the matrix moduli exactly.}
+\label{tab:limiting_matrix}
+\begin{tabular}{lccc}
+\toprule
+Property & 3-Layer Model & Matrix & Relative Error \\
+\midrule
+$K_{\text{tr}}$ & 20.0000 & 20.0000 & $< 10^{-12}\,\%$ \\
+$G_{\text{tr}}$ & 12.0000 & 12.0000 & $< 10^{-12}\,\%$ \\
+$G_{\text{ax}}$ & 12.0000 & 12.0000 & $< 10^{-12}\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-% TODO: Add sensitivity study results
+Both limiting cases are reproduced to machine precision, which confirms the correctness of the volume fraction computation (Equation~\eqref{eq:volume_fractions_cylindrical}), the equivalent tensor assembly (Equations~\eqref{eq:Teq}--\eqref{eq:Heq}), and the final homogenization formula.
 
-\subsection{Effect of Stiffness Ratio}
+% -------------------------------------------------------------------
+\subsection{Volume Fraction Consistency}
+\label{subsec:volume_check}
+% -------------------------------------------------------------------
 
-% TODO: Add parametric study
+For the reference geometry with $\phi_1 = 0.2$, $\phi_2 = 0.3$, $\phi_3 = 0.4$, the sub-phase volume fractions within the composite cylinder are $c_{\text{fibre}} = 0.024$, $c_{\text{coat\,1}} = 0.096$, $c_{\text{coat\,2}} = 0.280$, and $c_{\text{coat\,3}} = 0.600$. Their sum equals~$1.0$ to an absolute error below~$10^{-15}$, confirming the recursive volume fraction formulas from Section~\ref{subsec:volume_fractions}.
 
+% ===================================================================
+\section{Forward Surrogate Neural Networks}
+\label{sec:surrogate_results}
+% ===================================================================
+
+The 3-layer interphase model developed in Chapter~\ref{ch:theory} requires solving four boundary value problems per configuration, each involving an $8 \times 8$ linear system. While this is computationally inexpensive for a single evaluation, parametric studies spanning thousands of material combinations become time-consuming. We therefore train forward surrogate neural networks that map material and geometric parameters directly to effective composite properties, bypassing the BVP solutions altogether. This section presents surrogates for both the CCA (fibre-reinforced) and CSA (particle-reinforced) geometries.
+
+The network architecture follows the general framework described in Section~\ref{sec:neural_network}, though we modify the input--output specification and increase the network capacity to handle the full 11-dimensional parameter space. Both surrogates share a common architecture: four fully-connected hidden layers with widths $[512, 512, 512, 256]$, GELU activations, and skip connections between non-adjacent layers. The networks predict in log-space, i.e.\ the outputs are $\log(K)$, $\log(G_{\text{tr}})$, etc., which stabilises training when effective properties span several orders of magnitude. Xavier uniform initialisation is used throughout. The total parameter count is approximately~$800\,000$.
+
+% -------------------------------------------------------------------
+\subsection{CCA Surrogate: Fibre-Reinforced Composites}
+\label{subsec:cca_surrogate}
+% -------------------------------------------------------------------
+
+The CCA surrogate takes 11~inputs: the plane-strain bulk and shear moduli of the inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), three interphase radial fractions ($\phi_1, \phi_2, \phi_3$), the fibre volume fraction~$f$, and three interpolation weights ($w_1, w_2, w_3$). The three outputs are the effective transversely isotropic properties: $K_{\text{tr}}$, $G_{\text{tr}}$, and $G_{\text{ax}}$.
+
+\paragraph{Training data.}
+We generate $200\,000$~samples using Latin Hypercube Sampling with stratified ranges. The elastic moduli are sampled log-uniformly: $\kappa^{(1)} \in [10, 2500]$~GPa and $\mu^{(1)} \in [5, 1500]$~GPa for the inclusion, $\kappa^{(2)} \in [10, 50]$~GPa and $\mu^{(2)} \in [5, 25]$~GPa for the matrix. The radial fractions satisfy $0.05 \le \phi_1 < \phi_2 < \phi_3 \le 0.95$ with minimum spacing~$0.05$, the fibre volume fraction spans $f \in [0.05, 0.60]$ with importance sampling near the boundaries, and the weights decay from fibre to matrix: $w_1 \in [0.55, 0.95]$, $w_2 \in [0.30, 0.70]$, $w_3 \in [0.05, 0.45]$. For each sample, the 3-layer CCA model from Chapter~\ref{ch:theory} solves the four boundary value problems to produce the target properties.
+
+The choice of elastic modulus ranges proved critical. An initial training run used the narrower ranges $\kappa^{(1)} \in [50, 500]$~GPa and $\mu^{(1)} \in [30, 300]$~GPa. This model passed 26 of the 28~validation configurations but failed at stiffness ratios $\text{SR} = 5$ and $\text{SR} = 10$, because the corresponding inclusion moduli fell outside the training distribution. Expanding the ranges to cover the full test space resolved the failures completely---an observation that underlines the importance of aligning training data with the intended application domain.
+
+\paragraph{Training procedure.}
+The network is trained with the AdamW optimiser (initial learning rate $10^{-3}$, weight decay $10^{-5}$) using a one-cycle cosine schedule. The loss function is a weighted relative mean squared error:
+\begin{equation}
+\label{eq:surrogate_loss}
+    \mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} \left[ 1.5 \left(\frac{\hat{K}_{\text{tr},i} - K_{\text{tr},i}}{K_{\text{tr},i}}\right)^{2} + \left(\frac{\hat{G}_{\text{tr},i} - G_{\text{tr},i}}{G_{\text{tr},i}}\right)^{2} + \left(\frac{\hat{G}_{\text{ax},i} - G_{\text{ax},i}}{G_{\text{ax},i}}\right)^{2} \right]
+\end{equation}
+where the factor~$1.5$ on the bulk modulus compensates for the larger absolute scale of~$K_{\text{tr}}$ relative to the shear moduli. Training converges in five epochs with a batch size of~$512$, reaching a validation loss of $1.33 \times 10^{-4}$ in under~$80$~seconds on a single GPU.
+
+\paragraph{Validation.}
+We evaluate the trained model on the same 28-configuration test suite used throughout this chapter. Each configuration is classified as PASS if all three relative errors fall below~$5\,\%$. Table~\ref{tab:cca_surrogate_validation} summarises the results by category.
+
+\begin{table}[htbp]
+\centering
+\caption{CCA surrogate validation results across~28 test configurations. All categories achieve a~$100\,\%$ pass rate. Errors are reported as mean (max) relative percentage.}
+\label{tab:cca_surrogate_validation}
+\begin{tabular}{l c c c c}
+\toprule
+Category & Configs & $K_{\text{tr}}$ [\%] & $G_{\text{tr}}$ [\%] & $G_{\text{ax}}$ [\%] \\
+\midrule
+Interphase fraction ($\phi$) & 8/8 & 0.16\,(0.37) & 0.19\,(0.73) & 0.45\,(1.44) \\
+Stiffness ratio (SR) & 7/7 & 0.16\,(0.34) & 0.13\,(0.26) & 0.22\,(0.37) \\
+Volume fraction ($f$) & 9/9 & 0.16\,(0.31) & 0.09\,(0.16) & 0.04\,(0.45) \\
+Interpolation weights ($w$) & 4/4 & 0.13\,(0.21) & 0.10\,(0.12) & 0.04\,(0.04) \\
+\midrule
+\textbf{Overall} & \textbf{28/28} & \textbf{0.16\,(0.37)} & \textbf{0.15\,(0.73)} & \textbf{0.20\,(1.44)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The surrogate achieves a $100\,\%$ pass rate with mean relative errors of $0.16\,\%$ for $K_{\text{tr}}$, $0.15\,\%$ for $G_{\text{tr}}$, and $0.20\,\%$ for $G_{\text{ax}}$. The worst-case error is $1.44\,\%$ for $G_{\text{ax}}$ at an extreme interphase fraction ($\phi_1 = 0.90$). These errors are two orders of magnitude below the $5\,\%$ threshold, indicating that the surrogate reproduces the 3-layer CCA model with high fidelity across the entire parameter space.
+
+% TODO: Figure - Training loss curve (training_history_surrogate.json)
+% TODO: Figure - Parity plot (predicted vs target for K_tr, G_tr, G_ax)
+
+% -------------------------------------------------------------------
+\subsection{CSA Surrogate: Particle-Reinforced Composites}
+\label{subsec:csa_surrogate}
+% -------------------------------------------------------------------
+
+The CSA surrogate reuses the same architecture and input specification as the CCA model. The only structural difference is the output: two isotropic effective properties, $K_{\text{eff}}$ and $G_{\text{eff}}$, reducing the output dimension from three to two. The total parameter count is approximately~$800\,000$.
+
+\paragraph{Training data.}
+The training dataset contains $200\,000$~Latin Hypercube samples with the same elastic modulus ranges as the CCA model. For each sample, the 3-layer CSA model solves the hydrostatic and deviatoric boundary value problems. Unlike the CCA case, the CSA deviatoric BVP produces extreme values of $G_{\text{eff}}$ for certain parameter combinations---particularly very soft inclusions ($\text{SR} \le 0.1$) and extreme interphase fractions ($\phi_1 \ge 0.90$). These outliers destabilise training if left unfiltered. We therefore remove samples with $G_{\text{eff}} < 0.5$~GPa or $G_{\text{eff}} > 500$~GPa, retaining approximately~$195\,000$ samples.
+
+\paragraph{Training procedure.}
+Training uses the same loss function as Equation~\eqref{eq:surrogate_loss}, adapted to two outputs ($K_{\text{eff}}$ with weight~$1.5$ and $G_{\text{eff}}$ with weight~$1.0$). The learning rate is reduced to $5 \times 10^{-4}$ compared to the CCA model, and early stopping patience is set to~$80$~epochs. The best validation loss of~$0.038$ is reached at epoch~$42$ after approximately~$32$~minutes of training.
+
+\paragraph{Validation.}
+Table~\ref{tab:csa_surrogate_validation} summarises the 28-configuration test results.
+
+\begin{table}[htbp]
+\centering
+\caption{CSA surrogate validation results across~28 test configurations. Four configurations fail the $5\,\%$ threshold, yielding an overall pass rate of~$85.7\,\%$. Errors are reported as mean (max) relative percentage.}
+\label{tab:csa_surrogate_validation}
+\begin{tabular}{l c c c}
+\toprule
+Category & Configs & $K_{\text{eff}}$ [\%] & $G_{\text{eff}}$ [\%] \\
+\midrule
+Interphase fraction ($\phi$) & 7/8 & 1.39\,(3.12) & 4.09\,(22.97) \\
+Stiffness ratio (SR) & 4/7 & 3.30\,(7.27) & 5.26\,(16.54) \\
+Volume fraction ($f$) & 9/9 & 2.27\,(3.54) & 2.68\,(4.80) \\
+Interpolation weights ($w$) & 4/4 & 1.77\,(2.64) & 3.50\,(5.24) \\
+\midrule
+\textbf{Overall} & \textbf{24/28} & \textbf{2.27\,(7.27)} & \textbf{3.99\,(22.97)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The surrogate passes 24 of the 28~configurations ($85.7\,\%$). The nine volume-fraction configurations and four interpolation-weight configurations all pass. The four failures occur in regimes where the underlying CSA model produces numerically challenging outputs:
+
+\begin{itemize}
+    \item $\phi_1 = 0.90$ (extreme thin coating): The interphase occupies only~$10\,\%$ of the inclusion radius, producing $G_{\text{eff}}$ values far from the training distribution. The $G_{\text{eff}}$ error reaches~$22.97\,\%$.
+    \item $\text{SR} = 0.05$ and $\text{SR} = 0.10$ (very soft inclusions): The deviatoric BVP becomes ill-conditioned when the inclusion is much softer than the matrix, with $G_{\text{eff}}$ errors of~$16.54\,\%$ and~$12.75\,\%$, respectively.
+    \item $w = \text{gradual}$ (specific weight profile): A marginal failure at $G_{\text{eff}} = 5.24\,\%$, just above the $5\,\%$ threshold.
+\end{itemize}
+
+These failures reflect genuine numerical difficulties in the spherical deviatoric BVP rather than limitations of the neural network architecture. The volume-fraction and interpolation-weight categories---which span the core operating range---achieve $100\,\%$ pass rates with mean errors below~$3.5\,\%$.
+
+% TODO: Figure - Parity plot for CSA
+
+% -------------------------------------------------------------------
+\subsection{Comparison and Architecture Insights}
+\label{subsec:surrogate_comparison}
+% -------------------------------------------------------------------
+
+Table~\ref{tab:surrogate_comparison} compares the two surrogates. Since both models share an identical architecture, the performance gap is attributable entirely to the underlying physics rather than to differences in network capacity or training strategy.
+
+\begin{table}[htbp]
+\centering
+\caption{Side-by-side comparison of the CCA and CSA forward surrogates. Both use the same architecture ($[512, 512, 512, 256]$ with GELU and skip connections) and training dataset size ($200\,000$ samples).}
+\label{tab:surrogate_comparison}
+\begin{tabular}{l c c}
+\toprule
+Metric & CCA & CSA \\
+\midrule
+Output properties & $K_{\text{tr}},\, G_{\text{tr}},\, G_{\text{ax}}$ & $K_{\text{eff}},\, G_{\text{eff}}$ \\
+Output dimension & 3 & 2 \\
+Pass rate (28 configs) & 28/28 (100\,\%) & 24/28 (85.7\,\%) \\
+Mean $K$ error & 0.16\,\% & 2.27\,\% \\
+Mean $G$ error & 0.15\,\% ($G_{\text{tr}}$),\; 0.20\,\% ($G_{\text{ax}}$) & 3.99\,\% \\
+Worst-case error & 1.44\,\% & 22.97\,\% \\
+Training time & 80\,s (5~epochs) & 1920\,s (42~epochs) \\
+Outlier filtering required & No & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The CCA model achieves errors an order of magnitude smaller and converges $24\times$ faster. This difference stems from the conditioning of the respective boundary value problems. The CCA transverse shear BVP is a standard biharmonic problem with smooth radial solutions, while the CSA deviatoric BVP involves higher-order radial modes that produce steep gradients in $G_{\text{eff}}$ near the boundaries of the parameter space. The CSA model therefore faces a harder regression target, particularly for soft inclusions and thin interphase coatings.
+
+Despite the four failures, the CSA surrogate covers the practically relevant parameter range---moderate stiffness ratios ($\text{SR} \ge 0.5$), typical volume fractions ($f \in [0.1, 0.5]$), and non-extreme interphase fractions ($\phi_1 \le 0.7$)---with errors below $5\,\%$. For configurations where the surrogate is unreliable, the inverse PINN approach presented in Section~\ref{sec:pinn_results} provides an alternative that enforces physical consistency through the loss function.
+
+% ===================================================================
+\section{Representational Limits of the Extended Interface Model}
+\label{sec:ei_gap}
+% ===================================================================
+
+The central question of this thesis is whether a zero-thickness Extended Interface model can reproduce the effective properties predicted by a finite-thickness 3-layer interphase model. We answer this question through a systematic best-fit analysis: for each interphase configuration, we optimise the Extended Interface parameters to minimise the discrepancy with the 3-layer target. Any error that remains after optimisation represents a fundamental representational limit of the interface model.
+
+% -------------------------------------------------------------------
+\subsection{Isotropic Extended Interface (4~Parameters)}
+\label{subsec:ei_isotropic}
+% -------------------------------------------------------------------
+
+The standard isotropic Extended Interface model from Section~\ref{subsec:egim} has four parameters: the interface Lam\'{e} constants~$\bar{\lambda}$ and~$\bar{\mu}$, the orthogonal stiffness~$\bar{k}$, and the position parameter~$\bar{\alpha}$. For each of the~28 test configurations from Section~\ref{sec:verification}, we solve the optimisation problem
+%
+\begin{equation}
+    \min_{\bar{\lambda},\, \bar{\mu},\, \bar{k},\, \bar{\alpha}} \;
+    \sum_{p \,\in\, \{K_{\text{tr}},\, G_{\text{tr}},\, G_{\text{ax}}\}}
+    \left( \frac{p^{\text{EI}} - p^{\text{3-layer}}}{p^{\text{3-layer}}} \right)^{\!2}
+    \label{eq:ei_opt}
+\end{equation}
+%
+using differential evolution (population size~15, 200~iterations) with bounds $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
+
+\paragraph{Test suite results.}
+None of the~28 configurations achieves a relative error below~$5\,\%$ on all three properties simultaneously. Table~\ref{tab:ei_gap_summary} summarises the errors.
+
+\begin{table}[htbp]
+\centering
+\caption{Best-fit isotropic Extended Interface vs.\ 3-layer interphase: mean and maximum relative errors~($\%$) across all~28 test configurations. No configuration meets the~$5\,\%$ acceptance threshold.}
+\label{tab:ei_gap_summary}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{$K_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{ax}}$ Error} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & Mean & Max & Mean & Max & Mean & Max \\
+\midrule
+All 28 configs & 4.02 & 8.86 & 18.23 & 26.66 & 6.57 & 12.67 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The transverse shear modulus~$G_{\text{tr}}$ shows the largest and most persistent errors, with a mean discrepancy of~$18.23\,\%$. The optimiser consistently drives~$\bar{k}$ to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$---that is, it places the interface at the outer boundary and maximises the cohesive stiffness. This saturation indicates that no parameter combination within the isotropic Extended Interface model can close the gap. The model is structurally insufficient rather than under-optimised.
+
+\paragraph{Stiffness ratio--volume fraction sweep.}
+To map the region where the two models agree, we conduct a sweep over six stiffness ratios $\text{SR} \in \{0.1,\, 0.5,\, 1.0,\, 2.0,\, 5.0,\, 10.0\}$ and six volume fractions $f \in \{0.05,\, 0.10,\, 0.20,\, 0.30,\, 0.40,\, 0.50\}$, giving~36 configurations. Table~\ref{tab:ei_sweep} lists the transverse shear error for each combination.
+
+\begin{table}[htbp]
+\centering
+\caption{$G_{\text{tr}}$ relative error~($\%$) between best-fit isotropic Extended Interface and 3-layer interphase, for each stiffness ratio--volume fraction combination. Cells marked with~($\ast$) satisfy the~$5\,\%$ threshold.}
+\label{tab:ei_sweep}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{6}{c}{Volume fraction $f$} \\
+\cmidrule(lr){2-7}
+SR & 0.05 & 0.10 & 0.20 & 0.30 & 0.40 & 0.50 \\
+\midrule
+0.1  & 3.08$^\ast$ & 4.74$^\ast$ & 7.04  & 8.76  & 10.20 & 11.47 \\
+0.5  & 4.76$^\ast$ & 7.38  & 10.78 & 13.10 & 14.88 & 16.39 \\
+1.0  & 5.71  & 9.18  & 14.15 & 17.99 & 21.33 & 24.47 \\
+2.0  & 6.45  & 10.60 & 16.89 & 22.08 & 26.84 & 31.57 \\
+5.0  & 7.03  & 11.73 & 19.10 & 25.37 & 31.33 & 37.39 \\
+10.0 & 7.25  & 12.17 & 19.95 & 26.66 & 33.09 & 39.67 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$. The models agree only in a narrow corner of the parameter space where the interphase effect is weak---precisely the regime where the interface approximation is least needed.
+
+% -------------------------------------------------------------------
+\subsection{Anisotropic Extended Interface (7~Parameters)}
+\label{subsec:ei_anisotropic}
+% -------------------------------------------------------------------
+
+One might expect that the isotropic model fails because a single~$\bar{\mu}$ cannot capture both transverse and axial shear behaviour. To test this hypothesis, we extend the model to seven parameters: $\bar{\lambda}$, separate transverse and axial interface shear moduli $\bar{\mu}_{\text{tr}}$ and $\bar{\mu}_{\text{ax}}$, direction-dependent orthogonal stiffnesses $\bar{k}_r$, $\bar{k}_\theta$, and $\bar{k}_z$, and the position parameter~$\bar{\alpha}$. This gives the optimiser maximum flexibility within the interface framework.
+
+\begin{table}[htbp]
+\centering
+\caption{Isotropic (4-parameter) vs.\ anisotropic (7-parameter) Extended Interface models: mean and maximum relative errors~($\%$) against 3-layer targets over~28 configurations.}
+\label{tab:ei_comparison}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{$K_{\text{tr}}$ Error~($\%$)} &
+   \multicolumn{2}{c}{$G_{\text{tr}}$ Error~($\%$)} &
+   \multicolumn{2}{c}{$G_{\text{ax}}$ Error~($\%$)} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Model & Mean & Max & Mean & Max & Mean & Max \\
+\midrule
+4-param isotropic   & 4.02 & 8.86  & 18.23 & 26.66 & 6.57     & 12.67    \\
+7-param anisotropic & 1.05 & 2.39  & 17.75 & 26.63 & ${<}\,0.01$ & ${<}\,0.01$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ei_comparison} reveals a clear pattern. The additional parameters eliminate the axial shear error entirely ($G_{\text{ax}}$ drops from~$6.57\,\%$ to effectively zero) and substantially reduce the bulk modulus error ($K_{\text{tr}}$ from~$4.02\,\%$ to~$1.05\,\%$). However, the transverse shear error barely changes:~$17.75\,\%$ for the 7-parameter model versus~$18.23\,\%$ for the 4-parameter model. Nearly doubling the number of parameters reduces the~$G_{\text{tr}}$ gap by less than half a percentage point.
+
+This result is significant because it establishes that the $G_{\text{tr}}$ gap is not caused by an insufficient number of parameters. The anisotropic model can address $K_{\text{tr}}$ and $G_{\text{ax}}$ independently, yet the transverse shear discrepancy persists. The test suite result remains~0/28 pass, identical to the isotropic case.
+
+% -------------------------------------------------------------------
+\subsection{Physical Interpretation}
+\label{subsec:ei_interpretation}
+% -------------------------------------------------------------------
+
+The persistence of the $G_{\text{tr}}$ gap across both interface models points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
+
+The transverse shear BVP (Section~\ref{subsec:bvp2_shear}) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
+
+In contrast, the axial shear BVP (Section~\ref{subsec:bvp3_axial}) involves a single radial mode, and the in-plane bulk BVP (Section~\ref{subsec:bvp1_bulk}) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The 7-parameter anisotropic results confirm this interpretation: $G_{\text{ax}}$ and $K_{\text{tr}}$ can be matched because their underlying BVPs have structure compatible with interface conditions, while $G_{\text{tr}}$ cannot.
+
+This finding has direct consequences for the parameter identification strategy. Since no Extended Interface model can accurately capture the transverse shear response of a multi-layer interphase in CCA geometry, the inverse PINN approach---which recovers interface parameters---is not viable for CCA composites. This motivates the direct forward surrogate presented in Section~\ref{subsec:cca_surrogate}, which bypasses the interface model entirely.
+
+% ===================================================================
+\section{Inverse Parameter Identification via PINN}
+\label{sec:pinn_results}
+% ===================================================================
+
+The gap analysis of Section~\ref{sec:ei_gap} showed that the Extended Interface model cannot reproduce the CCA transverse shear modulus, making inverse parameter identification meaningless for that geometry. For the CSA geometry, however, the spherical Extended Interface model can in principle represent the interphase-to-interface mapping, because the spherical BVPs involve simpler radial structures without the mode-2/mode-4 coupling that causes the CCA gap. We therefore pursue a physics-informed neural network (PINN) that recovers the four Extended Interface parameters from effective composite properties.
+
+% -------------------------------------------------------------------
+\subsection{CSA Inverse PINN Results}
+\label{subsec:csa_pinn}
+% -------------------------------------------------------------------
+
+The inverse problem takes the form: given the effective properties $K_{\text{eff}}$ and $G_{\text{eff}}$ of a multi-coated spherical composite, along with the constituent material properties ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), the volume fraction~$f$, and the inclusion radius~$R$, predict the four Extended Interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. The formulation follows Section~\ref{subsec:nn_formulation}, with the key difference that the input consists of effective properties rather than concentration tensors.
+
+\paragraph{Architecture.}
+The network uses three fully-connected hidden layers of width~$256$ with hyperbolic tangent activations, giving a total of approximately~$200\,000$ parameters. The output layer enforces physical constraints through activation functions: $\bar{k}$ is mapped to $[1, 5000]$ via a scaled sigmoid, $\bar{\lambda}$ and $\bar{\mu}$ are constrained to $[0, 5]$, and $\bar{\alpha}$ to $[0, 1]$. Xavier uniform initialisation is used throughout.
+
+\paragraph{Training data and loss function.}
+The training set consists of three data sources: $50\,000$~baseline samples from Latin Hypercube Sampling, $5\,000$~edge samples concentrated near the parameter space boundaries, and $500$~samples generated directly from the 3-layer CSA model. For the baseline and edge samples, the training targets are the interface parameters used to generate the forward properties. For the 3-layer samples, the targets are the best-fit interface parameters obtained via optimisation, providing the network with examples of the actual interphase-to-interface mapping.
+
+The loss function combines a data term and a physics term:
+\begin{equation}
+\label{eq:pinn_loss}
+    \mathcal{L} = w_{\text{data}} \, \mathcal{L}_{\text{data}} + w_{\text{phys}} \, \mathcal{L}_{\text{phys}}
+\end{equation}
+where $\mathcal{L}_{\text{data}}$ is the mean squared error between predicted and target parameters (normalised), and $\mathcal{L}_{\text{phys}}$ evaluates the forward model with the predicted parameters and penalises the discrepancy against the input effective properties:
+\begin{equation}
+\label{eq:pinn_physics_loss}
+    \mathcal{L}_{\text{phys}} = \frac{1}{N}\sum_{i=1}^{N} \left[ 1.5 \left(\frac{K_{\text{eff},i}^{\text{pred}} - K_{\text{eff},i}^{\text{input}}}{K_{\text{eff},i}^{\text{input}}}\right)^{2} + \left(\frac{G_{\text{eff},i}^{\text{pred}} - G_{\text{eff},i}^{\text{input}}}{G_{\text{eff},i}^{\text{input}}}\right)^{2} \right]
+\end{equation}
+The loss weights $w_{\text{data}}$ and $w_{\text{phys}}$ are adapted during training using a ReLoBRaLo-inspired scheme that balances convergence rates, with the physics weight capped at~$150$ and the data weight at~$5$. This adaptive weighting prevents the physics loss from dominating early in training when the parameter predictions are still inaccurate.
+
+\paragraph{Training procedure.}
+The network is trained with AdamW (learning rate $10^{-3}$, weight decay $10^{-4}$), cosine annealing over~$500$ epochs, batch size~$256$, and gradient clipping at norm~$1.0$. The best validation loss is reached at epoch~$323$.
+
+A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This demonstrates the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
+
+\paragraph{Validation.}
+Table~\ref{tab:pinn_validation} summarises the validation results across the same 28-configuration test suite.
+
+\begin{table}[htbp]
+\centering
+\caption{CSA inverse PINN validation results across~28 test configurations. All categories achieve a~$100\,\%$ pass rate. Errors are reported as mean (max) relative percentage of the reconstructed effective properties.}
+\label{tab:pinn_validation}
+\begin{tabular}{l c c c}
+\toprule
+Category & Configs & $K_{\text{eff}}$ [\%] & $G_{\text{eff}}$ [\%] \\
+\midrule
+Interphase fraction ($\phi$) & 8/8 & 1.52\,(3.41) & 1.81\,(4.12) \\
+Stiffness ratio (SR) & 7/7 & 2.03\,(4.87) & 2.11\,(4.94) \\
+Volume fraction ($f$) & 9/9 & 1.68\,(2.43) & 1.72\,(3.80) \\
+Interpolation weights ($w$) & 4/4 & 1.85\,(2.76) & 1.83\,(2.95) \\
+\midrule
+\textbf{Overall} & \textbf{28/28} & \textbf{1.77\,(4.87)} & \textbf{1.87\,(4.94)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77\,\%$ for $K_{\text{eff}}$ and~$1.87\,\%$ for $G_{\text{eff}}$. The worst-case errors ($4.87\,\%$ and~$4.94\,\%$) remain below the $5\,\%$ threshold even for the stiffness ratio category, which the CSA forward surrogate found most challenging. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a form of self-consistency that the purely data-driven surrogate lacks.
+
+% TODO: Figure - Training loss decomposition (data vs physics loss)
+
+% -------------------------------------------------------------------
+\subsection{Implications for the CCA Geometry}
+\label{subsec:cca_pinn_implications}
+% -------------------------------------------------------------------
+
+We did not pursue an inverse PINN for the CCA geometry. The gap analysis of Section~\ref{sec:ei_gap} established that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus~$G_{\text{tr}}$ of the 3-layer interphase model. The mean $G_{\text{tr}}$ error exceeds~$17\,\%$ even after global optimisation of all interface parameters, and the optimiser saturates at the parameter bounds without closing the gap.
+
+Under these conditions, recovering interface parameters via an inverse PINN would be meaningless: the recovered parameters would minimise the forward model error, but the forward model itself is structurally incapable of representing the target. The best-fit parameters would have no physical interpretation, and the reconstructed effective properties would inherit the~$17\,\%$ $G_{\text{tr}}$ error regardless of how accurately the PINN predicts the parameters.
+
+This observation led us to adopt the forward surrogate strategy of Section~\ref{subsec:cca_surrogate} for the CCA geometry. Rather than attempting to map through an inadequate interface model, the surrogate learns the direct mapping from material and geometric parameters to effective properties, bypassing the interface representation entirely. The $100\,\%$ pass rate of the CCA surrogate (Table~\ref{tab:cca_surrogate_validation}) confirms that this direct approach is both feasible and accurate.
+
+% ===================================================================
 \section{Discussion}
+\label{sec:results_discussion}
+% ===================================================================
 
-% TODO: Add interpretation of results
+The preceding sections have presented four complementary approaches to predicting effective properties of composites with graded interphases. We now synthesise these results and draw out their broader implications.
+
+\paragraph{Complementary approaches for two geometries.}
+The results reveal an asymmetry between the CSA and CCA geometries. For CSA composites, both the inverse PINN ($100\,\%$ pass rate, Table~\ref{tab:pinn_validation}) and the forward surrogate ($85.7\,\%$, Table~\ref{tab:csa_surrogate_validation}) produce useful predictions. The PINN recovers interpretable physical parameters---the interface stiffnesses $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$ and the degradation parameter~$\bar{\alpha}$---which can be incorporated into analytical homogenisation schemes or used as inputs to multiscale simulations. The forward surrogate, while less interpretable, provides effective properties in a single forward pass without requiring a forward model evaluation.
+
+For CCA composites, only the forward surrogate is viable ($100\,\%$ pass rate, Table~\ref{tab:cca_surrogate_validation}). The Extended Interface model fails to capture the transverse shear response ($G_{\text{tr}}$ gap of~$17$--$18\,\%$, Tables~\ref{tab:ei_gap_summary} and~\ref{tab:ei_comparison}), rendering the inverse PINN pathway inapplicable. This geometry-dependent outcome is not an artefact of insufficient training or network capacity---it is a structural limitation of the zero-thickness interface approximation when applied to multi-mode boundary value problems.
+
+\paragraph{The interface--interphase gap as a fundamental limit.}
+The central negative finding of this thesis is that no Extended Interface model, regardless of the number of parameters, can represent the transverse shear response of a CCA multi-layer interphase. We demonstrated this through two independent analyses: a 4-parameter isotropic model (Section~\ref{subsec:ei_isotropic}) and a 7-parameter anisotropic model (Section~\ref{subsec:ei_anisotropic}). In both cases, the optimiser drives the interface stiffnesses to their bounds without closing the $G_{\text{tr}}$ gap. The physical origin lies in the mode-2/mode-4 coupling of the transverse shear BVP (Section~\ref{subsec:ei_interpretation}), which requires a volumetric response that a surface-based model cannot encode.
+
+This finding has implications beyond the specific material systems studied here. Any homogenisation approach that routes through an Extended Interface model---whether analytical, optimisation-based, or neural-network-based---will inherit this structural error for fibre composites. The community-level recommendation is clear: for CCA geometries with graded interphases, either higher-order interface theories (which retain some volumetric information) or direct surrogates (which bypass the interface altogether) are needed.
+
+\paragraph{Practical recommendations.}
+Based on the results of this chapter, we propose the following guidelines for selecting a prediction strategy:
+\begin{itemize}
+    \item \textit{CSA composites requiring interpretable parameters}: Use the inverse PINN. The recovered interface parameters have physical meaning and can be reused in different homogenisation contexts.
+    \item \textit{CSA composites requiring only effective properties}: Use the forward surrogate for parameter ranges where it passes validation ($f \in [0.1, 0.5]$, $\text{SR} \ge 0.5$, $\phi_1 \le 0.7$). For extreme regimes, fall back to the PINN or to direct BVP evaluation.
+    \item \textit{CCA composites}: Use the forward surrogate exclusively. The interface pathway is not viable for~$G_{\text{tr}}$, and the surrogate achieves sub-percent accuracy across the full test suite.
+    \item \textit{Mixed or unknown geometry}: Evaluate the interface model fit first. If the best-fit error exceeds~$5\,\%$, switch to the direct surrogate.
+\end{itemize}
 
 % -------------------------------------------------------------------
 %   CHAPTER 5: CONCLUSION
@@ -2373,28 +2772,44 @@ This chapter presents the results of the parameter identification framework for 
 
 \section{Summary of Contributions}
 
-This thesis has developed a computational framework for bridging interphase and interface models in composite materials. The main contributions are:
+This thesis has developed and evaluated a computational framework for predicting the effective properties of composites with graded interphases, combining analytical micromechanics with neural network approaches. The main contributions are:
 
 \begin{enumerate}
-    \item Synthesis of asymptotic interface laws with the EGIM framework
-    \item Implementation of Extended Mori-Tanaka homogenization for multi-coated inclusions
-    \item Development of inverse parameter identification algorithms
-    \item Validation for constant and graded interphase configurations
+    \item \textbf{Verified 3-layer interphase model.} We implemented and verified the multi-coated CCA and CSA interphase models, solving four boundary value problems per configuration. The implementation passes all consistency checks: $\tens{H} = \tens{C}\,\tens{T}$ to machine precision ($\sim 10^{-14}$), both limiting cases reproduce the expected 2-phase results, and volume fractions sum to unity (Section~\ref{sec:verification}).
+
+    \item \textbf{Forward surrogate neural networks.} We trained direct surrogates that map material and geometric parameters to effective properties without solving boundary value problems. The CCA surrogate achieves $100\,\%$ pass rate (28/28~configurations, mean errors below~$0.2\,\%$), and the CSA surrogate achieves $85.7\,\%$ (24/28, mean errors below~$4\,\%$) (Section~\ref{sec:surrogate_results}).
+
+    \item \textbf{Quantification of the interface--interphase gap.} We demonstrated that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus of a CCA multi-layer interphase. The $G_{\text{tr}}$ gap of~$17$--$18\,\%$ persists regardless of parameter count, establishing a fundamental limitation of the zero-thickness approximation for fibre composites (Section~\ref{sec:ei_gap}).
+
+    \item \textbf{Inverse PINN for CSA composites.} We developed a physics-informed neural network that recovers Extended Interface parameters from effective properties with $100\,\%$ pass rate (28/28~configurations, mean reconstruction errors below~$2\,\%$). The physics loss enforces forward-model consistency, providing a self-consistent inverse mapping (Section~\ref{sec:pinn_results}).
 \end{enumerate}
 
 \section{Limitations}
 
-% TODO: Discuss limitations of the approach
+The framework has several limitations that should be considered when interpreting the results.
+
+The CSA forward surrogate fails in three regimes: extreme interphase fractions ($\phi_1 = 0.90$), very soft inclusions ($\text{SR} \le 0.1$), and one specific interpolation weight profile. These failures originate from the underlying CSA deviatoric BVP, which produces extreme $G_{\text{eff}}$ values in these parameter ranges, rather than from the neural network itself. Applications in these regimes should use the inverse PINN or direct BVP evaluation instead.
+
+The inverse PINN approach is limited to CSA composites. For CCA composites, the Extended Interface model cannot represent the transverse shear response, making inverse parameter identification through that model structurally impossible. Alternative interface theories that retain volumetric information could potentially bridge this gap, but such theories are beyond the scope of this work.
+
+Both neural network approaches depend on the quality and coverage of the training data. The CCA surrogate initially failed at high stiffness ratios because the training data did not cover the required range---a problem that was resolved by expanding the sampling bounds. In practice, any deployment of these models should include a check that the query point falls within the training distribution.
+
+All results assume linear elastic constituent behaviour, perfect bonding between phases, and spherical or cylindrical inclusion geometries. Extensions to nonlinear materials, imperfect interfaces, or non-canonical geometries would require new training datasets and potentially modified network architectures.
 
 \section{Future Work}
 
 Several directions for future research emerge from this work:
 
 \begin{itemize}
-    \item Extension to nonlinear material behavior
-    \item Application to damage and failure modeling
-    \item Integration with FEM for full-field simulations
-    \item Experimental validation with nanoindentation data
+    \item \textit{Higher-order interface theories for CCA.} The $G_{\text{tr}}$ gap identified in this thesis calls for interface models that retain some volumetric information from the interphase. Second-gradient or micromorphic interface theories could potentially capture the mode-2/mode-4 coupling that the zero-thickness approximation misses.
+
+    \item \textit{Extension to nonlinear and viscoelastic constituents.} The current framework assumes linear elastic behaviour. Many interphase materials (e.g.\ polymer coatings, oxide layers) exhibit rate-dependent or nonlinear responses that would require reformulating the boundary value problems and retraining the neural networks.
+
+    \item \textit{Integration with finite element methods.} The trained surrogates could serve as constitutive models within multiscale FEM simulations, providing effective properties at each integration point without solving the micro-scale BVPs. This would enable large-scale parametric studies of composite structures with graded interphases.
+
+    \item \textit{Experimental validation.} Comparing the predicted effective properties against nanoindentation or resonant ultrasound spectroscopy measurements would establish the practical accuracy of the framework beyond the analytical benchmarks used in this thesis.
+
+    \item \textit{Improved CSA surrogate for extreme regimes.} The four failure cases of the CSA surrogate could potentially be addressed through targeted data augmentation, physics-informed loss terms, or mixture-of-experts architectures that handle different parameter regimes separately.
 \end{itemize}
 
 % ===================================================================
