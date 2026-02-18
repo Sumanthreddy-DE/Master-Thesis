@@ -548,7 +548,7 @@ From a computational perspective, the interphase presents a significant challeng
 
 % -------------------------------------------------------------------
 \section{Interface Models: Mathematical Abstraction}
-\label{sec:interface_models}
+\label{sec:interface_models_intro}
 % -------------------------------------------------------------------
 
 A well-established strategy to address the computational challenges of finite-thickness interphases is to replace them with zero-thickness \textit{interface} models characterized by field discontinuities \cite{SanchezPalencia1974}. In elasticity, these discontinuities manifest as jumps in displacement and/or traction across the interface. This approach trades geometric fidelity for computational efficiency while preserving the essential mechanical response.
@@ -603,8 +603,8 @@ where $\bar{\bs{\sigma}}$ is the interface stress and $\nabla_{\mathcal{I}}$ is 
 Real interphases often exhibit characteristics of both soft and hard behavior simultaneously. Hashin \cite{Hashin2002} and Benveniste and Miloh \cite{Benveniste2001} unified the cohesive and elastic models into a \textit{general interface model} (GIM) admitting both displacement and traction jumps:
 %
 \begin{align}
-    \mean{\bs{t}} &= \bar{k} \jump{\bs{u}} \label{eq:gim_cohesive} \\
-    \jump{\bs{t}} &= -\nabla_{\mathcal{I}} \cdot \bar{\bs{\sigma}} \label{eq:gim_elastic}
+    \mean{\bs{t}} &= \bar{k} \jump{\bs{u}} \label{eq:gim_cohesive_intro} \\
+    \jump{\bs{t}} &= -\nabla_{\mathcal{I}} \cdot \bar{\bs{\sigma}} \label{eq:gim_elastic_intro}
 \end{align}
 %
 The cohesive and elastic models emerge as limiting cases: $\bar{k} \to \infty$ with $\bar{\mu} = 0$ recovers the perfect interface; finite $\bar{k}$ with $\bar{\mu} = 0$ gives the cohesive interface; $\bar{k} \to \infty$ with finite $\bar{\mu}$ produces the elastic interface.
@@ -617,7 +617,7 @@ A crucial limitation of the classical GIM is the implicit assumption that the in
 %
 \begin{equation}
     \mean{\phi}_{\bar{\alpha}} := \bar{\alpha} \phi^+ + (1 - \bar{\alpha}) \phi^-
-    \label{eq:weighted_average}
+    \label{eq:weighted_average_intro}
 \end{equation}
 %
 where $\bar{\alpha} \in [0, 1]$ is the interface position parameter. Setting $\bar{\alpha} = 0.5$ recovers the standard mid-plane assumption, while $\bar{\alpha} = 0$ or $1$ places the interface at the inclusion or matrix boundary, respectively.
@@ -752,7 +752,7 @@ This work is structured as follows:
 \chapter{Theoretical Foundations}
 \label{ch:theory}
 
-This chapter develops the mathematical framework underlying the interphase and interface models for composite materials. Following the logical progression established in the introduction---where interphases represent physical reality and interfaces provide mathematical abstractions---we first present the multi-coated inclusion approach for modeling finite-thickness interphases, then proceed to the Extended General Interface Model (EGIM) that enables computationally efficient homogenization.
+This chapter develops the theoretical framework underlying the interphase and interface models for composite materials. Following the logical progression from the introduction---where interphases represent physical reality and interfaces provide mathematical abstractions---we first present the multi-coated inclusion model with its fundamental equations and concentration tensor definitions. We then develop the hierarchy of interface models, from perfect bonding to the Extended General Interface Model (EGIM), and establish the Mori-Tanaka homogenization framework that uses both representations. The boundary value problems needed to compute the concentration tensor components are derived in Chapter~\ref{ch:methodology}.
 
 % ===================================================================
 \section{Multi-Coated Inclusion Model for Interphases}
@@ -953,14 +953,17 @@ For \textbf{coated cylindrical fibers} (2D, cylindrical coordinates):
 %
 where $r_1$ is the core radius and $r_m$ denotes the outer radius of coating layer $m-1$ (inner radius of layer $m$).
 
-% -------------------------------------------------------------------
-\subsection{Solution Strategy: Concentration Tensors}
-\label{subsec:solution_strategy}
-% -------------------------------------------------------------------
+% ===================================================================
+\section{Concentration Tensors}
+\label{sec:concentration_tensors_theory}
+% ===================================================================
 
-The goal is to determine the interaction (concentration) tensors that relate the average fields in each phase to the applied far-field strain $\bs{\varepsilon}^{(0)}$.
+The central goal of the multi-coated inclusion analysis is to determine interaction (concentration) tensors that relate the average fields in each phase to the applied far-field strain $\bs{\varepsilon}^{(0)}$. These tensors serve as the shared mathematical representation through which both the interphase and interface models can be compared and connected.
 
-\subsubsection{Strain-Type Concentration Tensor}
+% -------------------------------------------------------------------
+\subsection{Strain-Type Concentration Tensor}
+\label{subsec:strain_concentration}
+% -------------------------------------------------------------------
 
 The strain-type elastic concentration tensor $\mathbb{T}^{(i)}$ satisfies:
 %
@@ -969,7 +972,10 @@ The strain-type elastic concentration tensor $\mathbb{T}^{(i)}$ satisfies:
     \label{eq:strain_concentration}
 \end{equation}
 
-\subsubsection{Stress-Strain Concentration Tensor}
+% -------------------------------------------------------------------
+\subsection{Stress-Strain Concentration Tensor}
+\label{subsec:stress_concentration}
+% -------------------------------------------------------------------
 
 The stress-strain type elastic concentration tensor $\mathbb{H}^{(i)}$ satisfies:
 %
@@ -985,7 +991,10 @@ For phases with constant material properties, these tensors are related by:
     \label{eq:H_T_relation}
 \end{equation}
 
-\subsubsection{Equivalent Inhomogeneity}
+% -------------------------------------------------------------------
+\subsection{Equivalent Inhomogeneity}
+\label{subsec:equivalent_inhomogeneity}
+% -------------------------------------------------------------------
 
 To avoid working with a large number of material phases, it is advantageous to substitute the inhomogeneity and the multiple coatings with a single \textit{equivalent inhomogeneity}. For an arbitrary field $\bs{a}$ (strain or stress type), its value in the equivalent inhomogeneity obeys:
 %
@@ -1008,349 +1017,14 @@ The equivalent concentration tensors are then:
     \mathbb{H}^{\text{eq}} &= c_h \mathbb{H}^{(h)} + \sum_{r=1}^{N} c_r \mathbb{H}^{(r)} \label{eq:Heq}
 \end{align}
 
-% ===================================================================
-\section{Coordinate Transformations}
-\label{sec:coordinate_transform}
-% ===================================================================
+The specific tensor structures---and the boundary value problems needed to determine the independent components---are developed in Chapter~\ref{ch:methodology}.
 
-When dealing with multicoated heterogeneities (spherical particles or cylindrical fibers), it is essential to express field quantities in appropriate coordinate systems and transform them between local and global coordinates.
-
-% -------------------------------------------------------------------
-\subsection{Rotation Matrix}
-\label{subsec:rotation_matrix}
-% -------------------------------------------------------------------
-
-A second-order tensor rotator $\bs{R}$ is defined as:
-%
-\begin{equation}
-    \bs{R} = 
-    \begin{bmatrix}
-        R_{11} & R_{12} & R_{13} \\
-        R_{21} & R_{22} & R_{23} \\
-        R_{31} & R_{32} & R_{33}
-    \end{bmatrix}
-    \label{eq:rotation_matrix}
-\end{equation}
-
-\subsubsection{Cylindrical Coordinates}
-
-For cylindrical coordinates $(r, \theta, z)$ with the fiber axis along $z$:
-%
-\begin{equation}
-    \bs{R}_{\text{cyl}} = 
-    \begin{bmatrix}
-        \cos\theta & -\sin\theta & 0 \\
-        \sin\theta & \cos\theta & 0 \\
-        0 & 0 & 1
-    \end{bmatrix}
-    \label{eq:R_cylindrical}
-\end{equation}
-
-\subsubsection{Spherical Coordinates}
-
-For spherical coordinates $(r, \theta, \phi)$:
-%
-\begin{equation}
-    \bs{R}_{\text{sph}} = 
-    \begin{bmatrix}
-        \sin\theta\cos\phi & \cos\theta\cos\phi & -\sin\phi \\
-        \sin\theta\sin\phi & \cos\theta\sin\phi & \cos\phi \\
-        \cos\theta & -\sin\theta & 0
-    \end{bmatrix}
-    \label{eq:R_spherical}
-\end{equation}
-
-% -------------------------------------------------------------------
-\subsection{Transformation Matrices in Voigt Notation}
-\label{subsec:Q_matrices}
-% -------------------------------------------------------------------
-
-The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively.
-
-\subsubsection{Strain Transformation Matrix}
-
-The matrix $\bs{Q}_\varepsilon$ transforms strains from global to local coordinates ($\bs{\varepsilon}' = \bs{Q}_\varepsilon \cdot \bs{\varepsilon}$):
-%
-\begin{equation}
-    \bs{Q}_\varepsilon = 
-    \begin{bmatrix}
-        R_{11}^2 & R_{21}^2 & R_{31}^2 & R_{11}R_{21} & R_{11}R_{31} & R_{21}R_{31} \\
-        R_{12}^2 & R_{22}^2 & R_{32}^2 & R_{12}R_{22} & R_{12}R_{32} & R_{22}R_{32} \\
-        R_{13}^2 & R_{23}^2 & R_{33}^2 & R_{13}R_{23} & R_{13}R_{33} & R_{23}R_{33} \\
-        2R_{11}R_{12} & 2R_{21}R_{22} & 2R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
-        2R_{11}R_{13} & 2R_{21}R_{23} & 2R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
-        2R_{12}R_{13} & 2R_{22}R_{23} & 2R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
-    \end{bmatrix}
-    \label{eq:Q_epsilon}
-\end{equation}
-
-\subsubsection{Stress Transformation Matrix}
-
-The matrix $\bs{Q}_\sigma$ transforms stresses from global to local coordinates ($\bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma}$):
-%
-\begin{equation}
-    \bs{Q}_\sigma = 
-    \begin{bmatrix}
-        R_{11}^2 & R_{21}^2 & R_{31}^2 & 2R_{11}R_{21} & 2R_{11}R_{31} & 2R_{21}R_{31} \\
-        R_{12}^2 & R_{22}^2 & R_{32}^2 & 2R_{12}R_{22} & 2R_{12}R_{32} & 2R_{22}R_{32} \\
-        R_{13}^2 & R_{23}^2 & R_{33}^2 & 2R_{13}R_{23} & 2R_{13}R_{33} & 2R_{23}R_{33} \\
-        R_{11}R_{12} & R_{21}R_{22} & R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
-        R_{11}R_{13} & R_{21}R_{23} & R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
-        R_{12}R_{13} & R_{22}R_{23} & R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
-    \end{bmatrix}
-    \label{eq:Q_sigma}
-\end{equation}
-
-\subsubsection{Transformation Relations}
-
-The transformation of strains and stresses between local (primed) and global (unprimed) coordinates is given by:
-%
-\begin{align}
-    \bs{\varepsilon}' &= \bs{Q}_\varepsilon \cdot \bs{\varepsilon}, \quad \bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma} \label{eq:transform_forward}\\
-    \bs{\varepsilon} &= \bs{Q}_\sigma^T \cdot \bs{\varepsilon}', \quad \bs{\sigma} = \bs{Q}_\varepsilon^T \cdot \bs{\sigma}' \label{eq:transform_inverse}
-\end{align}
-
-Note that $\bs{Q}_\varepsilon^{-1} = \bs{Q}_\sigma^T$ and $\bs{Q}_\sigma^{-1} = \bs{Q}_\varepsilon^T$.
-
-% ===================================================================
-\section{Boundary Value Problems for Fiber Composites (CCA)}
-\label{sec:bvp_cca}
-% ===================================================================
-
-For fiber-reinforced composites analyzed using the Composite Cylinder Assemblage (CCA) approach, we consider cylindrical coordinates $(r, \theta, z)$ with the fiber axis along the $z$-direction. The concentration tensor components are determined by solving specific boundary value problems.
-
-% -------------------------------------------------------------------
-\subsection{Governing Equations in Cylindrical Coordinates}
-\label{subsec:cylindrical_equations}
-% -------------------------------------------------------------------
-
-\subsubsection{Strain Components}
-
-In cylindrical coordinates, the strain components are:
-%
-\begin{equation}
-    \bs{\varepsilon} = 
-    \begin{bmatrix}
-        \varepsilon_{rr} \\ \varepsilon_{\theta\theta} \\ \varepsilon_{zz} \\ 2\varepsilon_{r\theta} \\ 2\varepsilon_{rz} \\ 2\varepsilon_{\theta z}
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \dfrac{\partial u_r}{\partial r} \\[8pt]
-        \dfrac{1}{r}\dfrac{\partial u_\theta}{\partial \theta} + \dfrac{u_r}{r} \\[8pt]
-        \dfrac{\partial u_z}{\partial z} \\[8pt]
-        \dfrac{\partial u_\theta}{\partial r} + \dfrac{1}{r}\dfrac{\partial u_r}{\partial \theta} - \dfrac{u_\theta}{r} \\[8pt]
-        \dfrac{\partial u_r}{\partial z} + \dfrac{\partial u_z}{\partial r} \\[8pt]
-        \dfrac{1}{r}\dfrac{\partial u_z}{\partial \theta} + \dfrac{\partial u_\theta}{\partial z}
-    \end{bmatrix}
-    \label{eq:strain_cylindrical}
-\end{equation}
-
-\subsubsection{Equilibrium Equations}
-
-The equilibrium equations in cylindrical coordinates read:
-%
-\begin{align}
-    \frac{\partial \sigma_{rr}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{r\theta}}{\partial \theta} + \frac{\partial \sigma_{rz}}{\partial z} + \frac{\sigma_{rr} - \sigma_{\theta\theta}}{r} &= 0 \label{eq:equil_cyl_r}\\
-    \frac{\partial \sigma_{r\theta}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{\theta\theta}}{\partial \theta} + \frac{\partial \sigma_{\theta z}}{\partial z} + \frac{2\sigma_{r\theta}}{r} &= 0 \label{eq:equil_cyl_theta}\\
-    \frac{\partial \sigma_{rz}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{\theta z}}{\partial \theta} + \frac{\partial \sigma_{zz}}{\partial z} + \frac{\sigma_{rz}}{r} &= 0 \label{eq:equil_cyl_z}
-\end{align}
-
-\subsubsection{Average Fields in Cylindrical Coordinates}
-
-For a phase $q$ with inner radius $r_a$ and outer radius $r_b$, the average fields are computed as:
-%
-\begin{align}
-    \langle \bs{\varepsilon}^{(q)} \rangle &= \frac{1}{\pi(r_b^2 - r_a^2)} \int_0^{2\pi} \int_{r_a}^{r_b} \bs{Q}_\sigma^T \cdot \bs{\varepsilon}^{(q)}_{\text{cyl}} \, r \, dr \, d\theta \label{eq:avg_strain_cyl}\\
-    \langle \bs{\sigma}^{(q)} \rangle &= \frac{1}{\pi(r_b^2 - r_a^2)} \int_0^{2\pi} \int_{r_a}^{r_b} \bs{Q}_\varepsilon^T \cdot \bs{\sigma}^{(q)}_{\text{cyl}} \, r \, dr \, d\theta \label{eq:avg_stress_cyl}
-\end{align}
-
-% -------------------------------------------------------------------
-\subsection{BVP 1: In-Plane Bulk Loading (Radial Expansion)}
-\label{subsec:bvp1_bulk}
-% -------------------------------------------------------------------
-
-To determine the bulk response coefficients $T_\kappa^{(q)}$ and $H_\kappa^{(q)}$, we consider uniform radial expansion. The far-field displacement and strain are:
-%
-\begin{equation}
-    \bs{u}^{(0)}(r, \theta, z) = 
-    \begin{bmatrix}
-        \beta r \\ 0 \\ 0
-    \end{bmatrix}, \quad
-    \bs{\varepsilon}^{(0)} = 
-    \begin{bmatrix}
-        \beta & \beta & 0 & 0 & 0 & 0
-    \end{bmatrix}^T
-    \label{eq:bvp1_farfield}
-\end{equation}
-%
-where $\beta$ is a scalar constant characterizing the magnitude of radial expansion.
-
-The displacement field in each phase takes the form:
-%
-\begin{equation}
-    u_r^{(i)}(r) = \beta\left(\Xi_1^{(i)} r + \Xi_2^{(i)} \frac{1}{r}\right), \quad u_\theta^{(i)} = u_z^{(i)} = 0
-    \label{eq:bvp1_displacement}
-\end{equation}
-
-The unknown constants $\Xi_1^{(i)}$ and $\Xi_2^{(i)}$ are determined from:
-\begin{enumerate}
-    \item Finite displacement at origin: $\Xi_2^{(1)} = 0$ (for the core)
-    \item Continuity of displacement at each interface $r = r_m$
-    \item Continuity of traction at each interface $r = r_m$
-    \item Far-field condition: $u_r^{(0)}(r \to \infty) = \beta r$
-\end{enumerate}
-
-% -------------------------------------------------------------------
-\subsection{BVP 2: Transverse (In-Plane) Shear}
-\label{subsec:bvp2_shear}
-% -------------------------------------------------------------------
-
-For the in-plane shear response coefficients $T_{44}^{(q)}$ and $H_{44}^{(q)}$, the far-field displacement is:
-%
-\begin{equation}
-    \bs{u}^{(0)}(r, \theta, z) = 
-    \begin{bmatrix}
-        \beta r \sin 2\theta \\ \beta r \cos 2\theta \\ 0
-    \end{bmatrix}, \quad
-    \bs{\varepsilon}^{(0)} = 
-    \begin{bmatrix}
-        \beta & -\beta & 0 & \beta & 0 & 0
-    \end{bmatrix}^T
-    \label{eq:bvp2_farfield}
-\end{equation}
-
-The displacement field in each phase takes the general form:
-%
-\begin{align}
-    u_r^{(i)}(r, \theta) &= \beta r U_r^{(i)}(r) \sin 2\theta \label{eq:bvp2_ur}\\
-    u_\theta^{(i)}(r, \theta) &= \beta r U_\theta^{(i)}(r) \cos 2\theta \label{eq:bvp2_utheta}
-\end{align}
-%
-where the radial functions are:
-%
-\begin{align}
-    U_r^{(i)}(r) &= \frac{\kappa^{(i)} - \mu^{(i)}}{2\kappa^{(i)} + \mu^{(i)}} \left(\frac{r}{r_1}\right)^2 \Xi_1^{(i)} + \Xi_2^{(i)} - \frac{1}{(r/r_1)^4} \Xi_3^{(i)} + \frac{\kappa^{(i)} + \mu^{(i)}}{\mu^{(i)}} \frac{1}{(r/r_1)^2} \Xi_4^{(i)} \\
-    U_\theta^{(i)}(r) &= \left(\frac{r}{r_1}\right)^2 \Xi_1^{(i)} + \Xi_2^{(i)} + \frac{1}{(r/r_1)^4} \Xi_3^{(i)} + \frac{1}{(r/r_1)^2} \Xi_4^{(i)}
-\end{align}
-
-The eight unknowns $\Xi_j^{(i)}$ ($j = 1, 2, 3, 4$; $i = 1, 2$) are determined from boundary and interface conditions.
-
-% -------------------------------------------------------------------
-\subsection{BVP 3: Anti-Plane (Axial) Shear}
-\label{subsec:bvp3_axial}
-% -------------------------------------------------------------------
-
-For the axial shear response coefficients $T_{55}^{(q)}$ and $H_{55}^{(q)}$, the far-field displacement is:
-%
-\begin{equation}
-    \bs{u}^{(0)}(r, \theta, z) = 
-    \begin{bmatrix}
-        0 \\ 0 \\ \beta r \cos\theta
-    \end{bmatrix}, \quad
-    \bs{\varepsilon}^{(0)} = 
-    \begin{bmatrix}
-        0 & 0 & 0 & 0 & \beta/2 & 0
-    \end{bmatrix}^T
-    \label{eq:bvp3_farfield}
-\end{equation}
-
-The displacement field in each phase takes the form:
-%
-\begin{equation}
-    u_z^{(i)}(r, \theta) = \beta r \cos\theta \left(\Xi_1^{(i)} + \Xi_2^{(i)} \frac{1}{(r/r_1)^2}\right), \quad u_r^{(i)} = u_\theta^{(i)} = 0
-    \label{eq:bvp3_displacement}
-\end{equation}
-
-The four unknowns are determined from:
-\begin{enumerate}
-    \item Finite displacement at origin: $\Xi_2^{(1)} = 0$
-    \item Continuity of displacement at $r = r_1$
-    \item Continuity of traction at $r = r_1$
-    \item Far-field condition: $\Xi_1^{(2)} = 1$
-\end{enumerate}
-
-% ===================================================================
-\section{Boundary Value Problems for Particle Composites (CSA)}
-\label{sec:bvp_csa}
-% ===================================================================
-
-For particle-reinforced composites analyzed using the Composite Sphere Assemblage (CSA) approach, we use spherical coordinates $(r, \theta, \phi)$.
-
-% -------------------------------------------------------------------
-\subsection{Governing Equations in Spherical Coordinates}
-\label{subsec:spherical_equations}
-% -------------------------------------------------------------------
-
-\subsubsection{Coordinate Transformation}
-
-The Cartesian coordinates $(x_1, x_2, x_3)$ transform to spherical coordinates as:
-%
-\begin{equation}
-    x_1 = r\sin\theta\cos\phi, \quad x_2 = r\sin\theta\sin\phi, \quad x_3 = r\cos\theta
-    \label{eq:spherical_transform}
-\end{equation}
-
-\subsubsection{Equilibrium Equations}
-
-The equilibrium equations in spherical coordinates are:
-%
-\begin{align}
-    \frac{\partial \sigma_{rr}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{r\theta}}{\partial \theta} + \frac{1}{r\sin\theta}\frac{\partial \sigma_{r\phi}}{\partial \phi} + \frac{\sigma_{r\theta}\cos\theta}{r\sin\theta} + \frac{2\sigma_{rr} - \sigma_{\theta\theta} - \sigma_{\phi\phi}}{r} &= 0 \label{eq:equil_sph_r}\\
-    \frac{\partial \sigma_{r\theta}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{\theta\theta}}{\partial \theta} + \frac{1}{r\sin\theta}\frac{\partial \sigma_{\theta\phi}}{\partial \phi} + \frac{3\sigma_{r\theta}}{r} + \frac{(\sigma_{\theta\theta} - \sigma_{\phi\phi})\cos\theta}{r\sin\theta} &= 0 \label{eq:equil_sph_theta}\\
-    \frac{\partial \sigma_{r\phi}}{\partial r} + \frac{1}{r}\frac{\partial \sigma_{\theta\phi}}{\partial \theta} + \frac{1}{r\sin\theta}\frac{\partial \sigma_{\phi\phi}}{\partial \phi} + \frac{3\sigma_{r\phi}}{r} + \frac{2\sigma_{\theta\phi}\cos\theta}{r\sin\theta} &= 0 \label{eq:equil_sph_phi}
-\end{align}
-
-\subsubsection{Strain Components}
-
-The strain components in spherical coordinates are:
-%
-\begin{equation}
-    \bs{\varepsilon} = 
-    \begin{bmatrix}
-        \varepsilon_{rr} \\ \varepsilon_{\theta\theta} \\ \varepsilon_{\phi\phi} \\ 2\varepsilon_{r\theta} \\ 2\varepsilon_{r\phi} \\ 2\varepsilon_{\theta\phi}
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \dfrac{\partial u_r}{\partial r} \\[8pt]
-        \dfrac{1}{r}\dfrac{\partial u_\theta}{\partial \theta} + \dfrac{u_r}{r} \\[8pt]
-        \dfrac{1}{r\sin\theta}\dfrac{\partial u_\phi}{\partial \phi} + \dfrac{u_r}{r} + \dfrac{u_\theta\cos\theta}{r\sin\theta} \\[8pt]
-        \dfrac{\partial u_\theta}{\partial r} + \dfrac{1}{r}\dfrac{\partial u_r}{\partial \theta} - \dfrac{u_\theta}{r} \\[8pt]
-        \dfrac{\partial u_\phi}{\partial r} + \dfrac{1}{r\sin\theta}\dfrac{\partial u_r}{\partial \phi} - \dfrac{u_\phi}{r} \\[8pt]
-        \dfrac{1}{r}\dfrac{\partial u_\phi}{\partial \theta} + \dfrac{1}{r\sin\theta}\dfrac{\partial u_\theta}{\partial \phi} - \dfrac{u_\phi\cos\theta}{r\sin\theta}
-    \end{bmatrix}
-    \label{eq:strain_spherical}
-\end{equation}
-
-\subsubsection{Average Fields in Spherical Coordinates}
-
-For a phase $q$ with inner radius $r_a$ and outer radius $r_b$, the average fields are:
-%
-\begin{align}
-    \langle \bs{\varepsilon}^{(q)} \rangle &= \frac{3}{4\pi(r_b^3 - r_a^3)} \int_0^{2\pi} \int_0^{\pi} \int_{r_a}^{r_b} \bs{Q}_\sigma^T \cdot \bs{\varepsilon}^{(q)}_{\text{sph}} \, r^2\sin\theta \, dr \, d\theta \, d\phi \label{eq:avg_strain_sph}\\
-    \langle \bs{\sigma}^{(q)} \rangle &= \frac{3}{4\pi(r_b^3 - r_a^3)} \int_0^{2\pi} \int_0^{\pi} \int_{r_a}^{r_b} \bs{Q}_\varepsilon^T \cdot \bs{\sigma}^{(q)}_{\text{sph}} \, r^2\sin\theta \, dr \, d\theta \, d\phi \label{eq:avg_stress_sph}
-\end{align}
-
-% -------------------------------------------------------------------
-\subsection{Boundary Value Problems for Spherical Inclusions}
-\label{subsec:bvp_spherical}
-% -------------------------------------------------------------------
-
-The boundary value problems for CSA follow a similar structure to those for CCA, with appropriate modifications for the three-dimensional spherical geometry. The key loading cases are:
-\begin{enumerate}
-    \item \textbf{Hydrostatic loading:} Determines bulk modulus response
-    \item \textbf{Pure shear loading:} Determines shear modulus response
-\end{enumerate}
-
-The detailed solutions follow the methodology described for CCA, with the spherical rotation matrix \eqref{eq:R_spherical} used for coordinate transformations.
-
-% ===================================================================
 % ===================================================================
 \section{Interface Models}
 \label{sec:interface_models}
 % ===================================================================
-% ===================================================================
 
-Having established the framework for modeling finite-thickness interphases through the multi-coated inclusion approach, we now turn to interface models---mathematical abstractions that replace the volumetric interphase with a zero-thickness surface endowed with specific constitutive laws.
+Having established the multi-coated inclusion framework for finite-thickness interphases, we now turn to interface models---mathematical abstractions that replace the volumetric interphase with a zero-thickness surface endowed with specific constitutive laws. We present the hierarchy of interface models from the simplest (perfect) to the most general (extended general), as each builds on the one before it.
 
 % -------------------------------------------------------------------
 \subsection{Interface Kinematics}
@@ -1637,34 +1311,21 @@ The equivalent stiffness of the inhomogeneity/interface system is:
 \label{sec:theory_summary}
 % ===================================================================
 
-This chapter has established the theoretical framework for bridging interphase and interface models:
+This chapter has presented the theoretical foundations for bridging interphase and interface models in composite homogenization. The multi-coated inclusion model provides the physical description of finite-thickness interphases, while the hierarchy of interface models---from perfect bonding through the Extended General Interface Model---offers computationally efficient zero-thickness abstractions. Both representations produce concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that feed into the same Mori-Tanaka homogenization framework (Equation~\eqref{eq:MT_interface}).
 
-\begin{enumerate}
-    \item \textbf{Multi-coated inclusion model:} Provides a systematic approach for analyzing composites with finite-thickness interphases through fundamental equations, volume fractions, and concentration tensors.
-    
-    \item \textbf{Coordinate transformations:} The rotation matrix $\bs{R}$ and transformation matrices $\bs{Q}_\varepsilon$, $\bs{Q}_\sigma$ enable analysis in cylindrical (fiber) and spherical (particle) coordinate systems.
-    
-    \item \textbf{Boundary value problems:} Three fundamental BVPs (radial expansion, transverse shear, axial shear) determine the concentration tensor components for both CCA and CSA approaches.
-    
-    \item \textbf{Interface models:} From perfect to general to extended general, these models provide increasingly sophisticated representations of imperfect bonding through the parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$.
-    
-    \item \textbf{Interface-enhanced homogenization:} The Mori-Tanaka framework extended for interfaces relates macroscopic properties to concentration tensors through Equation~\eqref{eq:MT_interface}.
-\end{enumerate}
-
-The key insight is that both the interphase model (multi-coated inclusions) and the interface model (EGIM) produce concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$. The parameter identification problem therefore reduces to finding interface parameters that match the concentration tensors from the interphase model---a task addressed through neural network-based inverse modeling in Chapter~\ref{ch:methodology}.
+This shared representation is the key insight of the present work. The parameter identification problem reduces to finding interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ whose concentration tensors match those from the interphase model. Chapter~\ref{ch:methodology} develops the boundary value problems that determine these concentration tensor components for both models and geometries, followed by the neural network architectures that exploit this connection in two complementary ways: a forward surrogate that predicts effective properties directly, and an inverse physics-informed network that recovers interface parameters from target mechanical response.
 
 
 % ===================================================================
-%   CHAPTER 3: METHODOLOGY
-%   
-%   Computational Framework for Parameter Identification
-%   Including: Concentration Tensor Formulas, Forward Models, 
-%   Neural Network Architecture
+%   CHAPTER 3: COMPUTATIONAL METHODOLOGY
+%
+%   Coordinate Transformations, BVP Derivations for Interphase & Interface,
+%   Forward Models, Neural Network Architectures
 % ===================================================================
-\chapter{Methodology}
+\chapter{Computational Methodology}
 \label{ch:methodology}
 
-This chapter details the computational framework for bridging interphase and interface models through a data-driven parameter identification approach. The methodology proceeds in three stages: (1) database generation using the interface-enhanced Mori-Tanaka formulation, (2) neural network training for inverse mapping, and (3) application to multi-interphase systems. We present the concentration tensor formulas that serve as inputs to the neural network, followed by the implementation details.
+Building on the theoretical foundations from Chapter~\ref{ch:theory}, this chapter develops the computational procedures for determining the concentration tensor components and using them for parameter identification. We first introduce the coordinate transformation machinery needed for analysis in cylindrical and spherical geometries. We then derive the boundary value problems for both the three-layered interphase model and the interface-enhanced Mori-Tanaka model, for fibre-reinforced (CCA) and particle-reinforced (CSA) composites. The chapter concludes with the neural network architectures---a forward surrogate and an inverse physics-informed network---that exploit the computed concentration tensors.
 
 % ===================================================================
 \section{Overview of the Parameter Identification Framework}
@@ -1691,6 +1352,110 @@ A neural network is trained to perform the \textit{inverse} mapping: given the c
 
 \paragraph{Stage 3: Application to Multi-Interphase Systems.}
 For a given interphase configuration (constant or graded properties), the multi-coated inclusion model computes the effective concentration tensors. These values, together with the constituent properties, are fed to the trained neural network, which directly outputs the equivalent interface parameters---bypassing expensive inverse optimization.
+
+% ===================================================================
+\section{Coordinate Transformations}
+\label{sec:coordinate_transform}
+% ===================================================================
+
+When dealing with multicoated heterogeneities (spherical particles or cylindrical fibers), it is essential to express field quantities in appropriate coordinate systems and transform them between local and global coordinates.
+
+% -------------------------------------------------------------------
+\subsection{Rotation Matrix}
+\label{subsec:rotation_matrix}
+% -------------------------------------------------------------------
+
+A second-order tensor rotator $\bs{R}$ is defined as:
+%
+\begin{equation}
+    \bs{R} =
+    \begin{bmatrix}
+        R_{11} & R_{12} & R_{13} \\
+        R_{21} & R_{22} & R_{23} \\
+        R_{31} & R_{32} & R_{33}
+    \end{bmatrix}
+    \label{eq:rotation_matrix}
+\end{equation}
+
+\subsubsection{Cylindrical Coordinates}
+
+For cylindrical coordinates $(r, \theta, z)$ with the fiber axis along $z$:
+%
+\begin{equation}
+    \bs{R}_{\text{cyl}} =
+    \begin{bmatrix}
+        \cos\theta & -\sin\theta & 0 \\
+        \sin\theta & \cos\theta & 0 \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \label{eq:R_cylindrical}
+\end{equation}
+
+\subsubsection{Spherical Coordinates}
+
+For spherical coordinates $(r, \theta, \phi)$:
+%
+\begin{equation}
+    \bs{R}_{\text{sph}} =
+    \begin{bmatrix}
+        \sin\theta\cos\phi & \cos\theta\cos\phi & -\sin\phi \\
+        \sin\theta\sin\phi & \cos\theta\sin\phi & \cos\phi \\
+        \cos\theta & -\sin\theta & 0
+    \end{bmatrix}
+    \label{eq:R_spherical}
+\end{equation}
+
+% -------------------------------------------------------------------
+\subsection{Transformation Matrices in Voigt Notation}
+\label{subsec:Q_matrices}
+% -------------------------------------------------------------------
+
+The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively.
+
+\subsubsection{Strain Transformation Matrix}
+
+The matrix $\bs{Q}_\varepsilon$ transforms strains from global to local coordinates ($\bs{\varepsilon}' = \bs{Q}_\varepsilon \cdot \bs{\varepsilon}$):
+%
+\begin{equation}
+    \bs{Q}_\varepsilon =
+    \begin{bmatrix}
+        R_{11}^2 & R_{21}^2 & R_{31}^2 & R_{11}R_{21} & R_{11}R_{31} & R_{21}R_{31} \\
+        R_{12}^2 & R_{22}^2 & R_{32}^2 & R_{12}R_{22} & R_{12}R_{32} & R_{22}R_{32} \\
+        R_{13}^2 & R_{23}^2 & R_{33}^2 & R_{13}R_{23} & R_{13}R_{33} & R_{23}R_{33} \\
+        2R_{11}R_{12} & 2R_{21}R_{22} & 2R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
+        2R_{11}R_{13} & 2R_{21}R_{23} & 2R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
+        2R_{12}R_{13} & 2R_{22}R_{23} & 2R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
+    \end{bmatrix}
+    \label{eq:Q_epsilon}
+\end{equation}
+
+\subsubsection{Stress Transformation Matrix}
+
+The matrix $\bs{Q}_\sigma$ transforms stresses from global to local coordinates ($\bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma}$):
+%
+\begin{equation}
+    \bs{Q}_\sigma =
+    \begin{bmatrix}
+        R_{11}^2 & R_{21}^2 & R_{31}^2 & 2R_{11}R_{21} & 2R_{11}R_{31} & 2R_{21}R_{31} \\
+        R_{12}^2 & R_{22}^2 & R_{32}^2 & 2R_{12}R_{22} & 2R_{12}R_{32} & 2R_{22}R_{32} \\
+        R_{13}^2 & R_{23}^2 & R_{33}^2 & 2R_{13}R_{23} & 2R_{13}R_{33} & 2R_{23}R_{33} \\
+        R_{11}R_{12} & R_{21}R_{22} & R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
+        R_{11}R_{13} & R_{21}R_{23} & R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
+        R_{12}R_{13} & R_{22}R_{23} & R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
+    \end{bmatrix}
+    \label{eq:Q_sigma}
+\end{equation}
+
+\subsubsection{Transformation Relations}
+
+The transformation of strains and stresses between local (primed) and global (unprimed) coordinates is given by:
+%
+\begin{align}
+    \bs{\varepsilon}' &= \bs{Q}_\varepsilon \cdot \bs{\varepsilon}, \quad \bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma} \label{eq:transform_forward}\\
+    \bs{\varepsilon} &= \bs{Q}_\sigma^T \cdot \bs{\varepsilon}', \quad \bs{\sigma} = \bs{Q}_\varepsilon^T \cdot \bs{\sigma}' \label{eq:transform_inverse}
+\end{align}
+
+Note that $\bs{Q}_\varepsilon^{-1} = \bs{Q}_\sigma^T$ and $\bs{Q}_\sigma^{-1} = \bs{Q}_\varepsilon^T$.
 
 % ===================================================================
 \section{Concentration Tensors: Mathematical Formulation}
@@ -1868,6 +1633,47 @@ For the core, $\Xi_2^{(1)} = 0$ to ensure bounded displacement. The concentratio
     H_{55}^{(q)} &= \mu^{(q)} \Xi_1^{(q)} \label{eq:H55_fiber}
 \end{empheq}
 
+\subsubsection{BVP 4: Overall Axisymmetric Response}
+
+The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, $T_{33}^{(q)}$, and $H_{33}^{(q)}$ that characterise the axial response. We apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
+%
+\begin{equation}
+    \bs{u}^{(0)}(r, \theta, z) =
+    \begin{bmatrix}
+        0 \\ 0 \\ z
+    \end{bmatrix}, \quad
+    \bs{\varepsilon}^{(0)} =
+    \begin{bmatrix}
+        0 & 0 & 1 & 0 & 0 & 0
+    \end{bmatrix}^T
+    \label{eq:bvp4_farfield}
+\end{equation}
+
+In each phase, the radial displacement takes the same form as BVP~1 (in-plane bulk), since the axial strain couples to the radial direction through the Poisson effect:
+%
+\begin{equation}
+    u_r^{(q)} = X_{2q-1} \, r + \frac{X_{2q}}{r}, \quad u_z = z
+    \label{eq:bvp4_displacement}
+\end{equation}
+%
+where $u_z = z$ holds in all phases due to continuity of axial displacement. The linear system for $X_{2q-1}$ and $X_{2q}$ uses the \textit{same} coefficient matrix as BVP~1, but with a different right-hand side arising from the Lam\'{e} parameter mismatch between adjacent phases:
+%
+\begin{equation}
+    \bs{A} \, \bs{X} = \bs{b}, \quad \text{with} \quad b_{2m+1} = \lambda^{(m+1)} - \lambda^{(m)}, \quad b_{2(N+1)} = 1
+    \label{eq:bvp4_rhs}
+\end{equation}
+%
+where $m = 1, 2, \ldots, N$ index the coating interfaces. Let $\Xi_{\text{oa}}^{(q)} = X_{2q-1}$ denote the amplitude from this BVP, and $\Xi_{\text{ip}}^{(q)}$ the amplitude from BVP~1. The off-diagonal concentration tensor components are then:
+%
+\begin{empheq}[box=\fbox]{align}
+    T_{13}^{(q)} &= \Xi_{\text{oa}}^{(q)} - \Xi_{\text{ip}}^{(q)} \label{eq:T13_fiber}\\[6pt]
+    H_{31}^{(q)} &= \lambda^{(q)} \, \Xi_{\text{ip}}^{(q)} \label{eq:H31_fiber}\\[6pt]
+    H_{13}^{(q)} &= 2\kappa^{(q)} \, \Xi_{\text{oa}}^{(q)} + \lambda^{(q)} - 2 H_{11}^{(q)} + 2 H_{44}^{(q)} \label{eq:H13_fiber}\\[6pt]
+    H_{33}^{(q)} &= 2\lambda^{(q)} \, \Xi_{\text{oa}}^{(q)} + \left(\kappa^{(q)} + \mu^{(q)}\right) - 2 H_{31}^{(q)} \label{eq:H33_fiber}
+\end{empheq}
+%
+where $H_{11}^{(q)}$ and $H_{44}^{(q)}$ come from BVPs~1 and~2, and $T_{33}^{(q)}$ follows from the identity $\mathbb{H}^{(q)} = \mathbb{L}^{(q)} : \mathbb{T}^{(q)}$. These formulas have been verified against~\eqref{eq:H_T_relation} to machine precision (Section~\ref{subsec:hct_check}).
+
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (Spherical)}
 \label{subsec:particle_bvp}
@@ -1898,44 +1704,65 @@ The concentration tensor components are:
 
 \subsubsection{BVP 2: Deviatoric Response}
 
-For far-field deviatoric loading, the displacement fields involve four terms with exponents $\xi_i$:
-%
-\begin{align}
-    u_r^{(q)} &= r \sum_{i=1}^{4} a_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin^2\theta \cos 2\phi \\
-    u_\theta^{(q)} &= r \sum_{i=1}^{4} b_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin\theta \cos\theta \cos 2\phi
-\end{align}
-%
-where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$, and:
+For a deviatoric far-field strain, the displacement field is expressed in spherical coordinates as:
 %
 \begin{equation}
-    a_1 = 1, \quad a_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad a_3 = -\frac{3}{2}, \quad a_4 = \frac{3\kappa + 3\mu}{2\mu}
+    \bs{u}^{(0)}(r, \theta, \phi) =
+    \begin{bmatrix}
+        \beta \, r \, \sin^2\!\theta \, \cos 2\phi \\
+        \beta \, r \, \sin\theta \, \cos\theta \, \cos 2\phi \\
+        -\beta \, r \, \sin\theta \, \sin 2\phi
+    \end{bmatrix}
+    \label{eq:bvp2_sph_farfield}
 \end{equation}
+%
+with the corresponding Cartesian far-field strain tensor having $\varepsilon_{11}^{(0)} = -\varepsilon_{22}^{(0)} = \beta$, $\varepsilon_{12}^{(0)} = \beta$ as the nonzero components.
 
-After volume averaging, the concentration tensor components are:
+In each phase, the displacement fields involve four radial modes with exponents $\xi_i$:
+%
+\begin{align}
+    u_r^{(q)} &= \beta \, r \sum_{i=1}^{4} a_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin^2\!\theta \, \cos 2\phi \label{eq:ur_deviatoric}\\
+    u_\theta^{(q)} &= \beta \, r \sum_{i=1}^{4} b_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:utheta_deviatoric}
+\end{align}
+%
+where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratios $a_i^{(q)}$ and $b_i^{(q)}$ depend on the material properties of phase~$q$:
+%
+\begin{equation}
+    a_1 = 1, \quad a_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad a_3 = -\frac{3}{2}, \quad a_4 = \frac{3(\kappa + \mu)}{2\mu}
+    \label{eq:a_coefficients}
+\end{equation}
+%
+\begin{equation}
+    b_1 = 1, \quad b_2 = -\frac{6(\kappa + 2\mu)}{15\kappa + 11\mu}, \quad b_3 = \frac{1}{2}, \quad b_4 = \frac{\kappa + \mu}{2\mu}
+    \label{eq:b_coefficients}
+\end{equation}
+%
+where $\kappa$ and $\mu$ here refer to the 3D bulk and shear moduli of the respective phase.
+
+The relevant stress components for the traction boundary conditions at radial interfaces are:
+%
+\begin{align}
+    \sigma_{rr}^{(q)} &= \beta \, \Sigma_{rr}^{(q)}(r) \, \sin^2\!\theta \, \cos 2\phi \label{eq:sigma_rr_sph}\\
+    \sigma_{r\theta}^{(q)} &= \beta \, \Sigma_{r\theta}^{(q)}(r) \, \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:sigma_rtheta_sph}
+\end{align}
+
+For the core, $\Xi_3^{(1)} = \Xi_4^{(1)} = 0$ to ensure bounded displacement at the origin. The far-field condition requires $\Xi_1^{(0)} = 1$ and $\Xi_2^{(0)} = 0$. At each interface $r = r_m$, the continuity of both displacement components and both traction components produces four conditions per interface, yielding the same $8 \times 8$ system structure as the CCA transverse shear BVP, but with spherical amplitude ratios.
+
+After volume averaging over the annular shell $r_a < r < r_b$ with the spherical Jacobian, the shear concentration tensor component is:
 %
 \begin{empheq}[box=\fbox]{align}
     T_{\mu}^{(q)} &= \Xi_1^{(q)} + \frac{63\kappa^{(q)} + 21\mu^{(q)}}{5(15\kappa^{(q)} + 11\mu^{(q)})} \cdot \frac{r_b^5 - r_a^5}{r_b^3 - r_a^3} \cdot \Xi_2^{(q)} \label{eq:Tmu_particle}\\[6pt]
     H_{\mu}^{(q)} &= 2\mu^{(q)} T_{\mu}^{(q)} \label{eq:Hmu_particle}
 \end{empheq}
+%
+The first term is the uniform mode ($\xi_1 = 1$) contribution, while the second involves the $\xi_2 = 3$ mode weighted by the radii ratio $r_b^5/r_a^5$. The $\xi_3 = -4$ and $\xi_4 = -2$ modes vanish upon volume averaging due to their radial decay.
 
 % -------------------------------------------------------------------
 \subsection{Equivalent Concentration Tensors}
 \label{subsec:equivalent_tensors}
 % -------------------------------------------------------------------
 
-For both interphase and interface models, the equivalent tensors that enter the Mori-Tanaka homogenization are volume-weighted averages:
-%
-\begin{empheq}[box=\fbox]{align}
-    \mathbb{T}^{\text{eq}} &= c_h \mathbb{T}^{(h)} + \sum_{m=1}^{N} c_m \mathbb{T}^{(m)} \label{eq:Teq}\\[6pt]
-    \mathbb{H}^{\text{eq}} &= c_h \mathbb{H}^{(h)} + \sum_{m=1}^{N} c_m \mathbb{H}^{(m)} \label{eq:Heq}
-\end{empheq}
-%
-where $c_q$ are the volume fractions of each phase within the equivalent inhomogeneity:
-%
-\begin{equation}
-    c_h + \sum_{m=1}^{N} c_m = 1
-    \label{eq:volume_constraint}
-\end{equation}
+For both interphase and interface models, the equivalent tensors that enter the Mori-Tanaka homogenization are computed as volume-weighted averages over all sub-phases (Equations~\eqref{eq:Teq}--\eqref{eq:Heq}), subject to the volume constraint~\eqref{eq:volume_constraint}.
 
 For cylindrical fibers:
 \begin{equation}
@@ -2057,6 +1884,49 @@ For the axial shear:
 
 The explicit expressions are lengthy and are implemented in the MATLAB code (see Section~\ref{sec:matlab_implementation}).
 
+% -------------------------------------------------------------------
+\subsection{BVP Solutions with Interface Conditions (CSA)}
+\label{subsec:interface_bvp_csa}
+% -------------------------------------------------------------------
+
+For particle-reinforced composites, the EGIM conditions at the spherical interface $r = r_1$ follow the same structure as the cylindrical case, adapted for the spherical geometry. The key difference is that the surface divergence operator now acts on a spherical surface, which modifies the tangential equilibrium conditions.
+
+\subsubsection{Hydrostatic Response with EGIM}
+
+The displacement ansatz remains $u_r^{(q)} = X_{2q-1} r + X_{2q}/r^2$, but the interface conditions at $r = r_1$ become:
+%
+\begin{align}
+    \text{Cohesive:} \quad & (1-\bar{\alpha})\sigma_{rr}^{(2)}(r_1) + \bar{\alpha}\sigma_{rr}^{(1)}(r_1) = \bar{k}\left[u_r^{(2)}(r_1) - u_r^{(1)}(r_1)\right] \label{eq:bc_bulk_csa_cohesive}\\[6pt]
+    \text{Elastic:} \quad & \frac{2(\bar{\lambda} + \bar{\mu})}{r_1}\mean{u_r}_{\bar{\alpha}} + \sigma_{rr}^{(2)}(r_1) - \sigma_{rr}^{(1)}(r_1) = 0 \label{eq:bc_bulk_csa_elastic}
+\end{align}
+%
+where the factor 2 in the elastic condition arises from the curvature of the spherical surface ($\nabla_s \cdot \bar{\bs{\sigma}}$ on a sphere gives $2\bar{\sigma}_{\theta\theta}/r$ for hydrostatic loading). This yields an explicit formula:
+%
+\begin{equation}
+    T_{\kappa}^{\text{eq}} = \frac{A_\kappa^{\text{sph}}}{D_\kappa^{\text{sph}}}, \quad H_{\kappa}^{\text{eq}} = \frac{B_\kappa^{\text{sph}}}{D_\kappa^{\text{sph}}}
+    \label{eq:Tkappa_interface_csa}
+\end{equation}
+
+\subsubsection{Deviatoric Response with EGIM}
+
+For the deviatoric problem, the interface conditions at $r = r_1$ involve four conditions coupling the eight unknown amplitudes. The radial and tangential components of the cohesive and elastic conditions read:
+%
+\begin{align}
+    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:bc_dev_csa_coh_r}\\
+    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:bc_dev_csa_coh_t}\\
+    \text{Radial equilibrium:} \quad & \frac{2\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{\phi\phi}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:bc_dev_csa_el_r}\\
+    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{3\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:bc_dev_csa_el_t}
+\end{align}
+%
+where the interface stresses are computed from the surface strains of the weighted average displacement. The resulting concentration tensor takes the same $A/D$ form as the bulk case:
+%
+\begin{equation}
+    T_{\mu}^{\text{eq}} = \frac{A_\mu^{\text{sph}}}{D_\mu^{\text{sph}}}, \quad H_{\mu}^{\text{eq}} = \frac{B_\mu^{\text{sph}}}{D_\mu^{\text{sph}}}
+    \label{eq:Tmu_interface_csa}
+\end{equation}
+%
+The explicit expressions for $A$, $B$, and $D$ coefficients for both BVPs are given in Firooz et al.~\cite{Firooz2022} and implemented in the Python code. For the CSA geometry, the isotropic symmetry ensures that only two independent moduli ($\kappa_{\text{eff}}$ and $\mu_{\text{eff}}$) need to be determined, whereas the CCA case requires five.
+
 % ===================================================================
 \section{Macroscopic Stiffness via Mori-Tanaka}
 \label{sec:macroscopic_stiffness}
@@ -2087,9 +1957,32 @@ For transversely isotropic fiber composites:
 \end{align}
 
 % ===================================================================
-\section{Neural Network for Inverse Parameter Identification}
+\section{Neural Network Architectures}
 \label{sec:neural_network}
 % ===================================================================
+
+This section describes two complementary neural network architectures. The \textit{forward surrogate} learns a direct mapping from material and interphase parameters to effective composite properties, replacing the boundary value problem solver with a fast approximation. The \textit{inverse PINN} learns the reverse mapping, recovering interface parameters from target mechanical response using physics-informed training.
+
+% -------------------------------------------------------------------
+\subsection{Forward Surrogate Neural Network}
+\label{subsec:forward_surrogate}
+% -------------------------------------------------------------------
+
+The forward surrogate predicts the effective properties of the three-layered interphase model without solving BVPs. Both the CCA and CSA surrogates share a common architecture: four fully-connected hidden layers with widths $[512, 512, 512, 256]$, GELU activations, and skip connections between non-adjacent layers. The tapering from 512 to 256~neurons in the final hidden layer encourages progressive feature compression. The total parameter count is approximately~$800\,000$.
+
+\paragraph{Input--output specification.}
+Each surrogate takes 11~inputs: the elastic moduli of inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), three interphase radial fractions ($\phi_1, \phi_2, \phi_3$), the inclusion volume fraction~$f$, and three interpolation weights ($w_1, w_2, w_3$) that control property grading within the interphase. The CCA surrogate outputs three transversely isotropic moduli ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$), while the CSA surrogate outputs two isotropic moduli ($K_{\text{eff}}, G_{\text{eff}}$).
+
+\paragraph{Log-space output transform.}
+Since effective properties span several orders of magnitude, the network predicts $\log(K)$, $\log(G)$ rather than the raw values. This stabilises training and ensures that the relative error is approximately uniform across the output range. The loss function accordingly uses a weighted relative MSE.
+
+\paragraph{Training procedure.}
+We generate $200\,000$~samples via Latin Hypercube Sampling with stratified ranges. For each sample, the interphase BVP solver (Section~\ref{subsec:fiber_bvp} or~\ref{subsec:particle_bvp}) produces the target properties. The network is trained with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-5}$) using a one-cycle cosine schedule and batch size~512. Xavier uniform initialisation is used throughout.
+
+% -------------------------------------------------------------------
+\subsection{Inverse Parameter Identification via PINN}
+\label{subsec:inverse_pinn}
+% -------------------------------------------------------------------
 
 The parameter identification problem is formulated as learning an inverse mapping from concentration tensor data to interface parameters.
 
@@ -2280,28 +2173,19 @@ The MATLAB implementation follows a modular structure:
 \end{verbatim}
 
 % ===================================================================
-\section{Summary: Inputs and Outputs for Neural Network}
+\section{Summary of the Computational Framework}
 \label{sec:nn_io_summary}
 % ===================================================================
 
-The parameter identification neural network operates as follows:
+This chapter has developed the complete computational methodology in three layers. First, the coordinate transformations and concentration tensor structures provide the mathematical machinery. Second, the boundary value problems---four for CCA (in-plane bulk, transverse shear, axial shear, overall axisymmetric) and two for CSA (hydrostatic, deviatoric)---determine the concentration tensor components for both the three-layered interphase model and the interface-enhanced Mori-Tanaka model. Third, two neural network architectures exploit these computations in complementary ways:
 
-\paragraph{Inputs:}
-\begin{enumerate}
-    \item \textbf{Material properties:} $\kappa^{(1)}$, $\mu^{(1)}$ (fiber/particle), $\kappa^{(2)}$, $\mu^{(2)}$ (matrix)
-    \item \textbf{Geometric parameters:} $r_1$ (fiber/particle radius)
-    \item \textbf{Target response:} $T_{\kappa}^{\text{eq}}$, $T_{\mu}^{\text{eq}}$ (or $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$ for fibers), $H_{\kappa}^{\text{eq}}$, $H_{\mu}^{\text{eq}}$ (or $H_{44}^{\text{eq}}$, $H_{55}^{\text{eq}}$)
-\end{enumerate}
+\begin{itemize}
+    \item \textbf{Forward surrogate} (Section~\ref{subsec:forward_surrogate}): Maps material and interphase parameters ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, \phi_{1\text{--}3}, f, w_{1\text{--}3}$) directly to effective properties ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$ for CCA; $K_{\text{eff}}, G_{\text{eff}}$ for CSA), bypassing the BVP solver.
 
-\paragraph{Outputs:}
-\begin{enumerate}
-    \item $\bar{k}$ --- interface orthogonal stiffness
-    \item $\bar{\lambda}$ (or $\bar{\Lambda} = \bar{\lambda} + \bar{\mu}$) --- interface Lam\'{e} parameter
-    \item $\bar{\mu}$ --- interface shear modulus
-    \item $\bar{\alpha}$ --- interface position parameter
-\end{enumerate}
+    \item \textbf{Inverse PINN} (Section~\ref{subsec:inverse_pinn}): Maps material properties and target concentration tensors ($T_\kappa^{\text{eq}}, T_\mu^{\text{eq}}, H_\kappa^{\text{eq}}, H_\mu^{\text{eq}}$) to interface parameters ($\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$), using physics-informed training.
+\end{itemize}
 
-This framework enables identification of interface parameters that produce matching concentration tensors, thereby bridging the interphase and interface descriptions. The validation of this approach is presented in Chapter~\ref{ch:results}.
+Chapter~\ref{ch:results} validates both pathways: the forward surrogate against the interphase model reference, and the inverse PINN against known interface parameter configurations.
 
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
@@ -2406,9 +2290,7 @@ For the reference geometry with $\phi_1 = 0.2$, $\phi_2 = 0.3$, $\phi_3 = 0.4$, 
 \label{sec:surrogate_results}
 % ===================================================================
 
-The 3-layer interphase model developed in Chapter~\ref{ch:theory} requires solving four boundary value problems per configuration, each involving an $8 \times 8$ linear system. While this is computationally inexpensive for a single evaluation, parametric studies spanning thousands of material combinations become time-consuming. We therefore train forward surrogate neural networks that map material and geometric parameters directly to effective composite properties, bypassing the BVP solutions altogether. This section presents surrogates for both the CCA (fibre-reinforced) and CSA (particle-reinforced) geometries.
-
-The network architecture follows the general framework described in Section~\ref{sec:neural_network}, though we modify the input--output specification and increase the network capacity to handle the full 11-dimensional parameter space. Both surrogates share a common architecture: four fully-connected hidden layers with widths $[512, 512, 512, 256]$, GELU activations, and skip connections between non-adjacent layers. The networks predict in log-space, i.e.\ the outputs are $\log(K)$, $\log(G_{\text{tr}})$, etc., which stabilises training when effective properties span several orders of magnitude. Xavier uniform initialisation is used throughout. The total parameter count is approximately~$800\,000$.
+The 3-layer interphase model developed in Chapter~\ref{ch:methodology} requires solving four boundary value problems per configuration, each involving an $8 \times 8$ linear system. While this is computationally inexpensive for a single evaluation, parametric studies spanning thousands of material combinations become time-consuming. We therefore train forward surrogate neural networks that map material and geometric parameters directly to effective composite properties, bypassing the BVP solutions altogether. The network architecture is described in Section~\ref{subsec:forward_surrogate}: four hidden layers $[512, 512, 512, 256]$ with GELU activations, skip connections, and log-space output transform. This section presents the training data, validation, and results for both the CCA and CSA geometries.
 
 % -------------------------------------------------------------------
 \subsection{CCA Surrogate: Fibre-Reinforced Composites}
@@ -2533,6 +2415,8 @@ The CCA model achieves errors an order of magnitude smaller and converges $24\ti
 
 Despite the four failures, the CSA surrogate covers the practically relevant parameter range---moderate stiffness ratios ($\text{SR} \ge 0.5$), typical volume fractions ($f \in [0.1, 0.5]$), and non-extreme interphase fractions ($\phi_1 \le 0.7$)---with errors below $5\,\%$. For configurations where the surrogate is unreliable, the inverse PINN approach presented in Section~\ref{sec:pinn_results} provides an alternative that enforces physical consistency through the loss function.
 
+Having established that neural networks can accurately reproduce the three-layered interphase predictions, we now investigate whether the Extended Interface model---the analytical alternative---can achieve the same.
+
 % ===================================================================
 \section{Representational Limits of the Extended Interface Model}
 \label{sec:ei_gap}
@@ -2639,11 +2523,11 @@ This result is significant because it establishes that the $G_{\text{tr}}$ gap i
 
 The persistence of the $G_{\text{tr}}$ gap across both interface models points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
 
-The transverse shear BVP (Section~\ref{subsec:bvp2_shear}) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
+The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
 
-In contrast, the axial shear BVP (Section~\ref{subsec:bvp3_axial}) involves a single radial mode, and the in-plane bulk BVP (Section~\ref{subsec:bvp1_bulk}) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The 7-parameter anisotropic results confirm this interpretation: $G_{\text{ax}}$ and $K_{\text{tr}}$ can be matched because their underlying BVPs have structure compatible with interface conditions, while $G_{\text{tr}}$ cannot.
+In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The 7-parameter anisotropic results confirm this interpretation: $G_{\text{ax}}$ and $K_{\text{tr}}$ can be matched because their underlying BVPs have structure compatible with interface conditions, while $G_{\text{tr}}$ cannot.
 
-This finding has direct consequences for the parameter identification strategy. Since no Extended Interface model can accurately capture the transverse shear response of a multi-layer interphase in CCA geometry, the inverse PINN approach---which recovers interface parameters---is not viable for CCA composites. This motivates the direct forward surrogate presented in Section~\ref{subsec:cca_surrogate}, which bypasses the interface model entirely.
+This finding has direct consequences for the parameter identification strategy. Since no Extended Interface model can accurately capture the transverse shear response of a multi-layer interphase in CCA geometry, the inverse PINN approach---which recovers interface parameters---is not viable for CCA composites. This motivates the direct forward surrogate presented in Section~\ref{subsec:cca_surrogate}, which bypasses the interface model entirely. For the CSA geometry, however, the BVP structure is simpler---only two isotropic moduli---and the interface model may still be adequate. The next section tests this hypothesis.
 
 % ===================================================================
 \section{Inverse Parameter Identification via PINN}
