@@ -267,6 +267,46 @@
   doi       = {10.1016/j.jmps.2005.10.009}
 }
 
+@book{Rasmussen2006,
+  author    = {Rasmussen, Carl Edward and Williams, Christopher K. I.},
+  title     = {Gaussian Processes for Machine Learning},
+  publisher = {MIT Press},
+  year      = {2006}
+}
+
+@article{Xiu2002,
+  author    = {Xiu, Dongbin and Karniadakis, George Em},
+  title     = {The {Wiener}--{Askey} polynomial chaos for stochastic differential equations},
+  journal   = {SIAM Journal on Scientific Computing},
+  year      = {2002},
+  volume    = {24},
+  number    = {2},
+  pages     = {619--644},
+  doi       = {10.1137/S1064827501387826}
+}
+
+@article{Liu2020,
+  author    = {Liu, Haitao and Ong, Yew-Soon and Shen, Xiaobo and Cai, Jianfei},
+  title     = {When {Gaussian} process meets big data: a review of scalable {GPs}},
+  journal   = {IEEE Transactions on Neural Networks and Learning Systems},
+  year      = {2020},
+  volume    = {31},
+  number    = {11},
+  pages     = {4405--4423},
+  doi       = {10.1109/TNNLS.2019.2957109}
+}
+
+@article{Hornik1989,
+  author    = {Hornik, Kurt and Stinchcombe, Maxwell and White, Halbert},
+  title     = {Multilayer feedforward networks are universal approximators},
+  journal   = {Neural Networks},
+  year      = {1989},
+  volume    = {2},
+  number    = {5},
+  pages     = {359--366},
+  doi       = {10.1016/0893-6080(89)90020-8}
+}
+
 \end{filecontents}
 
 \usepackage[backend=biber, style=ieee, dashed=false, doi=true, isbn=false]{biblatex}
@@ -657,43 +697,35 @@ Neural networks are naturally suited to such inverse problems. By training on a 
 \section{Bridging the Gap: A Data-Driven Approach}
 % -------------------------------------------------------------------
 
-This thesis proposes a novel computational framework that bridges interphase and interface models through a combination of analytical homogenization and machine learning. The central innovation is the use of a neural network as an \textit{inverse surrogate model} for parameter identification.
+The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation---suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges through three complementary strategies.
 
-The approach proceeds in three stages:
+\paragraph{Forward Surrogate Models.}
+The multi-coated inclusion BVP, while exact, requires solving a linear system for every new material configuration. For applications such as uncertainty quantification or material optimisation that demand thousands of evaluations, this cost becomes significant. We train neural networks on large databases of BVP solutions to serve as \textit{forward surrogate models} that reproduce the effective properties of the three-layered interphase system at a fraction of the computational cost.
 
-\paragraph{Stage 1 - Interaction Tensor Generation:}
-Using the interface-enhanced Mori-Tanaka formulation, we systematically vary the material parameters (Lamé constants of particle and matrix) and interface parameters ($\bar{\lambda}$, $\bar{\mu}$, $\bar{k}$, $\bar{\alpha}$) to compute the resulting concentration tensor components ($T_{11}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $H_{11}^{\text{eq}}$, $H_{44}^{\text{eq}}$). This generates a comprehensive database mapping interface parameters to mechanical response.
+\paragraph{Gap Analysis of the Extended Interface Model.}
+A natural question is whether the Extended General Interface Model, with suitably chosen parameters, can reproduce the multi-coated interphase predictions. We investigate this systematically by allowing a global optimiser to find the best-fit interface parameters for each configuration independently---giving the interface model every possible advantage. This analysis reveals whether the discrepancy between the two models is parametric (fixable by better parameter choices) or structural (inherent to the zero-thickness assumption).
 
-\paragraph{Stage 2 - Neural Network Training:}
-A neural network is trained to perform the \textit{inverse} mapping: given the constituent properties and target concentration tensors, predict the interface parameters that produce this response. The network learns the complex, potentially non-unique relationship between mechanical observables and interface parameters.
+\paragraph{Inverse Parameter Identification via Physics-Informed Neural Networks.}
+Where the interface model is applicable, we develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function, enabling parameter identification that respects physical constraints without requiring repeated forward solves.
 
-\paragraph{Stage 3 - Application to Multi-Interphase Systems:}
-For a given interphase configuration (constant or graded properties), the multi-coated inclusion model computes the effective concentration tensors. These values, together with the constituent properties, are fed to the trained neural network, which directly outputs the equivalent interface parameters---bypassing expensive inverse optimization.
-
-This data-driven approach offers several advantages over traditional methods:
-%
-\begin{itemize}
-    \item \textbf{Speed:} Once trained, the neural network provides near-instantaneous parameter predictions, enabling rapid material screening and optimization.
-    \item \textbf{Generalization:} The network can interpolate across the parameter space, handling configurations not explicitly present in the training data.
-    \item \textbf{Implicit Regularization:} By learning from physical forward simulations, the network inherently respects the constraints of the underlying mechanics.
-\end{itemize}
+The choice of neural networks over alternative surrogate methods---such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002}---is motivated by the problem characteristics. The input space is eleven-dimensional (four elastic constants, three interphase moduli, volume fraction, and three interpolation weights), the input-output mapping is highly nonlinear, and the material properties span several orders of magnitude. Gaussian processes scale cubically with training set size, making them impractical for the 200\,000-sample datasets used here \cite{Liu2020}. Polynomial surrogates struggle with the strong nonlinearities and high dimensionality of the parameter space. Neural networks handle both challenges naturally through their universal approximation capability and efficient mini-batch training \cite{Hornik1989}.
 
 % -------------------------------------------------------------------
 \section{Objectives}
 % -------------------------------------------------------------------
 
-The primary objective of this thesis is to develop and validate a computational framework for identifying Extended General Interface Model parameters from finite-thickness interphase descriptions. Specifically, the research aims to:
+The primary objective of this thesis is to investigate the relationship between finite-thickness interphase models and zero-thickness interface models in composite homogenization, and to develop neural network approaches where analytical methods reach their limits. Specifically, the research aims to:
 
 \begin{enumerate}
-    \item \textbf{Implement the Interface Models:} Develop MATLAB implementations of the Extended Mori-Tanaka homogenization for both particle-reinforced and fiber-reinforced composites with general interfaces, enabling systematic computation of concentration tensors from interface parameters.
-    
-    \item \textbf{Establish the Multi-Interphase Framework:} Extend the homogenization scheme to multi-coated inclusions, where the interphase is discretized into multiple layers with distinct properties, providing a reference solution for interphase configurations.
-    
-    \item \textbf{Generate Training Data:} Create a comprehensive database by varying constituent and interface properties, computing the resulting concentration tensor components for use in neural network training.
-    
-    \item \textbf{Train and Validate the Inverse Model:} Develop a neural network architecture capable of predicting interface parameters from concentration tensor data, validating its accuracy against known solutions.
-    
-    \item \textbf{Demonstrate the Complete Pipeline:} Apply the trained network to predict interface parameters for multi-interphase systems, verifying that the identified parameters reproduce the correct effective properties.
+    \item \textbf{Implement and Verify the Multi-Coated Interphase Model:} Develop and validate implementations of the three-layered interphase boundary value problems for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites, establishing a trusted reference solution through consistency checks and limiting-case verification.
+
+    \item \textbf{Quantify the Representational Limits of the Extended Interface Model:} Systematically compare the Extended General Interface Model against the three-layered interphase predictions, using both isotropic (4-parameter) and anisotropic (7-parameter) formulations with globally optimised parameters, to determine whether discrepancies are parametric or structural in nature.
+
+    \item \textbf{Develop Forward Surrogate Neural Networks:} Train neural networks to reproduce the effective properties of the three-layered interphase model for both CCA and CSA geometries, providing rapid and accurate property predictions across the full parameter space.
+
+    \item \textbf{Develop an Inverse PINN for Parameter Identification:} Construct a physics-informed neural network that identifies interface parameters from target mechanical response for the CSA geometry, embedding the homogenization equations directly into the training process.
+
+    \item \textbf{Synthesise the Complementary Approaches:} Compare all methods---analytical, surrogate, and physics-informed---to establish when each approach is appropriate, defining the scope boundaries of simplified interface models and the regimes where data-driven methods are necessary.
 \end{enumerate}
 \newpage
 % -------------------------------------------------------------------
@@ -702,13 +734,13 @@ The primary objective of this thesis is to develop and validate a computational 
 
 This work is structured as follows:
 
-\textbf{Chapter~\ref{ch:theory}} establishes the Literature Review. Beginning with continuum mechanics preliminaries, it proceeds to derive the interface conditions through asymptotic analysis of thin interphases. The Extended General Interface Model is presented, and the interface-enhanced Mori-Tanaka homogenization framework is developed for both particulate and fiber-reinforced composites.
+\textbf{Chapter~\ref{ch:theory}} presents the theoretical foundations. It develops the multi-coated inclusion model for interphase analysis, derives the boundary value problems for fibre-reinforced (CCA) and particle-reinforced (CSA) composites, formulates the interface models from perfect to extended general, and establishes the interface-enhanced Mori-Tanaka homogenization framework.
 
-\textbf{Chapter~\ref{ch:methodology}} details the computational implementation. The MATLAB code structure for the forward homogenization model is described, followed by the multi-coated inclusion formulation for interphase systems. The neural network architecture, training procedure, and hyperparameter selection are presented.
+\textbf{Chapter~\ref{ch:methodology}} details the computational methodology. The concentration tensor formulation, multi-coated interphase model, and forward interface-enhanced Mori-Tanaka solver are described. The neural network architectures for both forward surrogate and inverse parameter identification are presented, along with the training procedures and data generation strategy.
 
-\textbf{Chapter~\ref{ch:results}} presents the results of the parameter identification framework. The forward model is first validated against analytical solutions and published results. The neural network performance is evaluated on test data, and the complete pipeline is demonstrated for representative interphase configurations.
+\textbf{Chapter~\ref{ch:results}} presents the results and discussion. The three-layered interphase model is first verified through consistency checks and limiting cases. Forward surrogate neural networks are validated for CCA and CSA geometries. The representational limits of the Extended Interface Model are quantified through systematic gap analysis. An inverse PINN for CSA parameter identification is demonstrated. The chapter concludes with a discussion comparing all approaches.
 
-\textbf{Chapter~\ref{ch:conclusion}} summarizes the contributions, discusses limitations, and outlines directions for future research.
+\textbf{Chapter~\ref{ch:conclusion}} summarises the contributions, discusses limitations of the current framework, and outlines directions for future research.
 
 
 % -----------------------------------------------------------------
