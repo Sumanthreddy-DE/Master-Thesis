@@ -790,14 +790,14 @@ This work is structured as follows:
 \chapter{Theoretical Foundations}
 \label{ch:theory}
 
-This chapter develops the theoretical framework underlying the interphase and interface models for composite materials. We begin with the governing equations of continuum mechanics and homogenization theory---balance laws, the Hill-Mandel condition, and the Eshelby inclusion problem---that form the foundation for all subsequent derivations. The coordinate transformation machinery needed for cylindrical and spherical geometries is then established. With these tools in hand, we present the multi-coated inclusion model for finite-thickness interphases, define the concentration tensors and their symmetry structures, and develop the hierarchy of interface models from perfect bonding to the Extended General Interface Model (EGIM). The chapter concludes with the Mori-Tanaka homogenization framework common to both representations. The boundary value problems that determine the concentration tensor components are derived in Chapter~\ref{ch:methodology}.
+This chapter presents the two theoretical models that form the basis of the present work. We begin with a brief set of preliminaries---the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby frameworks---that both models build upon. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where a graded interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. The boundary value problems that determine the concentration tensor components for both models are derived in Chapter~\ref{ch:methodology}.
 
 % ===================================================================
-\section{Governing Equations}
-\label{sec:governing_equations}
+\section{Preliminaries}
+\label{sec:preliminaries}
 % ===================================================================
 
-Before developing the specific models for interphases and interfaces, we establish the continuum mechanics framework that underpins homogenization. These equations govern the mechanical response of heterogeneous media at the microscale and provide the formal bridge to macroscopic effective properties.
+Before developing the two models, we establish the continuum mechanics framework that underpins homogenization.
 
 % -------------------------------------------------------------------
 \subsection{Representative Volume Element}
@@ -827,14 +827,54 @@ Within the RVE, each phase satisfies the static balance of linear momentum in th
     \label{eq:bulk_equilibrium}
 \end{equation}
 %
-where $\mathcal{B}$ denotes the bulk domain (all phases). When an interface $\mathcal{I}$ separates two phases, the equilibrium condition on $\mathcal{I}$ reads
+where $\mathcal{B}$ denotes the bulk domain (all phases).
+
+% -------------------------------------------------------------------
+\subsection{Constitutive Relations}
+\label{subsec:constitutive_relations}
+% -------------------------------------------------------------------
+
+Both models in this thesis assume linear elastic, isotropic phase materials. The strain and stress tensors in Voigt notation are:
 %
 \begin{equation}
-    \bar{\nabla} \cdot \bar{\bs{\sigma}} + \jump{\bs{\sigma}} \cdot \bs{n} = \bs{0}, \quad \bs{x} \in \mathcal{I}
-    \label{eq:interface_equilibrium}
+    \bs{\varepsilon} =
+    \begin{bmatrix}
+        \varepsilon_{11} & \varepsilon_{22} & \varepsilon_{33} & 2\varepsilon_{12} & 2\varepsilon_{13} & 2\varepsilon_{23}
+    \end{bmatrix}^T
+    \label{eq:strain_voigt}
 \end{equation}
 %
-with $\bar{\nabla}$ the surface divergence operator and $\bar{\bs{\sigma}}$ the interface stress tensor. For a perfect interface ($\bar{\bs{\sigma}} = \bs{0}$), this reduces to the classical traction continuity condition $\jump{\bs{\sigma}} \cdot \bs{n} = \bs{0}$. Equation~\eqref{eq:interface_equilibrium} shows that a non-zero interface stress acts as a distributed body force along $\mathcal{I}$, coupling the bulk and surface mechanics.
+\begin{equation}
+    \bs{\sigma} =
+    \begin{bmatrix}
+        \sigma_{11} & \sigma_{22} & \sigma_{33} & \sigma_{12} & \sigma_{13} & \sigma_{23}
+    \end{bmatrix}^T
+    \label{eq:stress_voigt}
+\end{equation}
+
+For isotropic phases, the stiffness tensor takes the form:
+%
+\begin{equation}
+    \mathbb{L} = \lambda \, \bs{I} \otimes \bs{I} + 2\mu \, \mathbb{I}^{\text{sym}}
+    \label{eq:isotropic_stiffness}
+\end{equation}
+%
+where $\lambda$ and $\mu$ are the Lam\'{e} parameters. In matrix form:
+%
+\begin{equation}
+    \mathbb{L} =
+    \begin{bmatrix}
+        \lambda + 2\mu & \lambda & \lambda & 0 & 0 & 0 \\
+        \lambda & \lambda + 2\mu & \lambda & 0 & 0 & 0 \\
+        \lambda & \lambda & \lambda + 2\mu & 0 & 0 & 0 \\
+        0 & 0 & 0 & \mu & 0 & 0 \\
+        0 & 0 & 0 & 0 & \mu & 0 \\
+        0 & 0 & 0 & 0 & 0 & \mu
+    \end{bmatrix}
+    \label{eq:stiffness_matrix}
+\end{equation}
+
+The plane-strain bulk modulus is $\kappa = \lambda + \mu$ and the 3D bulk modulus is $K = \lambda + \frac{2}{3}\mu$.
 
 % -------------------------------------------------------------------
 \subsection{Hill-Mandel Condition}
@@ -857,9 +897,7 @@ The Hill-Mandel condition then requires:
     \label{eq:hill_mandel}
 \end{equation}
 
-This is satisfied, for instance, by linear displacement (Dirichlet) boundary conditions, uniform traction (Neumann) boundary conditions, or periodic boundary conditions \cite{Hill1963}. In the Mori-Tanaka framework used throughout this thesis, the linear displacement boundary condition is adopted: $\bs{u} = \bs{\varepsilon}^{(0)} \cdot \bs{x}$ at infinity.
-
-When interfaces with displacement jumps are present, the macroscopic fields acquire interface contributions. These modified averaging relations are developed in Section~\ref{sec:homogenization_interfaces}.
+This is satisfied by linear displacement (Dirichlet) boundary conditions, uniform traction (Neumann) boundary conditions, or periodic boundary conditions \cite{Hill1963}. In the Mori-Tanaka framework used throughout this thesis, we adopt linear displacement boundary conditions: $\bs{u} = \bs{\varepsilon}^{(0)} \cdot \bs{x}$ at infinity.
 
 % -------------------------------------------------------------------
 \subsection{Eshelby Inclusion Problem and the Mori-Tanaka Assumption}
@@ -878,256 +916,21 @@ where $\mathbb{S}$ is the Eshelby tensor, which depends only on the inclusion sh
 
 The Mori-Tanaka method \cite{Mori1973, Benveniste1987} extends this dilute result to finite inclusion volume fractions by a mean-field assumption: each inclusion experiences the \textit{average matrix strain} $\bs{\varepsilon}^{(2)}$ (rather than the macroscopic strain) as its far-field condition. The effective stiffness then follows from the dilute tensors and volume fractions.
 
-For composites with imperfect interfaces, the classical Eshelby formula~\eqref{eq:eshelby_dilute} no longer applies directly, because the interface conditions modify the stress and displacement fields around the inclusion. In this case, the concentration tensors $\mathbb{T}^{(1)}$ and $\mathbb{H}^{(1)}$ are computed by solving boundary value problems that incorporate the specific interface constitutive law---a procedure detailed in Chapter~\ref{ch:methodology}. Nonetheless, the Mori-Tanaka homogenization formula retains the same structure (Section~\ref{sec:homogenization_interfaces}), with the dilute tensors replaced by the interface-modified concentration tensors.
+For composites with imperfect interfaces, the classical Eshelby formula~\eqref{eq:eshelby_dilute} no longer applies directly, because the interface conditions modify the stress and displacement fields around the inclusion. In this case, the concentration tensors are computed by solving boundary value problems that incorporate the specific interface constitutive law---a procedure detailed in Chapter~\ref{ch:methodology}.
 
 % ===================================================================
-\section{Coordinate Transformations}
-\label{sec:coordinate_transform}
+\section{Three-Layered Interphase Model}
+\label{sec:interphase_model}
 % ===================================================================
 
-The boundary value problems for multicoated heterogeneities are most naturally formulated in curvilinear coordinates---cylindrical $(r, \theta, z)$ for fibres and spherical $(r, \theta, \phi)$ for particles. Since the concentration tensors and stiffness tensors are expressed in Voigt notation with respect to Cartesian axes, we need transformation matrices that convert between coordinate systems. These matrices are used repeatedly in the BVP derivations of Chapter~\ref{ch:methodology}.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}_h$ is surrounded by coating layers with stiffnesses $\mathbb{L}_1, \mathbb{L}_2, \ldots, \mathbb{L}_N$, all embedded in an infinite matrix with stiffness $\mathbb{L}_0$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles.
 
 % -------------------------------------------------------------------
-\subsection{Rotation Matrix}
-\label{subsec:rotation_matrix}
-% -------------------------------------------------------------------
-
-A second-order tensor rotator $\bs{R}$ maps components from the global Cartesian frame $(x_1, x_2, x_3)$ to a local frame:
-%
-\begin{equation}
-    \bs{R} =
-    \begin{bmatrix}
-        R_{11} & R_{12} & R_{13} \\
-        R_{21} & R_{22} & R_{23} \\
-        R_{31} & R_{32} & R_{33}
-    \end{bmatrix}
-    \label{eq:rotation_matrix}
-\end{equation}
-
-\subsubsection{Cylindrical Coordinates}
-
-For cylindrical coordinates $(r, \theta, z)$ with the fiber axis along $z$:
-%
-\begin{equation}
-    \bs{R}_{\text{cyl}} =
-    \begin{bmatrix}
-        \cos\theta & -\sin\theta & 0 \\
-        \sin\theta & \cos\theta & 0 \\
-        0 & 0 & 1
-    \end{bmatrix}
-    \label{eq:R_cylindrical}
-\end{equation}
-
-\subsubsection{Spherical Coordinates}
-
-For spherical coordinates $(r, \theta, \phi)$:
-%
-\begin{equation}
-    \bs{R}_{\text{sph}} =
-    \begin{bmatrix}
-        \sin\theta\cos\phi & \cos\theta\cos\phi & -\sin\phi \\
-        \sin\theta\sin\phi & \cos\theta\sin\phi & \cos\phi \\
-        \cos\theta & -\sin\theta & 0
-    \end{bmatrix}
-    \label{eq:R_spherical}
-\end{equation}
-
-% -------------------------------------------------------------------
-\subsection{Transformation Matrices in Voigt Notation}
-\label{subsec:Q_matrices}
-% -------------------------------------------------------------------
-
-The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively. The key distinction between these two matrices arises from the engineering shear strain convention in Voigt notation: strain components carry a factor of 2 (e.g., $\gamma_{12} = 2\varepsilon_{12}$), while stress components do not.
-
-\subsubsection{Strain Transformation Matrix}
-
-The matrix $\bs{Q}_\varepsilon$ transforms strains from global to local coordinates ($\bs{\varepsilon}' = \bs{Q}_\varepsilon \cdot \bs{\varepsilon}$):
-%
-\begin{equation}
-    \bs{Q}_\varepsilon =
-    \begin{bmatrix}
-        R_{11}^2 & R_{21}^2 & R_{31}^2 & R_{11}R_{21} & R_{11}R_{31} & R_{21}R_{31} \\
-        R_{12}^2 & R_{22}^2 & R_{32}^2 & R_{12}R_{22} & R_{12}R_{32} & R_{22}R_{32} \\
-        R_{13}^2 & R_{23}^2 & R_{33}^2 & R_{13}R_{23} & R_{13}R_{33} & R_{23}R_{33} \\
-        2R_{11}R_{12} & 2R_{21}R_{22} & 2R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
-        2R_{11}R_{13} & 2R_{21}R_{23} & 2R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
-        2R_{12}R_{13} & 2R_{22}R_{23} & 2R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
-    \end{bmatrix}
-    \label{eq:Q_epsilon}
-\end{equation}
-
-\subsubsection{Stress Transformation Matrix}
-
-The matrix $\bs{Q}_\sigma$ transforms stresses from global to local coordinates ($\bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma}$):
-%
-\begin{equation}
-    \bs{Q}_\sigma =
-    \begin{bmatrix}
-        R_{11}^2 & R_{21}^2 & R_{31}^2 & 2R_{11}R_{21} & 2R_{11}R_{31} & 2R_{21}R_{31} \\
-        R_{12}^2 & R_{22}^2 & R_{32}^2 & 2R_{12}R_{22} & 2R_{12}R_{32} & 2R_{22}R_{32} \\
-        R_{13}^2 & R_{23}^2 & R_{33}^2 & 2R_{13}R_{23} & 2R_{13}R_{33} & 2R_{23}R_{33} \\
-        R_{11}R_{12} & R_{21}R_{22} & R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
-        R_{11}R_{13} & R_{21}R_{23} & R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
-        R_{12}R_{13} & R_{22}R_{23} & R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
-    \end{bmatrix}
-    \label{eq:Q_sigma}
-\end{equation}
-
-\subsubsection{Transformation Relations}
-
-The transformation of strains and stresses between local (primed) and global (unprimed) coordinates is given by:
-%
-\begin{align}
-    \bs{\varepsilon}' &= \bs{Q}_\varepsilon \cdot \bs{\varepsilon}, \quad \bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma} \label{eq:transform_forward}\\
-    \bs{\varepsilon} &= \bs{Q}_\sigma^T \cdot \bs{\varepsilon}', \quad \bs{\sigma} = \bs{Q}_\varepsilon^T \cdot \bs{\sigma}' \label{eq:transform_inverse}
-\end{align}
-
-A useful identity is $\bs{Q}_\varepsilon^{-1} = \bs{Q}_\sigma^T$ and $\bs{Q}_\sigma^{-1} = \bs{Q}_\varepsilon^T$. This reciprocal relationship between the strain and stress transformation matrices follows from the requirement that the strain energy density $\frac{1}{2}\bs{\sigma}^T \bs{\varepsilon}$ be invariant under coordinate rotation.
-
-% ===================================================================
-\section{Multi-Coated Inclusion Model for Interphases}
-\label{sec:multicoated}
-% ===================================================================
-
-The multi-coated inclusion model provides a systematic framework for analyzing composites where the reinforcing phase (fiber or particle) is surrounded by one or more coating layers representing the interphase region. This section develops the fundamental equations governing such systems.
-
-% -------------------------------------------------------------------
-\subsection{Problem Setup}
-\label{subsec:problem_setup}
-% -------------------------------------------------------------------
-
-\begin{figure}[htbp]
-    \centering
-    % TODO: Insert Figure similar to Figure 1 from multicoated.pdf
-    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
-    \textbf{[Insert Figure: Eshelby inhomogeneity problem for multicoated reinforcement]}\\[0.5em]
-    \small Schematic showing: Inner inhomogeneity $\mathbb{L}_h$ with coating layers $\mathbb{L}_1, \mathbb{L}_2, \ldots, \mathbb{L}_N$ embedded in infinite matrix $\mathbb{L}_0$, subject to far-field strain $\bs{u} = \bs{\varepsilon}^{(0)} \cdot \bs{x}$
-    \vspace{2cm}}}
-    \caption{Eshelby inhomogeneity problem for multicoated reinforcement. The inhomogeneity (core) with stiffness $\mathbb{L}_h$ is surrounded by $N$ coating layers with stiffness $\mathbb{L}_m$ ($m = 1, 2, \ldots, N$), embedded in an infinite matrix with stiffness $\mathbb{L}_0$.}
-    \label{fig:multicoated_schematic}
-\end{figure}
-
-Consider a multicoated inhomogeneity with $N$ coatings, embedded in a matrix material (Figure~\ref{fig:multicoated_schematic}). The configuration consists of:
-%
-\begin{itemize}
-    \item \textbf{Inhomogeneity (core):} Characterized by constant stiffness tensor $\mathbb{L}_h$, occupying the domain $\Omega_h$ with volume $V_h$, bounded by the surface $\partial\Omega_1$.
-    
-    \item \textbf{Coating layer $m$:} Characterized by constant stiffness tensor $\mathbb{L}_m$, occupying the domain $\Omega_m$ with volume $V_m$, bounded by the surfaces $\partial\Omega_m$ and $\partial\Omega_{m+1}$, for $m = 1, 2, \ldots, N$.
-    
-    \item \textbf{Matrix:} Characterized by constant stiffness tensor $\mathbb{L}_0$, occupying the infinite domain $\Omega_0$, bounded by the surfaces $\partial\Omega_{N+1}$ and $\partial\Omega_0$.
-\end{itemize}
-
-At the boundary $\partial\Omega_0$ of the matrix (at infinity), a linear displacement field is applied:
-%
-\begin{equation}
-    \bs{u}_{\text{ext}} = 
-    \begin{bmatrix}
-        u_{1,\text{ext}} \\ u_{2,\text{ext}} \\ u_{3,\text{ext}}
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \varepsilon^0_{11} x_1 + \varepsilon^0_{12} x_2 + \varepsilon^0_{13} x_3 \\
-        \varepsilon^0_{12} x_1 + \varepsilon^0_{22} x_2 + \varepsilon^0_{23} x_3 \\
-        \varepsilon^0_{13} x_1 + \varepsilon^0_{23} x_2 + \varepsilon^0_{33} x_3
-    \end{bmatrix}
-    \label{eq:farfield_displacement}
-\end{equation}
-%
-corresponding to a uniform far-field strain $\bs{\varepsilon}^{(0)}$.
-
-% -------------------------------------------------------------------
-\subsection{Fundamental Equations}
-\label{subsec:fundamental_equations}
-% -------------------------------------------------------------------
-
-\subsubsection{Strain and Stress Tensors}
-
-For this continuum, the standard strain and stress tensors are adopted. In Cartesian coordinates, they are represented in Voigt notation as:
-%
-\begin{equation}
-    \bs{\varepsilon} = 
-    \begin{bmatrix}
-        \varepsilon_{11} & \varepsilon_{22} & \varepsilon_{33} & 2\varepsilon_{12} & 2\varepsilon_{13} & 2\varepsilon_{23}
-    \end{bmatrix}^T
-    =
-    \begin{bmatrix}
-        \dfrac{\partial u_1}{\partial x_1} & \dfrac{\partial u_2}{\partial x_2} & \dfrac{\partial u_3}{\partial x_3} & \dfrac{\partial u_1}{\partial x_2} + \dfrac{\partial u_2}{\partial x_1} & \dfrac{\partial u_1}{\partial x_3} + \dfrac{\partial u_3}{\partial x_1} & \dfrac{\partial u_2}{\partial x_3} + \dfrac{\partial u_3}{\partial x_2}
-    \end{bmatrix}^T
-    \label{eq:strain_voigt}
-\end{equation}
-%
-\begin{equation}
-    \bs{\sigma} = 
-    \begin{bmatrix}
-        \sigma_{11} & \sigma_{22} & \sigma_{33} & \sigma_{12} & \sigma_{13} & \sigma_{23}
-    \end{bmatrix}^T
-    \label{eq:stress_voigt}
-\end{equation}
-
-\subsubsection{Equilibrium Equations}
-
-In the absence of body forces, the equilibrium equations read:
-%
-\begin{align}
-    \frac{\partial \sigma_{11}}{\partial x_1} + \frac{\partial \sigma_{12}}{\partial x_2} + \frac{\partial \sigma_{13}}{\partial x_3} &= 0 \nonumber\\
-    \frac{\partial \sigma_{12}}{\partial x_1} + \frac{\partial \sigma_{22}}{\partial x_2} + \frac{\partial \sigma_{23}}{\partial x_3} &= 0 \nonumber\\
-    \frac{\partial \sigma_{13}}{\partial x_1} + \frac{\partial \sigma_{23}}{\partial x_2} + \frac{\partial \sigma_{33}}{\partial x_3} &= 0
-    \label{eq:equilibrium_cartesian}
-\end{align}
-%
-or, in compact form:
-%
-\begin{equation}
-    \nabla \cdot \bs{\sigma} = \bs{0}, \quad \bs{x} \in \Omega
-    \label{eq:equilibrium_compact}
-\end{equation}
-
-\subsubsection{Constitutive Relations (Hooke's Law)}
-
-For linear elastic, isotropic materials, the stress-strain relationship in each phase is given by:
-%
-\begin{equation}
-    \bs{\sigma}(\bs{x}) = 
-    \begin{cases}
-        \mathbb{L}_h : \bs{\varepsilon}(\bs{x}), & \bs{x} \in \Omega_h \\[4pt]
-        \mathbb{L}_1 : \bs{\varepsilon}(\bs{x}), & \bs{x} \in \Omega_1 \\[4pt]
-        \quad\vdots & \\[4pt]
-        \mathbb{L}_N : \bs{\varepsilon}(\bs{x}), & \bs{x} \in \Omega_N \\[4pt]
-        \mathbb{L}_0 : \bs{\varepsilon}(\bs{x}), & \bs{x} \in \Omega_0
-    \end{cases}
-    \label{eq:constitutive_phases}
-\end{equation}
-
-For isotropic phases, the stiffness tensor takes the form:
-%
-\begin{equation}
-    \mathbb{L} = \lambda \, \bs{I} \otimes \bs{I} + 2\mu \, \mathbb{I}^{\text{sym}}
-    \label{eq:isotropic_stiffness}
-\end{equation}
-%
-where $\lambda$ and $\mu$ are the Lamé parameters. In matrix form for 3D problems:
-%
-\begin{equation}
-    \mathbb{L} = 
-    \begin{bmatrix}
-        \lambda + 2\mu & \lambda & \lambda & 0 & 0 & 0 \\
-        \lambda & \lambda + 2\mu & \lambda & 0 & 0 & 0 \\
-        \lambda & \lambda & \lambda + 2\mu & 0 & 0 & 0 \\
-        0 & 0 & 0 & \mu & 0 & 0 \\
-        0 & 0 & 0 & 0 & \mu & 0 \\
-        0 & 0 & 0 & 0 & 0 & \mu
-    \end{bmatrix}
-    \label{eq:stiffness_matrix}
-\end{equation}
-
-The bulk modulus relates to the Lamé parameters as $\kappa = \lambda + \frac{2}{3}\mu$.
-
-% -------------------------------------------------------------------
-\subsection{Average Fields}
+\subsection{Average Fields and Volume Fractions}
 \label{subsec:average_fields}
 % -------------------------------------------------------------------
 
-For homogenization purposes, we define the average strain and average stress per phase:
+For homogenization, we define the average strain and stress in each phase $i$:
 %
 \begin{equation}
     \bs{\varepsilon}^{(i)} = \frac{1}{V_i} \int_{\Omega_i} \bs{\varepsilon}(\bs{x}) \, dV, \quad
@@ -1137,12 +940,8 @@ For homogenization purposes, we define the average strain and average stress per
 %
 for $i = h, 1, 2, \ldots, N, 0$.
 
-% -------------------------------------------------------------------
-\subsection{Volume Fractions}
 \label{subsec:volume_fractions}
-% -------------------------------------------------------------------
-
-The volume fractions characterize the relative sizes of the phases within the equivalent inhomogeneity. We define:
+The volume fractions characterise the relative sizes of the phases within the equivalent inhomogeneity:
 %
 \begin{equation}
     c_h = \frac{V_h}{V_h + \sum_{r=1}^{N} V_r}, \quad
@@ -1151,9 +950,7 @@ The volume fractions characterize the relative sizes of the phases within the eq
     \label{eq:volume_fractions_general}
 \end{equation}
 %
-where $V_h$ is the volume of the inhomogeneity (core) and $V_m$ for $m = 1, 2, \ldots, N$ are the volumes of the coating layers.
-
-Using these relations, the volume fractions can be expressed recursively as:
+where $V_h$ is the core volume and $V_m$ the volume of coating layer $m$. These can be expressed recursively:
 %
 \begin{align}
     c_N &= 1 - \phi_N \nonumber\\
@@ -1165,20 +962,18 @@ Using these relations, the volume fractions can be expressed recursively as:
     \label{eq:volume_fractions_recursive}
 \end{align}
 
-\subsubsection{Volume Fractions for Specific Geometries}
-
-For \textbf{coated spherical particles} (3D, spherical coordinates):
-%
-\begin{equation}
-    c_h = \frac{r_1^3}{r_{N+1}^3}, \quad c_m = \frac{r_{m+1}^3 - r_m^3}{r_{N+1}^3}, \quad \phi_m = \left(\frac{r_m}{r_{m+1}}\right)^3
-    \label{eq:volume_fractions_spherical}
-\end{equation}
-
-For \textbf{coated cylindrical fibers} (2D, cylindrical coordinates):
+The geometric formulae differ for the two composite types. For \textbf{coated cylindrical fibres} (2D, CCA geometry):
 %
 \begin{equation}
     c_h = \frac{r_1^2}{r_{N+1}^2}, \quad c_m = \frac{r_{m+1}^2 - r_m^2}{r_{N+1}^2}, \quad \phi_m = \left(\frac{r_m}{r_{m+1}}\right)^2
     \label{eq:volume_fractions_cylindrical}
+\end{equation}
+
+For \textbf{coated spherical particles} (3D, CSA geometry):
+%
+\begin{equation}
+    c_h = \frac{r_1^3}{r_{N+1}^3}, \quad c_m = \frac{r_{m+1}^3 - r_m^3}{r_{N+1}^3}, \quad \phi_m = \left(\frac{r_m}{r_{m+1}}\right)^3
+    \label{eq:volume_fractions_spherical}
 \end{equation}
 %
 where $r_1$ is the core radius and $r_m$ denotes the outer radius of coating layer $m-1$ (inner radius of layer $m$).
@@ -1194,36 +989,122 @@ The multi-coated inclusion model rests on the following assumptions:
     \item \textbf{Linear elasticity} in all phases---the core, each coating layer, and the matrix obey Hooke's law with small deformations.
     \item \textbf{Isotropic phase materials}: each phase is characterised by two Lam\'{e} parameters $(\lambda^{(q)}, \mu^{(q)})$, constant within each phase.
     \item \textbf{Perfect bonding} between adjacent layers---displacement and traction are continuous across every internal boundary $\partial\Omega_m$.
-    \item \textbf{Piecewise-constant property approximation}: a continuously graded interphase is discretised into $N$ layers of uniform properties. Convergence studies show that $N \geq 3$ is sufficient for most engineering interphase profiles.
+    \item \textbf{Piecewise-constant property approximation}: a continuously graded interphase is discretised into $N$ layers of uniform properties.
     \item \textbf{Dilute embedding}: the multicoated inclusion sits in an infinite matrix subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$ (Eshelby problem setting).
     \item \textbf{Concentration tensor extraction}: the tensors $\mathbb{T}^{(q)}$ and $\mathbb{H}^{(q)}$ are obtained from volume-averaged strain and stress fields over each phase, computed from the BVP solutions derived in Chapter~\ref{ch:methodology}.
 \end{enumerate}
 
-% ===================================================================
-\section{Concentration Tensors}
+% -------------------------------------------------------------------
+\subsection{Coordinate Transformations}
+\label{sec:coordinate_transform}
+% -------------------------------------------------------------------
+
+The boundary value problems are formulated in curvilinear coordinates---cylindrical $(r, \theta, z)$ for fibres and spherical $(r, \theta, \phi)$ for particles. Since the concentration tensors are expressed in Voigt notation with respect to Cartesian axes, we need transformation matrices that convert between coordinate systems.
+
+\subsubsection{Rotation Matrix}
+\label{subsec:rotation_matrix}
+
+A second-order tensor rotator $\bs{R}$ maps components from the global Cartesian frame $(x_1, x_2, x_3)$ to a local frame:
+%
+\begin{equation}
+    \bs{R} =
+    \begin{bmatrix}
+        R_{11} & R_{12} & R_{13} \\
+        R_{21} & R_{22} & R_{23} \\
+        R_{31} & R_{32} & R_{33}
+    \end{bmatrix}
+    \label{eq:rotation_matrix}
+\end{equation}
+
+For \textbf{cylindrical coordinates} (2D, CCA) with the fibre axis along $z$:
+%
+\begin{equation}
+    \bs{R}_{\text{cyl}} =
+    \begin{bmatrix}
+        \cos\theta & -\sin\theta & 0 \\
+        \sin\theta & \cos\theta & 0 \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \label{eq:R_cylindrical}
+\end{equation}
+
+For \textbf{spherical coordinates} (3D, CSA):
+%
+\begin{equation}
+    \bs{R}_{\text{sph}} =
+    \begin{bmatrix}
+        \sin\theta\cos\phi & \cos\theta\cos\phi & -\sin\phi \\
+        \sin\theta\sin\phi & \cos\theta\sin\phi & \cos\phi \\
+        \cos\theta & -\sin\theta & 0
+    \end{bmatrix}
+    \label{eq:R_spherical}
+\end{equation}
+
+\subsubsection{Voigt Transformation Matrices}
+\label{subsec:Q_matrices}
+
+The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively. The distinction arises from the engineering shear strain convention: strain components carry a factor of 2 (e.g., $\gamma_{12} = 2\varepsilon_{12}$), while stress components do not.
+
+The strain transformation matrix $\bs{Q}_\varepsilon$ ($\bs{\varepsilon}' = \bs{Q}_\varepsilon \cdot \bs{\varepsilon}$):
+%
+\begin{equation}
+    \bs{Q}_\varepsilon =
+    \begin{bmatrix}
+        R_{11}^2 & R_{21}^2 & R_{31}^2 & R_{11}R_{21} & R_{11}R_{31} & R_{21}R_{31} \\
+        R_{12}^2 & R_{22}^2 & R_{32}^2 & R_{12}R_{22} & R_{12}R_{32} & R_{22}R_{32} \\
+        R_{13}^2 & R_{23}^2 & R_{33}^2 & R_{13}R_{23} & R_{13}R_{33} & R_{23}R_{33} \\
+        2R_{11}R_{12} & 2R_{21}R_{22} & 2R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
+        2R_{11}R_{13} & 2R_{21}R_{23} & 2R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
+        2R_{12}R_{13} & 2R_{22}R_{23} & 2R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
+    \end{bmatrix}
+    \label{eq:Q_epsilon}
+\end{equation}
+
+The stress transformation matrix $\bs{Q}_\sigma$ ($\bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma}$):
+%
+\begin{equation}
+    \bs{Q}_\sigma =
+    \begin{bmatrix}
+        R_{11}^2 & R_{21}^2 & R_{31}^2 & 2R_{11}R_{21} & 2R_{11}R_{31} & 2R_{21}R_{31} \\
+        R_{12}^2 & R_{22}^2 & R_{32}^2 & 2R_{12}R_{22} & 2R_{12}R_{32} & 2R_{22}R_{32} \\
+        R_{13}^2 & R_{23}^2 & R_{33}^2 & 2R_{13}R_{23} & 2R_{13}R_{33} & 2R_{23}R_{33} \\
+        R_{11}R_{12} & R_{21}R_{22} & R_{31}R_{32} & R_{12}R_{21}+R_{11}R_{22} & R_{12}R_{31}+R_{11}R_{32} & R_{22}R_{31}+R_{21}R_{32} \\
+        R_{11}R_{13} & R_{21}R_{23} & R_{31}R_{33} & R_{13}R_{21}+R_{11}R_{23} & R_{13}R_{31}+R_{11}R_{33} & R_{23}R_{31}+R_{21}R_{33} \\
+        R_{12}R_{13} & R_{22}R_{23} & R_{32}R_{33} & R_{13}R_{22}+R_{12}R_{23} & R_{13}R_{32}+R_{12}R_{33} & R_{23}R_{32}+R_{22}R_{33}
+    \end{bmatrix}
+    \label{eq:Q_sigma}
+\end{equation}
+
+The forward and inverse transformations are:
+%
+\begin{align}
+    \bs{\varepsilon}' &= \bs{Q}_\varepsilon \cdot \bs{\varepsilon}, \quad \bs{\sigma}' = \bs{Q}_\sigma \cdot \bs{\sigma} \label{eq:transform_forward}\\
+    \bs{\varepsilon} &= \bs{Q}_\sigma^T \cdot \bs{\varepsilon}', \quad \bs{\sigma} = \bs{Q}_\varepsilon^T \cdot \bs{\sigma}' \label{eq:transform_inverse}
+\end{align}
+
+A useful identity is $\bs{Q}_\varepsilon^{-1} = \bs{Q}_\sigma^T$ and $\bs{Q}_\sigma^{-1} = \bs{Q}_\varepsilon^T$, which follows from the invariance of strain energy density $\frac{1}{2}\bs{\sigma}^T \bs{\varepsilon}$ under coordinate rotation.
+
+% -------------------------------------------------------------------
+\subsection{Concentration Tensors}
 \label{sec:concentration_tensors_theory}
-% ===================================================================
-
-The central goal of the multi-coated inclusion analysis is to determine interaction (concentration) tensors that relate the average fields in each phase to the applied far-field strain $\bs{\varepsilon}^{(0)}$. These tensors serve as the shared mathematical representation through which both the interphase and interface models can be compared and connected.
-
 % -------------------------------------------------------------------
-\subsection{Strain-Type Concentration Tensor}
+
+The central goal of the multi-coated inclusion analysis is to determine concentration tensors that relate the average fields in each phase to the applied far-field strain $\bs{\varepsilon}^{(0)}$.
+
+\subsubsection{Strain-Type Concentration Tensor}
 \label{subsec:strain_concentration}
-% -------------------------------------------------------------------
 
-The strain-type elastic concentration tensor $\mathbb{T}^{(i)}$ satisfies:
+The strain-type concentration tensor $\mathbb{T}^{(i)}$ satisfies:
 %
 \begin{equation}
     \bs{\varepsilon}^{(i)} = \mathbb{T}^{(i)} : \bs{\varepsilon}^{(0)}, \quad i = h, 1, 2, \ldots, N
     \label{eq:strain_concentration}
 \end{equation}
 
-% -------------------------------------------------------------------
-\subsection{Stress-Strain Concentration Tensor}
+\subsubsection{Stress-Strain Concentration Tensor}
 \label{subsec:stress_concentration}
-% -------------------------------------------------------------------
 
-The stress-strain type elastic concentration tensor $\mathbb{H}^{(i)}$ satisfies:
+The stress-strain concentration tensor $\mathbb{H}^{(i)}$ satisfies:
 %
 \begin{equation}
     \bs{\sigma}^{(i)} = \mathbb{H}^{(i)} : \bs{\varepsilon}^{(0)}, \quad i = h, 1, 2, \ldots, N
@@ -1237,19 +1118,17 @@ For phases with constant material properties, these tensors are related by:
     \label{eq:H_T_relation}
 \end{equation}
 
-% -------------------------------------------------------------------
-\subsection{Equivalent Inhomogeneity}
+\subsubsection{Equivalent Inhomogeneity}
 \label{subsec:equivalent_inhomogeneity}
-% -------------------------------------------------------------------
 
-To avoid working with a large number of material phases, it is advantageous to substitute the inhomogeneity and the multiple coatings with a single \textit{equivalent inhomogeneity}. For an arbitrary field $\bs{a}$ (strain or stress type), its value in the equivalent inhomogeneity obeys:
+To avoid working with a large number of phases, it is advantageous to replace the inhomogeneity and the multiple coatings with a single \textit{equivalent inhomogeneity}. For an arbitrary field $\bs{a}$ (strain or stress type), its value in the equivalent inhomogeneity is:
 %
 \begin{equation}
     \bs{a}^{\text{eq}} = c_h \bs{a}^{(h)} + \sum_{r=1}^{N} c_r \bs{a}^{(r)}
     \label{eq:equivalent_field}
 \end{equation}
 %
-where $c_h, c_1, c_2, \ldots, c_N$ are the volume fractions of each phase within the equivalent inhomogeneity, satisfying:
+where the volume fractions satisfy:
 %
 \begin{equation}
     c_h + \sum_{i=1}^{N} c_i = 1
@@ -1263,14 +1142,12 @@ The equivalent concentration tensors are then:
     \mathbb{H}^{\text{eq}} &= c_h \mathbb{H}^{(h)} + \sum_{r=1}^{N} c_r \mathbb{H}^{(r)} \label{eq:Heq}
 \end{align}
 
-The boundary value problems needed to determine the independent components are developed in Chapter~\ref{ch:methodology}. Here we present the tensor structures that arise from the symmetry of the underlying geometries.
+These are volume-weighted averages over all sub-phases. The BVPs that determine the individual phase tensors are derived in Chapter~\ref{ch:methodology}.
 
-% -------------------------------------------------------------------
-\subsection{Tensor Structure for Fiber-Reinforced Composites}
+\subsubsection{Tensor Structure for Fibre-Reinforced Composites (2D, CCA)}
 \label{subsec:tensor_structure_fiber}
-% -------------------------------------------------------------------
 
-For aligned cylindrical fibers, the composite exhibits transverse isotropy. The concentration tensors in Voigt notation take the block-diagonal form:
+For aligned cylindrical fibres, the composite exhibits transverse isotropy. The concentration tensors in Voigt notation take the block-diagonal form:
 %
 \begin{equation}
     \mathbb{T}^{(q)} =
@@ -1285,7 +1162,7 @@ For aligned cylindrical fibers, the composite exhibits transverse isotropy. The 
     \label{eq:T_fiber_structure}
 \end{equation}
 %
-The upper-left $3 \times 3$ block couples in-plane and axial responses, while the diagonal $T_{44}^{(q)}$ and $T_{55}^{(q)}$ entries govern transverse and axial shear, respectively. The stress-strain concentration tensor has the corresponding structure:
+The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T_{44}^{(q)}$ and $T_{55}^{(q)}$ govern transverse and axial shear. The stress-strain concentration tensor has the corresponding structure:
 %
 \begin{equation}
     \mathbb{H}^{(q)} =
@@ -1300,12 +1177,10 @@ The upper-left $3 \times 3$ block couples in-plane and axial responses, while th
     \label{eq:H_fiber_structure}
 \end{equation}
 
-For transversely isotropic fiber composites, only six independent components are needed: $T_{\kappa}^{(q)}$, $T_{44}^{(q)}$, $T_{55}^{(q)}$ for the strain concentration tensor, and $H_{11}^{(q)}$, $H_{44}^{(q)}$, $H_{55}^{(q)}$ for the stress-strain concentration tensor. The remaining entries ($T_{13}$, $T_{31}$, $T_{33}$, $H_{13}$, $H_{31}$, $H_{33}$) follow from the in-plane and axisymmetric BVP solutions. Each independent component corresponds to a specific boundary value problem, as derived in Section~\ref{subsec:fiber_bvp}.
+Six independent components are needed: $T_{\kappa}^{(q)}$, $T_{44}^{(q)}$, $T_{55}^{(q)}$ for $\mathbb{T}$, and $H_{11}^{(q)}$, $H_{44}^{(q)}$, $H_{55}^{(q)}$ for $\mathbb{H}$. The remaining entries ($T_{13}$, $T_{31}$, $T_{33}$, $H_{13}$, $H_{31}$, $H_{33}$) follow from the in-plane and axisymmetric BVP solutions (Section~\ref{subsec:fiber_bvp}).
 
-% -------------------------------------------------------------------
-\subsection{Tensor Structure for Particle-Reinforced Composites}
+\subsubsection{Tensor Structure for Particle-Reinforced Composites (3D, CSA)}
 \label{subsec:tensor_structure_particle}
-% -------------------------------------------------------------------
 
 For spherical particles, the tensors exhibit full isotropy:
 %
@@ -1322,14 +1197,55 @@ For spherical particles, the tensors exhibit full isotropy:
     \label{eq:T_particle_structure}
 \end{equation}
 
-The full isotropy of the spherical geometry reduces the number of independent components to just two: $T_{\kappa}^{(q)}$ (bulk response) and $T_{\mu}^{(q)}$ (shear response). This simplification---compared to the six independent components for fibres---makes the CSA geometry considerably more tractable for inverse parameter identification, as we shall see in Chapter~\ref{ch:results}.
+Only two independent components are needed: $T_{\kappa}^{(q)}$ (bulk) and $T_{\mu}^{(q)}$ (shear). This simplification---compared to the six components for fibres---makes the CSA geometry more tractable for inverse parameter identification (Chapter~\ref{ch:results}).
+
+% -------------------------------------------------------------------
+\subsection{Homogenization}
+\label{subsec:interphase_homogenization}
+% -------------------------------------------------------------------
+
+With the equivalent concentration tensors in hand, the equivalent stiffness of the multi-coated inhomogeneity is:
+%
+\begin{equation}
+    \mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} : \left(\mathbb{T}^{\text{eq}}\right)^{-1}
+    \label{eq:equivalent_stiffness}
+\end{equation}
+
+The macroscopic stiffness of the composite follows from the Mori-Tanaka method. Since all internal boundaries have perfect bonding (no displacement or traction jumps), the standard volume averaging applies and the effective stiffness is:
+%
+\begin{equation}
+    \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\mathbb{T}^{\text{eq}}\right]^{-1}}
+    \label{eq:MT_interphase}
+\end{equation}
+%
+where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)}$ is the matrix stiffness. Because the tensor structure is block-diagonal, this $6 \times 6$ formula reduces to scalar expressions for each independent modulus.
+
+For \textbf{fibre-reinforced composites} (2D, CCA), three independent effective moduli are obtained:
+%
+\begin{align}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}} &= \frac{(1-f)\mu^{(2)} + f H_{44}^{\text{eq}}}{(1-f) + f T_{44}^{\text{eq}}} \label{eq:mutr_eff_interphase}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}} &= \frac{(1-f)\mu^{(2)} + f H_{55}^{\text{eq}}}{(1-f) + f T_{55}^{\text{eq}}} \label{eq:muax_eff_interphase}
+\end{align}
+%
+where $\kappa^{(2)} = \lambda^{(2)} + \mu^{(2)}$ is the plane-strain bulk modulus of the matrix.
+
+For \textbf{particle-reinforced composites} (3D, CSA), two effective moduli suffice:
+%
+\begin{align}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase_csa}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu &= \frac{(1-f)\mu^{(2)} + f H_{\mu}^{\text{eq}}}{(1-f) + f T_{\mu}^{\text{eq}}} \label{eq:mu_eff_interphase_csa}
+\end{align}
+%
+where $\kappa^{(2)} = \lambda^{(2)} + \frac{2}{3}\mu^{(2)}$ is the 3D bulk modulus.
 
 % ===================================================================
-\section{Interface Models}
+\section{Extended General Interface Model}
+\label{sec:interface_model}
 \label{sec:interface_models}
 % ===================================================================
 
-Having established the multi-coated inclusion framework for finite-thickness interphases, we now turn to interface models---mathematical abstractions that replace the volumetric interphase with a zero-thickness surface endowed with specific constitutive laws. We present the hierarchy of interface models from the simplest (perfect) to the most general (extended general), as each builds on the one before it.
+An alternative to modelling the interphase as a volumetric region is to collapse it onto a zero-thickness surface with its own constitutive law. This is the idea behind interface models. Instead of discretising the graded region into layers, one assigns material-like parameters directly to the surface separating inclusion and matrix. In this section we develop the Extended General Interface Model (EGIM) \cite{Firooz2022}, which is the most general linear interface model and encompasses all simpler interface models as special cases.
 
 % -------------------------------------------------------------------
 \subsection{Interface Kinematics}
@@ -1370,10 +1286,26 @@ where $\bs{P} = \bs{I} - \bs{n} \otimes \bs{n}$ is the surface projection tensor
     \label{eq:surface_divergence}
 \end{equation}
 
+\subsubsection{Interface Equilibrium}
+
+When an interface $\mathcal{I}$ separates two phases, the equilibrium condition on $\mathcal{I}$ reads:
+%
+\begin{equation}
+    \bar{\nabla} \cdot \bar{\bs{\sigma}} + \jump{\bs{\sigma}} \cdot \bs{n} = \bs{0}, \quad \bs{x} \in \mathcal{I}
+    \label{eq:interface_equilibrium}
+\end{equation}
+%
+with $\bar{\nabla}$ the surface divergence operator and $\bar{\bs{\sigma}}$ the interface stress tensor. For a perfect interface ($\bar{\bs{\sigma}} = \bs{0}$), this reduces to the classical traction continuity $\jump{\bs{\sigma}} \cdot \bs{n} = \bs{0}$. A non-zero interface stress acts as a distributed body force along $\mathcal{I}$, coupling the bulk and surface mechanics.
+
 % -------------------------------------------------------------------
-\subsection{Perfect Interface}
+\subsection{Hierarchy of Interface Models}
+\label{subsec:interface_hierarchy}
+% -------------------------------------------------------------------
+
+We present the hierarchy from the simplest to the most general, as each model builds on the one before it.
+
+\subsubsection{Perfect Interface}
 \label{subsec:perfect_interface}
-% -------------------------------------------------------------------
 
 The classical \textit{perfect interface} assumes continuity of both displacement and traction:
 %
@@ -1384,10 +1316,8 @@ The classical \textit{perfect interface} assumes continuity of both displacement
 
 While convenient, this model cannot capture any interphase physics and fails to represent imperfect adhesion or surface effects.
 
-% -------------------------------------------------------------------
-\subsection{Cohesive (Spring-Layer) Interface}
+\subsubsection{Cohesive (Spring-Layer) Interface}
 \label{subsec:cohesive_interface}
-% -------------------------------------------------------------------
 
 The cohesive interface model allows displacement jumps while maintaining traction continuity. The interface behaves as a distributed spring:
 %
@@ -1396,14 +1326,10 @@ The cohesive interface model allows displacement jumps while maintaining tractio
     \mean{\bs{t}} &= \bar{k} \jump{\bs{u}} \label{eq:cohesive_law}
 \end{align}
 %
-where $\bar{k}$ is the interface stiffness (units: force per length cubed). This model represents compliant interphases---soft coatings, adhesive layers, or degraded bonds.
+where $\bar{k}$ is the interface stiffness (units: force per length cubed). This model represents compliant interphases---soft coatings, adhesive layers, or degraded bonds. Large $\bar{k}$ recovers the perfect interface; $\bar{k} \to 0$ represents complete debonding.
 
-\textbf{Physical interpretation:} The interface traction is proportional to the displacement jump, analogous to a spring connecting the two sides. Large $\bar{k}$ recovers the perfect interface; $\bar{k} \to 0$ represents complete debonding.
-
-% -------------------------------------------------------------------
-\subsection{Elastic (Membrane) Interface}
+\subsubsection{Elastic (Membrane) Interface}
 \label{subsec:elastic_interface}
-% -------------------------------------------------------------------
 
 The elastic interface model, based on Gurtin-Murdoch surface elasticity theory, maintains displacement continuity while allowing traction jumps due to surface stresses:
 %
@@ -1412,23 +1338,19 @@ The elastic interface model, based on Gurtin-Murdoch surface elasticity theory, 
     \jump{\bs{t}} &= -\nabla_s \cdot \bar{\bs{\sigma}} \label{eq:elastic_trac}
 \end{align}
 %
-where $\bar{\bs{\sigma}}$ is the interface stress tensor. This model captures stiff interphases that resist tangential deformation.
-
-The interface stress relates to the surface strain through an interface constitutive law:
+where $\bar{\bs{\sigma}}$ is the interface stress tensor. The interface stress relates to the surface strain through:
 %
 \begin{equation}
     \bar{\bs{\sigma}} = \bar{\lambda}(\text{tr}\,\bar{\bs{\varepsilon}})\bs{P} + 2\bar{\mu}\,\bar{\bs{\varepsilon}}
     \label{eq:interface_constitutive}
 \end{equation}
 %
-where $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}})$ is the surface strain and $\bar{\lambda}$, $\bar{\mu}$ are the interface Lamé parameters (units: force per length).
+where $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}})$ is the surface strain and $\bar{\lambda}$, $\bar{\mu}$ are the interface Lam\'{e} parameters (units: force per length).
 
-% -------------------------------------------------------------------
-\subsection{General Interface Model (GIM)}
+\subsubsection{General Interface Model (GIM)}
 \label{subsec:gim}
-% -------------------------------------------------------------------
 
-Real interphases often exhibit characteristics of both soft and hard behavior simultaneously. The General Interface Model unifies the cohesive and elastic models by admitting both displacement and traction jumps:
+Real interphases often exhibit characteristics of both soft and hard behaviour simultaneously. The General Interface Model unifies the cohesive and elastic models by admitting both displacement and traction jumps:
 %
 \begin{align}
     \mean{\bs{t}} &= \bar{k}\jump{\bs{u}} \label{eq:gim_cohesive}\\
@@ -1442,18 +1364,53 @@ The classical interface models emerge as limiting cases:
     \item $\bar{k} \to \infty$ with finite $\bar{\mu}$: Elastic interface
 \end{itemize}
 
-% -------------------------------------------------------------------
-\subsection{Extended General Interface Model (EGIM)}
+\subsubsection{Extended General Interface Model (EGIM)}
 \label{subsec:egim}
+
+A crucial limitation of the GIM is the implicit assumption that the interface coincides with the geometric mid-plane of the original interphase. The EGIM further generalises this by introducing a position parameter $\bar{\alpha} \in [0, 1]$ that accounts for asymmetric interphases.
+
+The \textbf{weighted average operator} is defined as:
+%
+\begin{equation}
+    \mean{\phi}_{\bar{\alpha}} := \bar{\alpha}\phi^+ + (1 - \bar{\alpha})\phi^-
+    \label{eq:weighted_average}
+\end{equation}
+
+Similarly, the complementary weighted average is:
+%
+\begin{equation}
+    \mean{\phi}_{1-\bar{\alpha}} := (1 - \bar{\alpha})\phi^+ + \bar{\alpha}\phi^-
+    \label{eq:complementary_average}
+\end{equation}
+
+The \textbf{interface position} $\bar{\bs{x}}$ and \textbf{interface traction} $\bar{\bs{t}}$ are:
+%
+\begin{align}
+    \bar{\bs{x}} &:= \mean{\bs{x}}_{\bar{\alpha}} = \bar{\alpha}\bs{x}^+ + (1 - \bar{\alpha})\bs{x}^- \label{eq:interface_position}\\
+    \bar{\bs{t}} &:= \mean{\bs{\sigma}}_{1-\bar{\alpha}} \cdot \bs{n} = (1 - \bar{\alpha})\bs{\sigma}^+ \cdot \bs{n} + \bar{\alpha}\bs{\sigma}^- \cdot \bs{n} \label{eq:interface_traction}
+\end{align}
+
+Note that while interface kinematics is governed by the weighted average, interface kinetics is governed by the complementary weighted average.
+
+The \textbf{displacement decomposition} on either side of the interface relates to the weighted average through:
+%
+\begin{align}
+    \bs{u}^+ &= \mean{\bs{u}}_{\bar{\alpha}} + \bar{\alpha}\jump{\bs{u}} \label{eq:egim_uplus}\\
+    \bs{u}^- &= \mean{\bs{u}}_{\bar{\alpha}} - (1 - \bar{\alpha})\jump{\bs{u}} \label{eq:egim_uminus}
+\end{align}
+
+The position parameter interpolates between different interface configurations: $\bar{\alpha} = 0.5$ gives the standard GIM (interface at mid-plane), $\bar{\alpha} = 0$ places the interface at the inclusion surface, and $\bar{\alpha} = 1$ places it at the matrix boundary.
+
 % -------------------------------------------------------------------
-The General Interface Model (GIM) unifies cohesive (soft) and elastic (hard) interface behaviors by allowing both displacement and traction jumps simultaneously. The Extended General Interface Model (EGIM) further generalizes this by introducing a position parameter that accounts for asymmetric interphases.
-
 \subsection{Interface Constitutive Relations}
+\label{subsec:interface_constitutive_relations}
+% -------------------------------------------------------------------
 
-The EGIM decomposes interface behavior into tangential (in-plane) and orthogonal (normal) components.
+The EGIM decomposes interface behaviour into tangential (in-plane) and orthogonal (normal) components.
 
-\paragraph{Tangential (Elastic) Response.}
-The interface stress $\bar{\bs{\sigma}}$ relates to the surface strain $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}})$ through an interface constitutive law. For fiber-reinforced composites with a cylindrical interface, the tangential behavior in the $(\theta, z)$ plane reads:
+\subsubsection{Tangential (Elastic) Response for Fibre Composites (2D, CCA)}
+
+For fibre-reinforced composites with a cylindrical interface, the tangential behaviour in the $(\theta, z)$ plane reads:
 %
 \begin{equation}
     \begin{bmatrix}
@@ -1471,7 +1428,7 @@ The interface stress $\bar{\bs{\sigma}}$ relates to the surface strain $\bar{\bs
     \label{eq:interface_tangential}
 \end{equation}
 %
-where $\bar{\lambda}$, $\bar{\mu}_{\text{tr}}$, and $\bar{\mu}_{\text{ax}}$ are the interface Lamé parameters. For an isotropic interface, $\bar{\mu}_{\text{tr}} = \bar{\mu}_{\text{ax}} = \bar{\mu}$.
+where $\bar{\lambda}$, $\bar{\mu}_{\text{tr}}$, and $\bar{\mu}_{\text{ax}}$ are the interface Lam\'{e} parameters. For an isotropic interface, $\bar{\mu}_{\text{tr}} = \bar{\mu}_{\text{ax}} = \bar{\mu}$.
 
 The surface strains on a cylindrical interface at radius $r_1$ are computed from the average displacement:
 %
@@ -1482,7 +1439,19 @@ The surface strains on a cylindrical interface at radius $r_1$ are computed from
     \label{eq:surface_strains}
 \end{equation}
 
-\paragraph{Orthogonal (Cohesive) Response.}
+\subsubsection{Tangential (Elastic) Response for Particle Composites (3D, CSA)}
+
+For particle-reinforced composites with a spherical interface, the tangential behaviour in the $(\theta, \phi)$ plane reads:
+%
+\begin{equation}
+    \bar{\bs{\sigma}} = \bar{\lambda}(\text{tr}\,\bar{\bs{\varepsilon}})\bs{P} + 2\bar{\mu}\,\bar{\bs{\varepsilon}}
+    \label{eq:interface_tangential_spherical}
+\end{equation}
+%
+where the surface strain $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}}_{\bar{\alpha}})$ is computed using the weighted average displacement at the spherical interface. Due to the full isotropy of the spherical geometry, only two interface moduli ($\bar{\lambda}$, $\bar{\mu}$) govern the tangential response---there is no distinction between in-plane and out-of-plane shear as in the cylindrical case.
+
+\subsubsection{Orthogonal (Cohesive) Response}
+
 The traction-displacement relation across the interface follows:
 %
 \begin{equation}
@@ -1498,68 +1467,20 @@ The traction-displacement relation across the interface follows:
     \label{eq:interface_orthogonal}
 \end{equation}
 %
-where $\bar{k}_r$, $\bar{k}_\theta$, and $\bar{k}_z$ are the interface orthogonal stiffness parameters. Without loss of generality, for isotropic interfaces one can demonstrate that a single parameter $\bar{k}$ suffices:
+For isotropic interfaces, a single parameter $\bar{k}$ suffices:
 %
 \begin{equation}
     \bar{k}_r = \bar{k}_\theta = \bar{k}_z = \bar{k}
     \label{eq:isotropic_interface_stiffness}
 \end{equation}
 
-
-A crucial limitation of the classical GIM is the implicit assumption that the interface coincides with the geometric mid-plane of the original interphase. This restriction becomes problematic for graded or asymmetric interphases.
-
-\subsubsection{Weighted Average Operator}
-
-The EGIM introduces a position parameter $\bar{\alpha} \in [0, 1]$ defining where the interface sits within the interphase. The weighted average operator is defined as:
-%
-\begin{equation}
-    \mean{\phi}_{\bar{\alpha}} := \bar{\alpha}\phi^+ + (1 - \bar{\alpha})\phi^-
-    \label{eq:weighted_average}
-\end{equation}
-
-Similarly, the complementary weighted average is:
-%
-\begin{equation}
-    \mean{\phi}_{1-\bar{\alpha}} := (1 - \bar{\alpha})\phi^+ + \bar{\alpha}\phi^-
-    \label{eq:complementary_average}
-\end{equation}
-
-\subsubsection{Interface Position and Traction}
-
-The interface position $\bar{\bs{x}}$ and interface traction $\bar{\bs{t}}$ are defined as:
-%
-\begin{align}
-    \bar{\bs{x}} &:= \mean{\bs{x}}_{\bar{\alpha}} = \bar{\alpha}\bs{x}^+ + (1 - \bar{\alpha})\bs{x}^- \label{eq:interface_position}\\
-    \bar{\bs{t}} &:= \mean{\bs{\sigma}}_{1-\bar{\alpha}} \cdot \bs{n} = (1 - \bar{\alpha})\bs{\sigma}^+ \cdot \bs{n} + \bar{\alpha}\bs{\sigma}^- \cdot \bs{n} \label{eq:interface_traction}
-\end{align}
-
-Note that while interface kinematics is governed by the weighted average, interface kinetics is governed by the complementary weighted average.
-
-\subsubsection{Displacement Decomposition}
-
-The displacement fields on either side of the interface relate to the weighted average through:
-%
-\begin{align}
-    \bs{u}^+ &= \mean{\bs{u}}_{\bar{\alpha}} + \bar{\alpha}\jump{\bs{u}} \label{eq:egim_uplus}\\
-    \bs{u}^- &= \mean{\bs{u}}_{\bar{\alpha}} - (1 - \bar{\alpha})\jump{\bs{u}} \label{eq:egim_uminus}
-\end{align}
-
-\subsubsection{Special Cases}
-
-The position parameter interpolates between different interface configurations:
-\begin{itemize}
-    \item $\bar{\alpha} = 0.5$: Standard GIM (interface at mid-plane)
-    \item $\bar{\alpha} = 0$: Interface coincides with the inclusion surface ($\mean{\cdot}_0 = (\cdot)^-$)
-    \item $\bar{\alpha} = 1$: Interface lies at the matrix boundary ($\mean{\cdot}_1 = (\cdot)^+$)
-\end{itemize}
-
 \subsubsection{Complete EGIM Parameter Set}
 
-The complete EGIM is characterized by four independent parameters:
+The complete EGIM is characterised by four independent parameters:
 %
 \begin{enumerate}
     \item $\bar{k}$ --- interface orthogonal stiffness (resistance to normal separation)
-    \item $\bar{\lambda}$ --- interface first Lamé parameter (coupling between tangential strains)
+    \item $\bar{\lambda}$ --- interface first Lam\'{e} parameter (coupling between tangential strains)
     \item $\bar{\mu}$ --- interface shear modulus (resistance to tangential deformation)
     \item $\bar{\alpha}$ --- interface position parameter (location within the original interphase)
 \end{enumerate}
@@ -1567,7 +1488,7 @@ The complete EGIM is characterized by four independent parameters:
 For 2D plane-strain analysis, the interface in-plane bulk modulus $\bar{\kappa} = \bar{\lambda} + \bar{\mu}$ provides a convenient alternative to $\bar{\lambda}$.
 
 % -------------------------------------------------------------------
-\subsection{Interface Model Assumptions}
+\subsection{Model Assumptions}
 \label{subsec:interface_assumptions}
 % -------------------------------------------------------------------
 
@@ -1583,17 +1504,13 @@ The EGIM rests on assumptions distinct from those of the multi-coated model:
 
 A consequence of assumption~1 is that the interface model cannot reproduce all features of a finite-thickness graded interphase. In particular, the transverse shear response ($G_{\text{tr}}$) in CCA composites shows a persistent gap of approximately 18\% between the best-fit interface prediction and the three-layered interphase reference, regardless of the number of interface parameters (Section~\ref{sec:ei_gap}). This structural limitation motivates the complementary surrogate and PINN approaches developed in Chapter~\ref{ch:results}.
 
-% ===================================================================
-\section{Homogenization with General Interfaces}
-\label{sec:homogenization_interfaces}
-% ===================================================================
-
 % -------------------------------------------------------------------
-\subsection{Modified Volume Averaging}
+\subsection{Modified Hill-Mandel Condition}
 \label{subsec:modified_averaging}
+\label{sec:homogenization_interfaces}
 % -------------------------------------------------------------------
 
-For composites with interfaces, the standard averaging relations must be modified to account for displacement and traction discontinuities. The macroscopic strain and stress are:
+When interfaces with displacement jumps are present, the standard averaging relations from Section~\ref{subsec:hill_mandel} must be modified to account for discontinuities. The macroscopic strain and stress acquire interface contributions:
 %
 \begin{align}
     {}^{\mathrm{M}}\hspace{-1pt}\bs{\varepsilon} &= (1-f)\bs{\varepsilon}^{(2)} + f\bs{\varepsilon}^{(1)} + \hat{\bs{\varepsilon}} \label{eq:macro_strain}\\
@@ -1607,35 +1524,70 @@ where $f$ is the inclusion volume fraction, $\bs{\varepsilon}^{(i)}$ and $\bs{\s
     \hat{\bs{\sigma}} &= \frac{1}{V}\int_{\mathcal{I}} \bar{\bs{\sigma}} \, dA \label{eq:interface_stress_contrib}
 \end{align}
 
+The term $\hat{\bs{\varepsilon}}$ accounts for the extra strain due to displacement jumps across the interface, while $\hat{\bs{\sigma}}$ accounts for the stress carried by the interface membrane. For the interphase model (Section~\ref{sec:interphase_model}), where all internal boundaries have perfect bonding, these terms vanish and the standard volume averaging is recovered.
+
 % -------------------------------------------------------------------
-\subsection{Interface-Enhanced Mori-Tanaka Method}
+\subsection{Concentration Tensors with Interface Effects}
+\label{subsec:interface_concentration_tensors}
+% -------------------------------------------------------------------
+
+In contrast to the interphase model, where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ are volume-weighted averages over multiple sub-phases, the interface model defines these tensors for a \textit{single} equivalent inhomogeneity with modified boundary conditions at the interface. There is only one inclusion and one matrix---no coating layers---but the interface conditions couple the fields across $\mathcal{I}$.
+
+The concentration tensors satisfy the same relations as before:
+%
+\begin{equation}
+    \bs{\varepsilon}^{(1)} = \mathbb{T}^{\text{eq}} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)} = \mathbb{H}^{\text{eq}} : \bs{\varepsilon}^{(0)}
+    \label{eq:interface_concentration_def}
+\end{equation}
+%
+but now the components of $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ depend on the interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ in addition to the bulk material properties. They are obtained by solving interface-modified BVPs, as derived in Chapter~\ref{ch:methodology}.
+
+\subsubsection{Tensor Structure for Fibre Composites (2D, CCA)}
+
+The transversely isotropic structure is the same as in Equation~\eqref{eq:T_fiber_structure}. The tensor $\mathbb{T}^{\text{eq}}$ for the interface model has the same block-diagonal form with components $T_{\kappa}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and the off-diagonal entries $T_{13}^{\text{eq}}$, $T_{31}^{\text{eq}}$, $T_{33}^{\text{eq}}$. The stress-strain tensor $\mathbb{H}^{\text{eq}}$ follows the same pattern. The key difference is that these components are functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ rather than being volume-weighted sums over coating layers.
+
+\subsubsection{Tensor Structure for Particle Composites (3D, CSA)}
+
+The isotropic structure is the same as in Equation~\eqref{eq:T_particle_structure}, with only two independent components: $T_{\kappa}^{\text{eq}}$ (bulk) and $T_{\mu}^{\text{eq}}$ (shear). Again, these depend on interface parameters rather than on multi-layer volume averages.
+
+% -------------------------------------------------------------------
+\subsection{Mori-Tanaka Homogenization with Interfaces}
 \label{subsec:interface_mori_tanaka}
 % -------------------------------------------------------------------
 
-The Mori-Tanaka method assumes each inclusion experiences the average matrix strain as its far-field condition: $\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$. With interfaces, the macroscopic stiffness tensor becomes:
+The Mori-Tanaka method assumes each inclusion experiences the average matrix strain as its far-field condition: $\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$. With interfaces, the macroscopic stiffness tensor takes the same form as Equation~\eqref{eq:MT_interphase}:
 %
 \begin{equation}
     \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\mathbb{T}^{\text{eq}}\right]^{-1}}
     \label{eq:MT_interface}
 \end{equation}
 %
-where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ are the equivalent concentration tensors that incorporate interface effects.
+where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ now incorporate interface effects. The formula is structurally identical to the interphase case, but the meaning of the equivalent tensors is different: here they come from interface-modified BVPs rather than volume-weighted averages over coating layers.
 
-The equivalent stiffness of the inhomogeneity/interface system is:
+For \textbf{fibre-reinforced composites} (2D, CCA), the scalar effective moduli are:
 %
-\begin{equation}
-    \mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} : \left(\mathbb{T}^{\text{eq}}\right)^{-1}
-    \label{eq:equivalent_stiffness}
-\end{equation}
+\begin{align}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interface}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}} &= \frac{(1-f)\mu^{(2)} + f H_{44}^{\text{eq}}}{(1-f) + f T_{44}^{\text{eq}}} \label{eq:mutr_eff_interface}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}} &= \frac{(1-f)\mu^{(2)} + f H_{55}^{\text{eq}}}{(1-f) + f T_{55}^{\text{eq}}} \label{eq:muax_eff_interface}
+\end{align}
+
+For \textbf{particle-reinforced composites} (3D, CSA):
+%
+\begin{align}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interface_csa}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu &= \frac{(1-f)\mu^{(2)} + f H_{\mu}^{\text{eq}}}{(1-f) + f T_{\mu}^{\text{eq}}} \label{eq:mu_eff_interface_csa}
+\end{align}
 
 % ===================================================================
 \section{Summary}
 \label{sec:theory_summary}
 % ===================================================================
 
-This chapter has laid the theoretical groundwork for the entire thesis. We began with the governing equations---balance of momentum, the Hill-Mandel condition, and the Eshelby inclusion problem---that justify and underpin the Mori-Tanaka homogenization framework. The coordinate transformation matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ provide the machinery for formulating boundary value problems in curvilinear coordinates. The multi-coated inclusion model describes finite-thickness interphases through piecewise-constant coating layers, while the hierarchy of interface models---from perfect bonding to the Extended General Interface Model---offers zero-thickness abstractions with increasing physical fidelity.
+This chapter has presented the two theoretical models used in the present work. The three-layered interphase model (Section~\ref{sec:interphase_model}) treats the graded region between inclusion and matrix as a set of coating layers with piecewise-constant properties. Volume fractions, concentration tensors, and homogenization formulas were defined for both fibre (2D, CCA) and particle (3D, CSA) composites. The Extended General Interface Model (Section~\ref{sec:interface_model}) takes a different approach: it collapses the interphase onto a zero-thickness surface governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ that encode the orthogonal stiffness, tangential elasticity, and interface position.
 
-Both representations produce concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that feed into the same Mori-Tanaka formula (Equation~\eqref{eq:MT_interface}). This shared representation is the central insight of the present work: the parameter identification problem reduces to finding interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ whose concentration tensors best match those from the interphase model. However, the assumptions underlying each model differ---the interphase model requires perfect bonding between layers while the interface model collapses the entire region onto a surface---and these differences have consequences for the accuracy of the equivalence, as we quantify in Chapter~\ref{ch:results}.
+Both models produce equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that feed into the same Mori-Tanaka formula. The central difference lies in how these tensors are obtained: multi-layer BVPs with perfect bonding for the interphase model, versus interface-modified BVPs for the EGIM. This shared representation is what makes the parameter identification problem possible---one seeks interface parameters whose concentration tensors match those from the interphase model. At the same time, the assumptions differ (finite-thickness layers versus zero-thickness surface), and these differences have consequences for the accuracy of the equivalence, as we quantify in Chapter~\ref{ch:results}.
 
 Chapter~\ref{ch:methodology} now develops the specific boundary value problems that determine the concentration tensor components for both models and geometries, followed by the neural network architectures that exploit this connection.
 
