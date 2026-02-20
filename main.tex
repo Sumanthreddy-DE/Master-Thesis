@@ -542,6 +542,13 @@
   doi       = {10.1021/ma0602270}
 }
 
+@article{Bischof2021,
+  author    = {Bischof, Rafael and Kraus, Michael},
+  title     = {Multi-objective loss balancing for physics-informed deep learning},
+  journal   = {arXiv preprint arXiv:2110.09813},
+  year      = {2021}
+}
+
 \end{filecontents}
 
 \usepackage[backend=biber, style=ieee, dashed=false, doi=true, isbn=false]{biblatex}
@@ -2193,67 +2200,63 @@ The explicit expressions for $A$, $B$, and $D$ coefficients for both BVPs are gi
 \label{sec:neural_network}
 % ===================================================================
 
-This section describes two complementary neural network architectures. The \textit{forward surrogate} learns a direct mapping from material and interphase parameters to effective composite properties, replacing the boundary value problem solver with a fast approximation. The \textit{inverse PINN} learns the reverse mapping, recovering interface parameters from target mechanical response using physics-informed training.
+This section describes the neural network architecture used for the central problem of the present work: given the effective properties produced by the three-layered interphase model, find the EGIM interface parameters that reproduce them. We train an inverse network that takes effective moduli and material properties as input and predicts the four unknown interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. A physics-informed loss ensures that the predicted parameters, when passed through the EGIM forward model, reconstruct the target properties.
 
 % -------------------------------------------------------------------
-\subsection{Forward Surrogate Neural Network}
-\label{subsec:forward_surrogate}
+\subsection{Inverse Parameter Identification Network}
+\label{subsec:inverse_network}
 % -------------------------------------------------------------------
 
-The forward surrogate predicts the effective properties of the three-layered interphase model without solving BVPs. Both the CCA and CSA surrogates share a common architecture: four fully-connected hidden layers with widths $[512, 512, 512, 256]$, GELU activations, and skip connections between non-adjacent layers. The tapering from 512 to 256~neurons in the final hidden layer encourages progressive feature compression. The total parameter count is approximately~$800\,000$.
+The inverse network addresses the core question: what EGIM parameters produce effective properties matching those of the three-layered interphase model? For a given composite configuration, the interphase BVP solver yields target properties (e.g.\ $K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ for CCA). The network must find interface parameters that, when substituted into the EGIM forward model, reproduce these targets as closely as possible.
 
 \paragraph{Input--output specification.}
-Each surrogate takes 11~inputs: the elastic moduli of inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), three interphase radial fractions ($\phi_1, \phi_2, \phi_3$), the inclusion volume fraction~$f$, and three interpolation weights ($w_1, w_2, w_3$) that control property grading within the interphase. The CCA surrogate outputs three transversely isotropic moduli ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$), while the CSA surrogate outputs two isotropic moduli ($K_{\text{eff}}, G_{\text{eff}}$).
+For CCA composites, the network takes 8~inputs: the three target effective moduli ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$) together with the elastic moduli of inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$) and the volume fraction~$f$. The network outputs four EGIM parameters: normal stiffness~$\bar{k}$, surface Lam\'{e} parameter~$\bar{\lambda}$, surface shear modulus~$\bar{\mu}$, and the Gurtin--Murdoch parameter~$\bar{\alpha}$.
 
-\paragraph{Log-space output transform.}
-Since effective properties span several orders of magnitude, the network predicts $\log(K)$, $\log(G)$ rather than the raw values. This stabilises training and ensures that the relative error is approximately uniform across the output range. The loss function accordingly uses a weighted relative MSE.
+For CSA composites, the input reduces to 7~features (two isotropic target moduli $K_{\text{eff}}$, $G_{\text{eff}}$ plus material properties and volume fraction), while the output dimension remains four.
 
-\paragraph{Training procedure.}
-We generate $200\,000$~samples via Latin Hypercube Sampling with stratified ranges. For each sample, the interphase BVP solver (Section~\ref{subsec:fiber_bvp} or~\ref{subsec:particle_bvp}) produces the target properties. The network is trained with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-5}$) using a one-cycle cosine schedule and batch size~512. Xavier uniform initialisation is used throughout.
+\paragraph{Architecture.}
+The network has three fully-connected hidden layers with 256~neurons each and tanh activations. Xavier normal initialisation is applied to all weight matrices. Physical constraints are enforced on the outputs through activation functions: softplus for $\bar{\lambda}$ and $\bar{\mu}$ (ensuring non-negativity), an exponential mapping clamped to $[-2, 8.5]$ for $\bar{k}$ (covering the range $[1, 5000]$), and a sigmoid for $\bar{\alpha} \in [0, 1]$. The total parameter count is approximately $135\,000$.
+
+\paragraph{Training data generation.}
+We generate $200\,000$~samples by sampling the EGIM parameter space with importance sampling. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
+
+\paragraph{Loss function.}
+The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with the normal stiffness $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the differentiable EGIM forward model and computes the relative error against the target effective properties. An adaptive weighting scheme inspired by ReLoBRaLo adjusts the relative contribution of each term based on convergence rates. We train with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing, batch size~512, and gradient clipping at 1.0 for 500~epochs.
 
 % -------------------------------------------------------------------
-\subsection{Inverse Parameter Identification via PINN}
+\subsection{CSA-Specific Training Strategy}
 \label{subsec:inverse_pinn}
 % -------------------------------------------------------------------
 
-The second network addresses the inverse problem: given target concentration tensors from the interphase model, recover the EGIM parameters that best reproduce them. We formulate this as a physics-informed learning task.
+The architecture described in Section~\ref{subsec:inverse_network} is shared between the CCA and CSA variants. However, the CSA inverse problem requires a different training strategy because the isotropic spherical geometry produces only two target properties ($K_{\text{eff}}$, $G_{\text{eff}}$) from which four interface parameters must be recovered. This section describes the data generation and training procedure for the CSA case.
 
-\paragraph{Problem formulation.}
-\label{subsec:nn_formulation}
-Given interface parameters $\bs{\theta} = [\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}]^T$ and material properties $\bs{p} = [\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, r_1]^T$, the forward model computes:
+\paragraph{Training data composition.}
+The CSA training set combines three data sources. The primary source consists of $50\,000$~samples generated by sampling the EGIM parameter space and computing effective properties through the spherical interface forward model, following the same procedure as the CCA case. The second source adds $5\,000$~edge samples concentrated near the parameter space boundaries---extreme stiffness ratios, high and low volume fractions---to improve predictions in these regions. The third source provides $500$~samples generated directly from the 3-layer CSA interphase model: for each interphase configuration, we solve the hydrostatic and deviatoric BVPs to obtain effective properties, then find best-fit interface parameters via optimisation. These samples expose the network to the actual interphase-to-interface mapping during training, rather than relying solely on EGIM-generated data.
+
+\paragraph{Loss function.}
+The training loss combines a data term and a physics term:
 %
 \begin{equation}
-    \bs{y} = \mathcal{F}(\bs{\theta}; \bs{p}) = [T_{\kappa}^{\text{eq}}, T_{\mu}^{\text{eq}}, H_{\kappa}^{\text{eq}}, H_{\mu}^{\text{eq}}]^T
+\label{eq:pinn_loss}
+    \mathcal{L} = w_{\text{data}} \, \mathcal{L}_{\text{data}} + w_{\text{phys}} \, \mathcal{L}_{\text{phys}}
 \end{equation}
 %
-The inverse network $\mathcal{N}$ predicts the parameters from the target tensors:
+where $\mathcal{L}_{\text{data}}$ is the mean squared error between predicted and target interface parameters with $\bar{k}$ scaled down to balance its larger magnitude, and $\mathcal{L}_{\text{phys}}$ passes the predicted parameters through the differentiable EGIM forward model and penalises the discrepancy against the input effective properties:
 %
 \begin{equation}
-    \hat{\bs{\theta}} = \mathcal{N}(\bs{y}^*, \bs{p}; \bs{W})
-\end{equation}
-
-\paragraph{Architecture.}
-The input vector combines the target concentration tensors and material properties:
-%
-\begin{equation}
-    \bs{x} = [T_{\kappa}^{\text{eq}}, T_{\mu}^{\text{eq}}, H_{\kappa}^{\text{eq}}, H_{\mu}^{\text{eq}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, r_1]^T \in \mathbb{R}^9
+\label{eq:pinn_physics_loss}
+    \mathcal{L}_{\text{phys}} = \frac{1}{N}\sum_{i=1}^{N} \left[ w_K \left(\frac{K_{\text{eff},i}^{\text{pred}} - K_{\text{eff},i}^{\text{target}}}{K_{\text{eff},i}^{\text{target}}}\right)^{2} + w_G \left(\frac{G_{\text{eff},i}^{\text{pred}} - G_{\text{eff},i}^{\text{target}}}{G_{\text{eff},i}^{\text{target}}}\right)^{2} \right]
 \end{equation}
 %
-For fibre composites, the input dimension increases to include $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, $H_{44}^{\text{eq}}$, $H_{55}^{\text{eq}}$. The network has three hidden layers with widths $[64, 32, 16]$ and ReLU activations. The output layer has four neurons (linear activation) producing $\hat{\bs{\theta}} = [\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}]^T$.
+with $w_K = 1.5$ and $w_G = 1.0$. The physics loss plays a dual role: it regularises the parameter predictions by enforcing forward-model consistency, and it helps the network generalise to interphase configurations that differ from the EGIM-generated training data.
 
-\paragraph{Loss function and training.}
-The network minimises the mean squared error between predicted and true interface parameters:
-%
-\begin{equation}
-    \mathcal{L}(\bs{W}) = \frac{1}{N_{\text{train}}} \sum_{i=1}^{N_{\text{train}}} \|\hat{\bs{\theta}}_i - \bs{\theta}_i\|^2
-\end{equation}
-%
-All inputs and outputs are normalised to zero mean and unit variance. We train with Adam ($\eta = 10^{-3}$), batch size~64, for up to 500~epochs with early stopping (patience~50). The data is split 70/15/15 for training, validation, and testing.
+\paragraph{Adaptive loss weighting.}
+The loss weights $w_{\text{data}}$ and $w_{\text{phys}}$ are adapted during training using a scheme inspired by ReLoBRaLo~\cite{Bischof2021}. At each epoch, the relative convergence rates of the two loss terms are compared, and the weights are adjusted to prevent either term from dominating. The physics weight is capped at~150 and the data weight at~5. This keeps the physics loss from overwhelming early training when the parameter predictions are still inaccurate.
 
-\paragraph{Database generation.}
-The training data is generated by sampling the parameter space with Latin hypercube sampling ($N = 50{,}000$ points). Material properties are sampled with stiffness ratios $\kappa^{(1)}/\kappa^{(2)} \in [0.1, 10]$, $\mu^{(1)}/\mu^{(2)} \in [0.1, 10]$, and Poisson's ratios $\nu \in [0.1, 0.45]$. Interface parameters are sampled in dimensionless form: $\bar{k} r_1 / \mu^{(2)} \in [10^{-2}, 10^3]$, $\bar{\mu} / (r_1 \mu^{(2)}) \in [10^{-3}, 10^2]$, $\bar{\lambda} / (r_1 \lambda^{(2)}) \in [10^{-3}, 10^2]$, and $\bar{\alpha} \in [0, 1]$.
+\paragraph{Training procedure.}
+We train with AdamW ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing over 500~epochs, batch size~256, and gradient clipping at norm~1.0. Inputs are normalised to zero mean and unit variance. The best validation loss is reached at epoch~322.
 
-With the BVPs and neural network architectures in place, Chapter~\ref{ch:results} now validates both pathways: the forward surrogate against the interphase model, and the inverse PINN against known interface parameter configurations.
+With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the EI gap analysis that reveals the structural limitation of the interface model, and the inverse PINN performance for CCA and CSA composites.
 
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
@@ -2261,7 +2264,7 @@ With the BVPs and neural network architectures in place, Chapter~\ref{ch:results
 \chapter{Results and Discussion}
 \label{ch:results}
 
-This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). We then evaluate forward surrogate neural networks for both CCA and CSA geometries (Section~\ref{sec:surrogate_results}). Section~\ref{sec:ei_gap} quantifies the representational limits of the Extended Interface model---this constitutes the central finding of this thesis. Section~\ref{sec:pinn_results} presents the inverse PINN results for the CSA geometry, and Section~\ref{sec:results_discussion} synthesizes all findings.
+This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). Section~\ref{sec:surrogate_results} evaluates forward surrogate neural networks as an auxiliary tool for both geometries. Section~\ref{sec:ei_gap} quantifies the representational limits of the Extended Interface model---this constitutes the central finding of this thesis. Section~\ref{sec:pinn_results} presents the inverse PINN results for both CSA and CCA geometries, and Section~\ref{sec:results_discussion} synthesises all findings.
 
 % ===================================================================
 \section{Verification of the 3-Layer Interphase Model}
@@ -2353,12 +2356,14 @@ Both limiting cases are reproduced to machine precision, which confirms the corr
 
 For the reference geometry with $\phi_1 = 0.2$, $\phi_2 = 0.3$, $\phi_3 = 0.4$, the sub-phase volume fractions within the composite cylinder are $c_{\text{fibre}} = 0.024$, $c_{\text{coat\,1}} = 0.096$, $c_{\text{coat\,2}} = 0.280$, and $c_{\text{coat\,3}} = 0.600$. Their sum equals~$1.0$ to an absolute error below~$10^{-15}$, confirming the recursive volume fraction formulas from Section~\ref{subsec:volume_fractions}.
 
+% TODO: Remove this section (Forward Surrogates) in next revision.
+% Chapter 4 will be restructured to: 4.1 Verification, 4.2 EI Gap, 4.3 Inverse PINNs (CCA+CSA), 4.4 Discussion
 % ===================================================================
 \section{Forward Surrogate Neural Networks}
 \label{sec:surrogate_results}
 % ===================================================================
 
-The 3-layer interphase model developed in Chapter~\ref{ch:methodology} requires solving four boundary value problems per configuration, each involving an $8 \times 8$ linear system. While this is computationally inexpensive for a single evaluation, parametric studies spanning thousands of material combinations become time-consuming. We therefore train forward surrogate neural networks that map material and geometric parameters directly to effective composite properties, bypassing the BVP solutions altogether. The network architecture is described in Section~\ref{subsec:forward_surrogate}: four hidden layers $[512, 512, 512, 256]$ with GELU activations, skip connections, and log-space output transform. This section presents the training data, validation, and results for both the CCA and CSA geometries.
+The 3-layer interphase model developed in Chapter~\ref{ch:methodology} requires solving four boundary value problems per configuration, each involving an $8 \times 8$ linear system. While this is computationally inexpensive for a single evaluation, parametric studies spanning thousands of material combinations become time-consuming. We therefore train forward surrogate neural networks that map material and geometric parameters directly to effective composite properties, bypassing the BVP solutions altogether. The network uses four hidden layers $[512, 512, 512, 256]$ with GELU activations, skip connections, and log-space output transform. This section presents the training data, validation, and results for both the CCA and CSA geometries.
 
 % -------------------------------------------------------------------
 \subsection{CCA Surrogate: Fibre-Reinforced Composites}
@@ -2609,30 +2614,12 @@ The gap analysis of Section~\ref{sec:ei_gap} showed that the Extended Interface 
 \label{subsec:csa_pinn}
 % -------------------------------------------------------------------
 
-The inverse problem takes the form: given the effective properties $K_{\text{eff}}$ and $G_{\text{eff}}$ of a multi-coated spherical composite, along with the constituent material properties ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), the volume fraction~$f$, and the inclusion radius~$R$, predict the four Extended Interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. The formulation follows Section~\ref{subsec:nn_formulation}, with the key difference that the input consists of effective properties rather than concentration tensors.
+The inverse problem takes the form: given the effective properties $K_{\text{eff}}$ and $G_{\text{eff}}$ of a multi-coated spherical composite, along with the constituent material properties ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), the volume fraction~$f$, and the inclusion radius~$R$, predict the four Extended Interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. The network architecture and training strategy follow Sections~\ref{subsec:inverse_network} and~\ref{subsec:inverse_pinn}.
 
-\paragraph{Architecture.}
-The network uses three fully-connected hidden layers of width~$256$ with hyperbolic tangent activations, giving a total of approximately~$200\,000$ parameters. The output layer enforces physical constraints through activation functions: $\bar{k}$ is mapped to $[1, 5000]$ via a scaled sigmoid, $\bar{\lambda}$ and $\bar{\mu}$ are constrained to $[0, 5]$, and $\bar{\alpha}$ to $[0, 1]$. Xavier uniform initialisation is used throughout.
+\paragraph{Training.}
+The network architecture follows Section~\ref{subsec:inverse_network}, and the training data, loss function, and adaptive weighting follow Section~\ref{subsec:inverse_pinn}. The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_loss}) is trained with AdamW and cosine annealing over 500~epochs. The best validation loss is reached at epoch~323.
 
-\paragraph{Training data and loss function.}
-The training set consists of three data sources: $50\,000$~baseline samples from Latin Hypercube Sampling, $5\,000$~edge samples concentrated near the parameter space boundaries, and $500$~samples generated directly from the 3-layer CSA model. For the baseline and edge samples, the training targets are the interface parameters used to generate the forward properties. For the 3-layer samples, the targets are the best-fit interface parameters obtained via optimisation, providing the network with examples of the actual interphase-to-interface mapping.
-
-The loss function combines a data term and a physics term:
-\begin{equation}
-\label{eq:pinn_loss}
-    \mathcal{L} = w_{\text{data}} \, \mathcal{L}_{\text{data}} + w_{\text{phys}} \, \mathcal{L}_{\text{phys}}
-\end{equation}
-where $\mathcal{L}_{\text{data}}$ is the mean squared error between predicted and target parameters (normalised), and $\mathcal{L}_{\text{phys}}$ evaluates the forward model with the predicted parameters and penalises the discrepancy against the input effective properties:
-\begin{equation}
-\label{eq:pinn_physics_loss}
-    \mathcal{L}_{\text{phys}} = \frac{1}{N}\sum_{i=1}^{N} \left[ 1.5 \left(\frac{K_{\text{eff},i}^{\text{pred}} - K_{\text{eff},i}^{\text{input}}}{K_{\text{eff},i}^{\text{input}}}\right)^{2} + \left(\frac{G_{\text{eff},i}^{\text{pred}} - G_{\text{eff},i}^{\text{input}}}{G_{\text{eff},i}^{\text{input}}}\right)^{2} \right]
-\end{equation}
-The loss weights $w_{\text{data}}$ and $w_{\text{phys}}$ are adapted during training using a ReLoBRaLo-inspired scheme that balances convergence rates, with the physics weight capped at~$150$ and the data weight at~$5$. This adaptive weighting prevents the physics loss from dominating early in training when the parameter predictions are still inaccurate.
-
-\paragraph{Training procedure.}
-The network is trained with AdamW (learning rate $10^{-3}$, weight decay $10^{-4}$), cosine annealing over~$500$ epochs, batch size~$256$, and gradient clipping at norm~$1.0$. The best validation loss is reached at epoch~$323$.
-
-A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This demonstrates the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
+A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
 
 \paragraph{Validation.}
 Table~\ref{tab:pinn_validation} summarises the validation results across the same 28-configuration test suite.
@@ -2660,15 +2647,35 @@ The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77
 % TODO: Figure - Training loss decomposition (data vs physics loss)
 
 % -------------------------------------------------------------------
-\subsection{Implications for the CCA Geometry}
+\subsection{CCA Inverse PINN Results}
 \label{subsec:cca_pinn_implications}
 % -------------------------------------------------------------------
 
-We did not pursue an inverse PINN for the CCA geometry. The gap analysis of Section~\ref{sec:ei_gap} established that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus~$G_{\text{tr}}$ of the 3-layer interphase model. The mean $G_{\text{tr}}$ error exceeds~$17\,\%$ even after global optimisation of all interface parameters, and the optimiser saturates at the parameter bounds without closing the gap.
+To verify the findings of the gap analysis independently, we also train the inverse network from Section~\ref{subsec:inverse_network} on the CCA geometry. The CCA variant takes 8~inputs ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ plus material properties and volume fraction) and produces four EGIM parameters. We train on $200\,000$~samples for 500~epochs using the same loss function and adaptive weighting scheme as the CSA case, with the training data generated from the CCA Extended Interface forward model.
 
-Under these conditions, recovering interface parameters via an inverse PINN would be meaningless: the recovered parameters would minimise the forward model error, but the forward model itself is structurally incapable of representing the target. The best-fit parameters would have no physical interpretation, and the reconstructed effective properties would inherit the~$17\,\%$ $G_{\text{tr}}$ error regardless of how accurately the PINN predicts the parameters.
+\paragraph{Validation.}
+Table~\ref{tab:cca_pinn_validation} summarises the per-property reconstruction errors across the 28-configuration test suite.
 
-This observation led us to adopt the forward surrogate strategy of Section~\ref{subsec:cca_surrogate} for the CCA geometry. Rather than attempting to map through an inadequate interface model, the surrogate learns the direct mapping from material and geometric parameters to effective properties, bypassing the interface representation entirely. The $100\,\%$ pass rate of the CCA surrogate (Table~\ref{tab:cca_surrogate_validation}) confirms that this direct approach is both feasible and accurate.
+\begin{table}[htbp]
+\centering
+\caption{CCA inverse PINN: mean and maximum reconstruction errors~($\%$) against 3-layer interphase targets. No configuration passes the~$5\,\%$ threshold on all three properties simultaneously.}
+\label{tab:cca_pinn_validation}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{$K_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{ax}}$ Error} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & Mean & Max & Mean & Max & Mean & Max \\
+\midrule
+All 28 configs & 4.6 & 12.9 & 29.5 & 40.3 & 13.3 & 39.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The overall pass rate is~$0/28$. The transverse shear modulus shows the largest errors, with a mean~$G_{\text{tr}}$ discrepancy of~$29.5\,\%$---even higher than the~$18.2\,\%$ achieved by the per-configuration differential evolution in Section~\ref{subsec:ei_isotropic}. This is expected: the optimisation fits each configuration independently, while the neural network must generalise across all configurations with a single set of weights. The $K_{\text{tr}}$ reconstruction is reasonable at low volume fractions (below~$2\,\%$ for $f \le 0.25$), but the $G_{\text{tr}}$ error remains above~$15\,\%$ everywhere.
+
+These results confirm the gap analysis from a different angle. The optimisation-based approach (Section~\ref{sec:ei_gap}) showed that no EGIM parameters can reproduce the 3-layer $G_{\text{tr}}$; the inverse PINN shows that even a flexible nonlinear approximator cannot find parameters that close this gap. Together, these two lines of evidence establish that the transverse shear limitation is a structural property of the Extended Interface model for cylindrical geometry, not an artefact of any particular optimisation or training procedure.
 
 % ===================================================================
 \section{Discussion}
