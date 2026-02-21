@@ -1903,7 +1903,7 @@ Chapter~\ref{ch:theory} established the theoretical models---the three-layered i
 \end{figure}
 
 % ===================================================================
-\section{Multi-Layered Interphase Model}
+\section{Three-Layered Interphase Model}
 \label{sec:multicoated_forward}
 % ===================================================================
 
@@ -1914,7 +1914,7 @@ The three-layered interphase model introduced in Section~\ref{sec:interphase_mod
 \label{subsec:interphase_problem_setup}
 % -------------------------------------------------------------------
 
-We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into $N$ coating layers between them. For \textbf{cylindrical fibres} (CCA), the core has radius $r_1$ and properties $(\lambda^{(1)}, \mu^{(1)})$. Coating layer $m$ occupies the annulus $r_m < r < r_{m+1}$ with properties $(\lambda^{(m)}, \mu^{(m)})$, and the matrix has properties $(\lambda^{(0)}, \mu^{(0)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by $N$ concentric shells.
+We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into 3 coating layers between them. For \textbf{cylindrical fibres} (CCA), the core/fiber/inclusion has radius $r_1$ and properties $(\kappa^{(1)}, \lambda^{(1)}, \mu^{(1)})$. Coating layer $m$ where m = 1,2,3 occupies the annulus $r_m < r < r_{m+1}$ with properties $(\lambda^{(m)}, \mu^{(m)})$, and the matrix has properties $(\lambda^{(0)}, \mu^{(0)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by 3 concentric shells.
 
 A uniform far-field strain $\bs{\varepsilon}^{(0)}$ is applied at infinity. In each phase, we write the displacement and stress fields as functions of unknown amplitude coefficients. Continuity of displacement and traction at every internal boundary yields a linear system whose solution gives these amplitudes. Volume averaging over each phase then produces the concentration tensor components. The volume fractions and equivalent tensor formulas from Section~\ref{subsec:average_fields} apply directly.
 
@@ -1936,7 +1936,7 @@ For far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in cylindrical coo
 %
 where for the core (fiber), $X_2 = 0$ to ensure bounded displacement at $r = 0$.
 
-The radial stress in each phase is:
+The radial stress in each phase q is:
 %
 \begin{equation}
     \sigma_{rr}^{(q)} = 2\beta\left[(\lambda^{(q)} + \mu^{(q)}) X_{2q-1} - \mu^{(q)} \frac{X_{2q}}{r^2}\right]
@@ -1948,7 +1948,7 @@ The boundary conditions are:
     \item Finite displacement at origin: $X_2 = 0$
     \item Continuity of displacement at each interface $r = r_m$
     \item Continuity of traction at each interface $r = r_m$
-    \item Far-field condition: $u_r^{(0)}(r \to \infty) = \beta r$ implies $X_1^{(0)} = 1$
+    \item Prescribed displacement: $u_r^{(4)}(r \to \infty) = \beta r$ implies $X_7 = 1$
 \end{enumerate}
 
 The average strain over phase $q$ (with inner radius $r_a$ and outer radius $r_b$) yields:
@@ -1961,8 +1961,9 @@ The average strain over phase $q$ (with inner radius $r_a$ and outer radius $r_b
 The concentration tensor components are:
 %
 \begin{align}
-    T_{\kappa}^{(q)} &= X_{2q-1} \label{eq:Tkappa_fiber} \\[6pt]
-    H_{\kappa}^{(q)} &= 2\kappa^{(q)} X_{2q-1} \label{eq:Hkappa_fiber}
+    T_{\kappa}^{(q)} &= X_{2q-1}/2 \label{eq:Tkappa_fiber} \\[6pt]
+    H_{\kappa}^{(q)} &= \kappa^{(q)} X_{2q-1} \label{eq:Hkappa_fiber} \\[6pt]
+    H_{31}^{(q)} &= (\kappa^{(q)}-\mu^{(q)}) X_{2q-1} \label{eq:H31_fiber}
 \end{align}
 %
 where $\kappa^{(q)} = \lambda^{(q)} + \mu^{(q)}$ is the plane-strain bulk modulus.
@@ -1979,11 +1980,11 @@ For far-field displacement $\bs{u}^{(0)} = [\beta r \sin 2\theta, \, \beta r \co
 where the radial functions are:
 %
 \begin{align}
-    U_r^{(q)}(r) &= \frac{\kappa^{(q)} - \mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} \left(\frac{r}{r_1}\right)^2 \Xi_1^{(q)} + \Xi_2^{(q)} - \frac{1}{(r/r_1)^4} \Xi_3^{(q)} + \frac{\kappa^{(q)} + \mu^{(q)}}{\mu^{(q)}} \frac{1}{(r/r_1)^2} \Xi_4^{(q)} \label{eq:Ur_transverse}\\[6pt]
-    U_\theta^{(q)}(r) &= \left(\frac{r}{r_1}\right)^2 \Xi_1^{(q)} + \Xi_2^{(q)} + \frac{1}{(r/r_1)^4} \Xi_3^{(q)} + \frac{1}{(r/r_1)^2} \Xi_4^{(q)} \label{eq:Utheta_transverse}
+    U_r^{(q)}(r) &= \frac{\kappa^{(q)} - \mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + X_{4(q-1)+3} - r^4 X_{4(q-1)+1} + \frac{\kappa^{(q)} + \mu^{(q)}}{\mu^{(q)}} r^2 X_{4(q-1)+2}\label{eq:Ur_transverse}\\[6pt]
+    U_\theta^{(q)}(r) &= r^2 X_{4(q-1)+4} + X_{4(q-1)+3} + \frac{1}{r^4} X_{4(q-1)+1}+ \frac{1}{r^2} X_{4(q-1)+2} \label{eq:Utheta_transverse}
 \end{align}
 
-For the core, $\Xi_3^{(1)} = \Xi_4^{(1)} = 0$ to ensure bounded fields. The stress components are:
+For the core, $X_{4(q-1)+1} = X_{4(q-1)+2} = 0$ to ensure bounded fields. The stress components are:
 %
 \begin{align}
     \sigma_{rr}^{(q)}(r, \theta) &= \beta \Sigma_{rr}^{(q)}(r) \sin 2\theta \\
@@ -1993,15 +1994,15 @@ For the core, $\Xi_3^{(1)} = \Xi_4^{(1)} = 0$ to ensure bounded fields. The stre
 with:
 %
 \begin{align}
-    \Sigma_{rr}^{(q)}(r) &= 2\mu^{(q)} \Xi_2^{(q)} + 6\mu^{(q)} \frac{\Xi_3^{(q)}}{(r/r_1)^4} - 4\kappa^{(q)} \frac{\Xi_4^{(q)}}{(r/r_1)^2} \\[6pt]
-    \Sigma_{r\theta}^{(q)}(r) &= \frac{6\kappa^{(q)}\mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} \left(\frac{r}{r_1}\right)^2 \Xi_1^{(q)} + 2\mu^{(q)} \Xi_2^{(q)} - 6\mu^{(q)} \frac{\Xi_3^{(q)}}{(r/r_1)^4} + 2\kappa^{(q)} \frac{\Xi_4^{(q)}}{(r/r_1)^2}
+    \Sigma_{rr}^{(q)}(r) &= 2\mu^{(q)}X_{4(q-1)+3} + 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} - 4\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2} \\[6pt]
+    \Sigma_{r\theta}^{(q)}(r) &= \frac{6\kappa^{(q)}\mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + 2\mu^{(q)} X_{4(q-1)+3} - 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} + 2\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2}
 \end{align}
 
 The volume-averaged strain in phase $q$ (over the annulus $r_a < r < r_b$) gives the transverse shear concentration:
 %
-\begin{empheq}[box=\fbox]{equation}
-    T_{44}^{(q)} = \frac{1}{2(r_b^2 - r_a^2)} \int_{r_a}^{r_b} \left[U_r^{(q)}(r) + U_\theta^{(q)}(r)\right] r \, dr
-    \label{eq:T44_fiber}
+\begin{empheq}[box=\fbox]{align}
+    T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4\beta_0 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\
+    H_{44}^{(q)} &= \mu^{(q)} T_{44}^{(q)}
 \end{empheq}
 
 \subsubsection{BVP 3: Axial Shear Response}
@@ -2009,29 +2010,29 @@ The volume-averaged strain in phase $q$ (over the annulus $r_a < r < r_b$) gives
 For far-field displacement $\bs{u}^{(0)} = [0, 0, \beta r \cos\theta]^T$, the displacement field is:
 %
 \begin{equation}
-    u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(\Xi_1^{(q)} + \Xi_2^{(q)} \frac{1}{(r/r_1)^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
+    u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(X_{2q-1} + X_{2q} \frac{1}{(r/r_1)^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
     \label{eq:uz_axial}
 \end{equation}
 
-For the core, $\Xi_2^{(1)} = 0$ to ensure bounded displacement. The concentration tensor components are:
+For the core, $X_{2q} = 0$ to ensure bounded displacement. The concentration tensor components are:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{55}^{(q)} &= \Xi_1^{(q)} \label{eq:T55_fiber}\\[6pt]
-    H_{55}^{(q)} &= \mu^{(q)} \Xi_1^{(q)} \label{eq:H55_fiber}
+    T_{55}^{(q)} &= \frac{X_{2q-1}}{2 \cos \theta} \label{eq:T55_fiber}\\[6pt]
+    H_{55}^{(q)} &= \frac{\mu^{(q)} X_{2q-1}}{2 \cos \theta} \label{eq:H55_fiber}
 \end{empheq}
 
 \subsubsection{BVP 4: Overall Axisymmetric Response}
 
-The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, $T_{33}^{(q)}$, and $H_{33}^{(q)}$ that characterise the axial response. We apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
+The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, and $H_{33}^{(q)}$ that characterise the axial response. We apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
 %
 \begin{equation}
     \bs{u}^{(0)}(r, \theta, z) =
     \begin{bmatrix}
-        0 \\ 0 \\ z
+        \beta r \\ 0 \\ \beta z
     \end{bmatrix}, \quad
     \bs{\varepsilon}^{(0)} =
     \begin{bmatrix}
-        0 & 0 & 1 & 0 & 0 & 0
+        \beta & 0 & \beta & 0 & 0 & 0
     \end{bmatrix}^T
     \label{eq:bvp4_farfield}
 \end{equation}
@@ -2039,27 +2040,26 @@ The first three BVPs determine the in-plane concentration tensor components. To 
 In each phase, the radial displacement takes the same form as BVP~1 (in-plane bulk), since the axial strain couples to the radial direction through the Poisson effect:
 %
 \begin{equation}
-    u_r^{(q)} = X_{2q-1} \, r + \frac{X_{2q}}{r}, \quad u_z = z
+    u_r^{(q)} = \beta r (X_{2q-1} \,  + \frac{X_{2q}}{r^2}), \quad u_z = \beta z
     \label{eq:bvp4_displacement}
 \end{equation}
 %
-where $u_z = z$ holds in all phases due to continuity of axial displacement. The linear system for $X_{2q-1}$ and $X_{2q}$ uses the \textit{same} coefficient matrix as BVP~1, but with a different right-hand side arising from the Lam\'{e} parameter mismatch between adjacent phases:
+where $u_z = \beta z$ holds in all phases due to continuity of axial displacement. The linear system for $X_{2q-1}$ and $X_{2q}$ uses the \textit{same} coefficient matrix as BVP~1, but with a different right-hand side arising from the Lam\'{e} parameter mismatch between adjacent phases:
 %
 \begin{equation}
     \bs{A} \, \bs{X} = \bs{b}, \quad \text{with} \quad b_{2m+1} = \lambda^{(m+1)} - \lambda^{(m)}, \quad b_{2(N+1)} = 1
     \label{eq:bvp4_rhs}
 \end{equation}
 %
-where $m = 1, 2, \ldots, N$ index the coating interfaces. Let $\Xi_{\text{oa}}^{(q)} = X_{2q-1}$ denote the amplitude from this BVP, and $\Xi_{\text{ip}}^{(q)}$ the amplitude from BVP~1. The off-diagonal concentration tensor components are then:
+where $m = 1, 2, \ldots, N$ index the coating interfaces. Then the off-diagonal concentration tensor components are :
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{13}^{(q)} &= \Xi_{\text{oa}}^{(q)} - \Xi_{\text{ip}}^{(q)} \label{eq:T13_fiber}\\[6pt]
-    H_{31}^{(q)} &= \lambda^{(q)} \, \Xi_{\text{ip}}^{(q)} \label{eq:H31_fiber}\\[6pt]
-    H_{13}^{(q)} &= 2\kappa^{(q)} \, \Xi_{\text{oa}}^{(q)} + \lambda^{(q)} - 2 H_{11}^{(q)} + 2 H_{44}^{(q)} \label{eq:H13_fiber}\\[6pt]
-    H_{33}^{(q)} &= 2\lambda^{(q)} \, \Xi_{\text{oa}}^{(q)} + \left(\kappa^{(q)} + \mu^{(q)}\right) - 2 H_{31}^{(q)} \label{eq:H33_fiber}
+    T_{13}^{(q)} &=  X_{2q-1} - 2 T_{\kappa}\beta  \label{eq:T13_fiber}\\[6pt]
+    H_{13}^{(q)} &= 2\kappa^{(q)} \, X_{2q-1} + \lambda^{(q)} - 2 H_{\kappa}^{(q)}\label{eq:H13_fiber}\\[6pt]
+    H_{33}^{(q)} &= 2\lambda^{(q)} \, X_{2q-1} + \left(\kappa^{(q)} + \mu^{(q)}\right) - 2 H_{31}^{(q)} \label{eq:H33_fiber}
 \end{empheq}
 %
-where $H_{11}^{(q)}$ and $H_{44}^{(q)}$ come from BVPs~1 and~2, and $T_{33}^{(q)}$ follows from the identity $\mathbb{H}^{(q)} = \mathbb{L}^{(q)} : \mathbb{T}^{(q)}$. These formulas have been verified against~\eqref{eq:H_T_relation} to machine precision (Section~\ref{subsec:hct_check}).
+where $T_{\kappa}^{(q)}$, $H_{31}$ and $H_{\kappa}^{(q)}$ come from BVPs~1.
 
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
