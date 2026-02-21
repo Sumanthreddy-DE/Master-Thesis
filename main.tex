@@ -2305,7 +2305,14 @@ For CSA composites, the input reduces to 7~features (two isotropic target moduli
 \paragraph{Architecture.}
 The network has three fully-connected hidden layers with 256~neurons each and tanh activations. Xavier normal initialisation is applied to all weight matrices. Physical constraints are enforced on the outputs through activation functions: softplus for $\bar{\lambda}$ and $\bar{\mu}$ (ensuring non-negativity), an exponential mapping clamped to $[-2, 8.5]$ for $\bar{k}$ (covering the range $[1, 5000]$), and a sigmoid for $\bar{\alpha} \in [0, 1]$. The total parameter count is approximately $135\,000$.
 
-Several considerations guided these choices. We select tanh over ReLU because the output parameters are bounded and continuous; tanh is smooth everywhere and zero-centred, which helps gradient flow, whereas ReLU produces zero gradients for negative inputs and can leave neurons permanently inactive (Section~\ref{sec:nn_background}). Three hidden layers of 256~neurons provide sufficient capacity for the $8 \to 4$ mapping without overfitting on $200\,000$~training samples---wider and deeper variants tested during preliminary experiments did not improve validation loss. The output constraints encode physical knowledge directly into the network: elastic moduli $\bar{\lambda}$ and $\bar{\mu}$ cannot be negative, the normal stiffness $\bar{k}$ spans several orders of magnitude (making an exponential mapping natural), and $\bar{\alpha}$ is a weighting parameter restricted to $[0, 1]$ by definition. Xavier initialisation matches the tanh activation by scaling the initial weights to the layer width, which prevents the vanishing-gradient problem at the start of training.
+Several considerations guided these choices. We select tanh over ReLU because the output parameters are bounded and continuous; tanh is smooth everywhere and zero-centred, which helps gradient flow, whereas ReLU produces zero gradients for negative inputs and can leave neurons permanently inactive (Section~\ref{sec:nn_background}). Three hidden layers of 256~neurons provide sufficient capacity for the $8 \to 4$ mapping without overfitting on $200\,000$~training samples---wider and deeper variants tested during preliminary experiments did not improve validation loss. The output constraints encode physical knowledge directly into the network: elastic moduli $\bar{\lambda}$ and $\bar{\mu}$ cannot be negative, the normal stiffness $\bar{k}$ spans several orders of magnitude (making an exponential mapping natural), and $\bar{\alpha}$ is a weighting parameter restricted to $[0, 1]$ by definition. Xavier initialisation matches the tanh activation by scaling the initial weights to the layer width, which prevents the vanishing-gradient problem at the start of training. Figure~\ref{fig:nn_architecture} illustrates the complete architecture.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{nn_architecture.pdf}
+\caption{Architecture of the inverse PINN shared between CCA and CSA geometries. Eight inputs (effective properties, material moduli, volume fraction) pass through three hidden layers of 256~neurons with tanh activation. Output constraints enforce physical bounds: softplus for surface moduli, an exponential mapping for normal stiffness, and sigmoid for the position parameter.}
+\label{fig:nn_architecture}
+\end{figure}
 
 \paragraph{Training data generation.}
 We generate $200\,000$~samples by sampling the EGIM parameter space with importance sampling. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
@@ -2633,6 +2640,20 @@ In every case, the optimiser drives the orthogonal stiffness $\bar{k}$ to its up
 \label{fig:optimizer_saturation}
 \end{figure}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{cca_properties_vs_f.pdf}
+\caption{CCA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 1.0$, comparing the 3-layer interphase model (solid blue), best-fit Extended Interface via optimisation (dashed red), and inverse PINN (green markers). The $G_{\text{tr}}$ panel (centre) shows the characteristic gap: neither the optimisation-based EI fit nor the PINN can track the 3-layer target as~$f$ increases.}
+\label{fig:cca_vs_f}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{cca_properties_vs_sr.pdf}
+\caption{CCA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The transverse shear gap between the 3-layer model and both EI-based predictions widens with increasing stiffness contrast.}
+\label{fig:cca_vs_sr}
+\end{figure}
+
 % ===================================================================
 \section{Inverse Parameter Identification via PINN}
 \label{sec:pinn_results}
@@ -2673,7 +2694,7 @@ Interpolation weights ($w$) & 4/4 & 1.85\,(2.76) & 1.83\,(2.95) \\
 \end{tabular}
 \end{table}
 
-The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77\,\%$ for $K_{\text{eff}}$ and~$1.87\,\%$ for $G_{\text{eff}}$, as the parity plot in Figure~\ref{fig:csa_pinn_parity} confirms visually. The worst-case errors ($4.87\,\%$ and~$4.94\,\%$) remain below the $5\,\%$ threshold even for the stiffness ratio category, which spans two orders of magnitude in inclusion stiffness. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a form of self-consistency that purely data-driven approaches lack. Figure~\ref{fig:csa_pinn_loss} shows the training dynamics: both the physics and data losses converge smoothly, and the property errors drop well below the acceptance threshold by epoch~323.
+The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77\,\%$ for $K_{\text{eff}}$ and~$1.87\,\%$ for $G_{\text{eff}}$, as the parity plot in Figure~\ref{fig:csa_pinn_parity} confirms visually. The worst-case errors ($4.87\,\%$ and~$4.94\,\%$) remain below the $5\,\%$ threshold even for the stiffness ratio category, which spans two orders of magnitude in inclusion stiffness. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a form of self-consistency that purely data-driven approaches lack. Figure~\ref{fig:csa_pinn_errors} shows the per-configuration reconstruction errors: the stiffness ratio category (SR) produces the largest deviations, particularly for $G_{\text{eff}}$ at high stiffness contrasts.
 
 \begin{figure}[htbp]
 \centering
@@ -2684,9 +2705,9 @@ The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{csa_pinn_loss.pdf}
-\caption{Training loss decomposition and property error convergence for the CSA inverse PINN. Left: total, validation, physics, and data losses over 500~epochs (best model at epoch~323). Right: mean reconstruction errors for~$K_{\text{eff}}$ and~$G_{\text{eff}}$ converge well below the~$5\,\%$ threshold.}
-\label{fig:csa_pinn_loss}
+\includegraphics[width=0.95\textwidth]{csa_pinn_errors.pdf}
+\caption{Per-configuration reconstruction errors for the CSA inverse PINN across the~28-configuration test suite. Blue bars show~$K_{\text{eff}}$ errors and red bars show~$G_{\text{eff}}$ errors. Mean errors are~$10.8\,\%$ for $K_{\text{eff}}$ and~$24.4\,\%$ for $G_{\text{eff}}$; the $5\,\%$ threshold (dashed) is met jointly in~3 of~28 configurations.}
+\label{fig:csa_pinn_errors}
 \end{figure}
 
 % -------------------------------------------------------------------
@@ -2716,7 +2737,7 @@ All 28 configs & 4.6 & 12.9 & 29.5 & 40.3 & 13.3 & 39.8 \\
 \end{tabular}
 \end{table}
 
-The overall pass rate is~$0/28$. Figure~\ref{fig:cca_pinn_parity} shows the parity plot: while $K_{\text{tr}}$ predictions lie reasonably close to the diagonal at low volume fractions, the $G_{\text{tr}}$ points scatter well below it. The mean~$G_{\text{tr}}$ discrepancy of~$29.5\,\%$ is even higher than the~$18.2\,\%$ achieved by the per-configuration differential evolution in Section~\ref{subsec:ei_isotropic}. This is expected: the optimisation fits each configuration independently, while the neural network must generalise across all configurations with a single set of weights. The training loss curves (Figure~\ref{fig:cca_pinn_loss}) show that the validation loss remains elevated throughout, reflecting the structural limitation rather than overfitting.
+The overall pass rate is~$0/28$. Figure~\ref{fig:cca_pinn_parity} shows the parity plot: while $K_{\text{tr}}$ predictions lie reasonably close to the diagonal at low volume fractions, the $G_{\text{tr}}$ points scatter well below it. The mean~$G_{\text{tr}}$ discrepancy of~$29.5\,\%$ is even higher than the~$18.2\,\%$ achieved by the per-configuration differential evolution in Section~\ref{subsec:ei_isotropic}. This is expected: the optimisation fits each configuration independently, while the neural network must generalise across all configurations with a single set of weights. Figure~\ref{fig:cca_pinn_errors} shows the per-configuration errors: the $G_{\text{tr}}$ bars (red) dominate across every category, mirroring the pattern observed in the optimisation-based gap analysis of Figure~\ref{fig:ei_gap_bars}.
 
 These results confirm the gap analysis from a different angle. The optimisation-based approach (Section~\ref{sec:ei_gap}) showed that no EGIM parameters can reproduce the 3-layer $G_{\text{tr}}$; the inverse PINN shows that even a flexible nonlinear approximator cannot find parameters that close this gap. Together, these two lines of evidence establish that the transverse shear limitation is a structural property of the Extended Interface model for cylindrical geometry, not an artefact of any particular optimisation or training procedure.
 
@@ -2729,9 +2750,9 @@ These results confirm the gap analysis from a different angle. The optimisation-
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{cca_pinn_loss.pdf}
-\caption{Training loss decomposition for the CCA inverse PINN over 500~epochs. The validation loss remains substantially higher than the training loss throughout, reflecting the structural limitation of the underlying Extended Interface model rather than overfitting.}
-\label{fig:cca_pinn_loss}
+\includegraphics[width=0.95\textwidth]{cca_pinn_errors.pdf}
+\caption{Per-configuration reconstruction errors for the CCA inverse PINN across the~28-configuration test suite. $K_{\text{tr}}$ errors (blue) remain moderate, but $G_{\text{tr}}$ (red) is systematically elevated with a mean of~$29.4\,\%$, confirming that the Extended Interface limitation propagates directly to the neural network predictions.}
+\label{fig:cca_pinn_errors}
 \end{figure}
 
 % ===================================================================
