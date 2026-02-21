@@ -851,13 +851,8 @@ where $\jump{\cdot}$ denotes the jump across the interface. While convenient, th
 
 \begin{figure}[htbp]
     \centering
-    % Include Figure 1 from InterfaceHomogenization.pdf
-    % \includegraphics[width=0.95\textwidth]{figures/interface_classification.pdf}
-    \fbox{\parbox{0.95\textwidth}{\centering\vspace{1.5cm}
-    \textbf{[Insert Figure 1 from Firooz et al. (2021)]}\\[0.5em]
-    \small Classification showing: Perfect, Cohesive, Elastic, General, and Extended General Interface models based on displacement jump and traction jump conditions
-    \vspace{1.5cm}}}
-    \caption{Classification of interface models based on kinematic (displacement) and kinetic (traction) coherence. The extended general interface model encompasses all classical models while additionally allowing arbitrary interface positioning. Adapted from \cite{Firooz2021}.}
+    \includegraphics[width=0.95\textwidth]{figures/interface_classification.png}
+    \caption{Classification of interface models based on the continuity of displacement and traction fields and the interface position. The extended general interface model encompasses all classical models while additionally allowing arbitrary interface positioning. Adapted from \cite{Firooz2022}.}
     \label{fig:interface_classification}
 \end{figure}
 
@@ -924,15 +919,15 @@ This extended model can recover all classical interface types while additionally
 \section{The Research Gap: Parameter Identification}
 % -------------------------------------------------------------------
 
-The theoretical framework described above provides a coherent path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties.
+The theoretical framework described above provides a coherent path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties \cite{Firooz2021}.
 
 Consider a concrete example: given a CFRP system with a sizing layer of known thickness $h$ and elastic moduli ($\lambda_{\text{sizing}}$, $\mu_{\text{sizing}}$), what interface stiffness $\bar{k}$ produces the same effective composite response? The answer is not obvious, and several complicating factors arise:
 
 \paragraph{Non-uniqueness:} Different combinations of interface parameters can yield identical macroscopic responses. For instance, increasing $\bar{k}$ while simultaneously adjusting $\bar{\alpha}$ may leave the effective bulk modulus unchanged \cite{Firooz2021}.
 
-\paragraph{Coupled Effects:} The interface parameters influence multiple effective properties simultaneously. The stiffness $\bar{k}$ affects both bulk and shear moduli, making independent identification from single loading cases difficult.
+\paragraph{Coupled Effects:} The interface parameters influence multiple effective properties simultaneously. The stiffness $\bar{k}$ affects both bulk and shear moduli, making independent identification from single loading cases difficult \cite{Firooz2019}.
 
-\paragraph{Graded Properties:} Real interphases rarely exhibit uniform properties. Sizing agents create cross-linking density gradients \cite{Wu2019}, diffusion processes generate compositional profiles, and damage accumulation produces spatially varying stiffness. Mapping such complexity onto equivalent interface parameters requires systematic methodology.
+\paragraph{Graded Properties:} Real interphases rarely exhibit uniform properties. Sizing agents create cross-linking density gradients \cite{Wu2019}, diffusion processes generate compositional profiles, and damage accumulation produces spatially varying stiffness \cite{Ciprari2006, Jones1991}. Mapping such complexity onto equivalent interface parameters requires systematic methodology.
 
 
 \subsection{Approaches to Parameter Identification}
@@ -962,10 +957,10 @@ This matching condition leads to an \textit{underdetermined} system: the EGIM ha
 The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation---suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges through two complementary strategies.
 
 \paragraph{Gap Analysis of the Extended Interface Model.}
-A natural question is whether the Extended General Interface Model, with suitably chosen parameters, can reproduce the multi-coated interphase predictions. We investigate this systematically by allowing a global optimiser to find the best-fit interface parameters for each configuration independently---giving the interface model every possible advantage. This analysis reveals whether the discrepancy between the two models is parametric (fixable by better parameter choices) or structural (inherent to the zero-thickness assumption). The results show a mean transverse shear error of approximately~$18\,\%$ for fibre composites, reaching nearly~$40\,\%$ at high stiffness ratios---a gap that persists even when the number of interface parameters is nearly doubled. For particle composites (CSA geometry), however, the simpler BVP structure means that the Extended Interface model remains accurate, and the interface pathway is viable.
+A natural question is whether the Extended General Interface Model, with suitably chosen parameters, can reproduce the multi-coated interphase predictions. We investigate this systematically by allowing a global optimiser to find the best-fit interface parameters for each configuration independently---giving the interface model every possible advantage. This analysis reveals whether the discrepancy between the two models is parametric (fixable by better parameter choices) or structural (inherent to the zero-thickness assumption). As shown in Chapter~\ref{ch:results}, the gap turns out to be structural for fibre composites---persisting even under generous optimisation---while particle composites remain well represented by the interface model.
 
 \paragraph{Inverse Parameter Identification via Physics-Informed Neural Networks.}
-Where the interface model is applicable, we develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries---the CSA case tests the method where the interface model is structurally adequate, while the CCA case provides independent confirmation of the gap analysis.
+Where the interface model is applicable, we develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function~\cite{Raissi2019}, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries---the CSA case tests the method where the interface model is structurally adequate, while the CCA case provides independent confirmation of the gap analysis.
 
 The choice of neural networks over alternative methods---such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002}---is motivated by the problem characteristics. The input space is seven- to eight-dimensional (effective moduli, elastic constants, and volume fraction), the input-output mapping is highly nonlinear, and the material properties span several orders of magnitude. Gaussian processes scale cubically with training set size, making them impractical for the $200\,000$-sample datasets used here \cite{Liu2020}. Polynomial expansions struggle with the strong nonlinearities and high dimensionality of the parameter space. Neural networks handle both challenges naturally through their universal approximation capability and efficient mini-batch training \cite{Hornik1989}.
 
@@ -1869,10 +1864,7 @@ Chapter~\ref{ch:theory} established the theoretical models---the three-layered i
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
-    \textbf{[TODO: Insert Flowchart --- Parameter Identification Pipeline]}\\[0.5em]
-    \small Interphase BVPs $\rightarrow$ Interface BVPs $\rightarrow$ Neural Network Training $\rightarrow$ Parameter Identification
-    \vspace{1.5cm}}}
+    \includegraphics[width=0.85\textwidth]{figures/methodology_flowchart.pdf}
     \caption{Overview of the methodology. The multi-coated interphase model and the interface-enhanced Mori-Tanaka model each produce concentration tensors through their respective BVPs. A neural network then learns the inverse mapping between these representations, recovering interface parameters from target effective properties.}
     \label{fig:methodology_flowchart}
 \end{figure}
