@@ -550,6 +550,50 @@
   year      = {2021}
 }
 
+@article{Raissi2019,
+  author    = {Raissi, Maziar and Perdikaris, Paris and Karniadakis, George Em},
+  title     = {Physics-informed neural networks: {A} deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations},
+  journal   = {Journal of Computational Physics},
+  year      = {2019},
+  volume    = {378},
+  pages     = {686--707},
+  doi       = {10.1016/j.jcp.2018.10.045}
+}
+
+@book{Goodfellow2016,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  year      = {2016}
+}
+
+@article{Cybenko1989,
+  author    = {Cybenko, George},
+  title     = {Approximation by superpositions of a sigmoidal function},
+  journal   = {Mathematics of Control, Signals and Systems},
+  year      = {1989},
+  volume    = {2},
+  number    = {4},
+  pages     = {303--314},
+  doi       = {10.1007/BF02551274}
+}
+
+@inproceedings{Kingma2015,
+  author    = {Kingma, Diederik P. and Ba, Jimmy},
+  title     = {Adam: {A} method for stochastic optimization},
+  booktitle = {Proceedings of the 3rd International Conference on Learning Representations (ICLR)},
+  year      = {2015}
+}
+
+@article{Krishnapriyan2021,
+  author    = {Krishnapriyan, Aditi S. and Gholami, Amir and Zhe, Shandian and Kirby, Robert M. and Mahoney, Michael W.},
+  title     = {Characterizing possible failure modes in physics-informed neural networks},
+  journal   = {Advances in Neural Information Processing Systems},
+  year      = {2021},
+  volume    = {34},
+  pages     = {26548--26560}
+}
+
 \end{filecontents}
 
 \usepackage[backend=biber, style=ieee, dashed=false, doi=true, isbn=false]{biblatex}
@@ -974,7 +1018,7 @@ The primary objective of this thesis is to investigate the relationship between 
 
 This work is structured as follows:
 
-\textbf{Chapter~\ref{ch:theory}} presents the theoretical foundations. It begins with the governing equations of continuum mechanics and homogenization---balance laws, the Hill-Mandel condition, and the Eshelby inclusion problem. The coordinate transformation machinery for cylindrical and spherical geometries is then established. The multi-coated inclusion model for interphase analysis is developed, the concentration tensor structures are derived, and the interface models from perfect to extended general are formulated. The chapter concludes with the interface-enhanced Mori-Tanaka homogenization framework.
+\textbf{Chapter~\ref{ch:theory}} presents the theoretical foundations. It begins with the governing equations of continuum mechanics and homogenization---balance laws, the Hill-Mandel condition, and the Eshelby inclusion problem. The coordinate transformation machinery for cylindrical and spherical geometries is then established. The multi-coated inclusion model for interphase analysis is developed, the concentration tensor structures are derived, and the interface models from perfect to extended general are formulated. The interface-enhanced Mori-Tanaka homogenization framework is developed, and the chapter concludes with an introduction to feedforward neural networks and physics-informed learning.
 
 \textbf{Chapter~\ref{ch:methodology}} develops the methodology. The boundary value problems for the multi-layered interphase model and the interface-enhanced Mori-Tanaka model are derived for fibre-reinforced (CCA) and particle-reinforced (CSA) composites. The neural network architecture for inverse parameter identification is presented, along with training procedures and data generation.
 
@@ -992,7 +1036,7 @@ This work is structured as follows:
 \chapter{Theoretical Foundations}
 \label{ch:theory}
 
-This chapter presents the two theoretical models that form the basis of the present work. We begin with a brief set of preliminaries---the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby frameworks---that both models build upon. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where a graded interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. The boundary value problems that determine the concentration tensor components for both models are derived in Chapter~\ref{ch:methodology}.
+This chapter presents the theoretical foundations of the present work. We begin with a brief set of preliminaries---the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby frameworks---that the subsequent models build upon. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where a graded interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. Section~\ref{sec:nn_background} then introduces the neural network and physics-informed learning concepts needed for the inverse methodology of Chapter~\ref{ch:methodology}.
 
 % ===================================================================
 \section{Preliminaries}
@@ -1783,15 +1827,61 @@ For \textbf{particle-reinforced composites} (3D, CSA):
 \end{align}
 
 % ===================================================================
+\section{Neural Networks and Physics-Informed Neural Networks}
+\label{sec:nn_background}
+% ===================================================================
+
+The parameter identification approach developed in Chapter~\ref{ch:methodology} relies on neural networks trained with physics-based constraints. This section introduces the necessary background: feedforward networks, gradient-based training, and the physics-informed paradigm that combines observed data with known physical laws.
+
+\paragraph{Feedforward Neural Networks.}
+A feedforward neural network maps an input vector~$\bs{x}$ to an output vector~$\bs{y}$ through a sequence of transformations called layers. Each layer applies a linear map followed by a nonlinear activation function~$\sigma$:
+%
+\begin{equation}
+    \bs{y}^{(\ell)} = \sigma\!\left(\bs{W}^{(\ell)} \bs{y}^{(\ell-1)} + \bs{b}^{(\ell)}\right), \quad \ell = 1, \ldots, L
+    \label{eq:nn_layer}
+\end{equation}
+%
+where $\bs{W}^{(\ell)}$ is a weight matrix, $\bs{b}^{(\ell)}$ a bias vector, and $\bs{y}^{(0)} = \bs{x}$. The final output~$\bs{y}^{(L)}$ is the network prediction. Common activation functions include the sigmoid $\sigma(z) = 1/(1+e^{-z})$, the hyperbolic tangent $\tanh(z)$, and the rectified linear unit $\text{ReLU}(z) = \max(0, z)$. Each choice carries different trade-offs: the sigmoid saturates at extreme values, which can slow training; the hyperbolic tangent is zero-centred but shares the saturation problem; and ReLU avoids saturation entirely but produces zero gradients for negative inputs.
+
+The depth (number of layers) and width (neurons per layer) control the model capacity. Cybenko~\cite{Cybenko1989} and Hornik et al.~\cite{Hornik1989} showed that a single hidden layer with enough neurons can approximate any continuous function on a compact domain to arbitrary precision. In practice, however, deeper networks with moderate width tend to learn hierarchical representations more efficiently than very wide shallow ones~\cite{Goodfellow2016}. The specific depth and width are chosen based on the complexity of the mapping to be learned.
+
+\paragraph{Training and Optimisation.}
+Training adjusts the network weights~$\bs{\theta} = \{\bs{W}^{(\ell)}, \bs{b}^{(\ell)}\}_\ell$ to minimise a loss function $\mathcal{L}(\bs{\theta})$ that measures the discrepancy between predictions and targets. Backpropagation computes the gradient $\nabla_{\bs{\theta}} \mathcal{L}$ by applying the chain rule layer by layer, and the weights are updated in the direction of steepest descent. Stochastic gradient descent processes the training data in small batches rather than all at once, which both reduces memory requirements and introduces noise that can help escape shallow local minima.
+
+Modern optimisers build on this basic scheme. Adam~\cite{Kingma2015} maintains per-parameter estimates of the first and second moments of the gradient and adapts the step size accordingly. Its variant AdamW adds decoupled weight decay, which penalises large weights and acts as an implicit regulariser. A learning rate schedule---for example, cosine annealing---reduces the step size over the course of training to allow fine-grained convergence in later epochs.
+
+A persistent risk during training is \textit{overfitting}: the network memorises the training data but generalises poorly to unseen inputs. The standard remedy is to reserve a fraction of the data as a \textit{validation set} that is never used for weight updates. When the validation loss stops decreasing while the training loss continues to fall, the training is stopped and the weights from the best validation epoch are retained. This \textit{early stopping} strategy prevents the network from fitting noise in the training data.
+
+\paragraph{Physics-Informed Neural Networks.}
+Standard neural networks learn entirely from data. When the system under study obeys known physical laws, however, these laws can be embedded directly into the training process. Raissi et al.~\cite{Raissi2019} introduced physics-informed neural networks (PINNs), where the loss function includes a term that penalises violations of the governing equations:
+%
+\begin{equation}
+    \mathcal{L} = \mathcal{L}_{\text{data}}(\bs{\theta}) + w_{\text{phys}}\,\mathcal{L}_{\text{physics}}(\bs{\theta})
+    \label{eq:pinn_loss_general}
+\end{equation}
+%
+Here $\mathcal{L}_{\text{data}}$ measures the fit to available observations, $\mathcal{L}_{\text{physics}}$ measures how well the network outputs satisfy the physical equations, and $w_{\text{phys}}$ controls the relative importance of the two terms. The physics loss acts as a regulariser: it restricts the solution space to physically admissible configurations, reduces the amount of training data needed, and improves generalisation to regions of the input space where data may be sparse.
+
+PINNs can operate in two modes. In the \textit{forward} mode, the network approximates the solution of a partial differential equation given boundary and initial conditions. The physics loss evaluates the PDE residual at selected collocation points and drives it towards zero. In the \textit{inverse} mode, the unknowns are not the solution field but the parameters of the governing equations themselves. Given observed data---for instance, measured effective properties---the network predicts the unknown parameters, and the physics loss checks whether these parameters, when substituted back into the forward model, reproduce the observations. This inverse formulation is well suited to problems where analytical inversion is not possible, which is precisely the situation encountered in the interphase-to-interface parameter identification problem of this thesis.
+
+\paragraph{Challenges in PINN Training.}
+Training a PINN is more difficult than training a standard data-driven network, because the data and physics loss terms often compete during optimisation. Krishnapriyan et al.~\cite{Krishnapriyan2021} demonstrated that PINNs can converge to poor solutions when the physics loss landscape contains sharp gradients or when the target solution has multi-scale features. If the physics weight is too large early in training, the network may get trapped in a local minimum where the physics residual is small but the data fit is poor. If the weight is too small, the physics constraints have little effect.
+
+Adaptive weighting schemes address this difficulty by adjusting $w_{\text{phys}}$ during training. One such approach, ReLoBRaLo~\cite{Bischof2021}, compares the convergence rates of the individual loss terms and redistributes their weights to prevent any single term from dominating. These balancing strategies are important in practice and directly influence the training procedure described in Chapter~\ref{ch:methodology}.
+
+\paragraph{Connection to the Present Work.}
+The inverse PINN developed in this thesis takes the effective properties of a composite with graded interphase as input and predicts four unknown EGIM interface parameters. The physics loss evaluates these predicted parameters through the differentiable EGIM forward model from Section~\ref{sec:interface_model} and penalises discrepancies against the target properties. Unlike PDE-based PINNs, this setup involves no collocation points or PDE residual evaluation; the ``physics'' is the algebraic homogenization model itself, which is exact and fully differentiable. This avoids many of the collocation-related difficulties mentioned above, although the loss-balancing challenge remains. Chapter~\ref{ch:methodology} develops the specific architecture, output constraints, training data generation, and loss function details for both CCA and CSA composites.
+
+% ===================================================================
 \section{Summary}
 \label{sec:theory_summary}
 % ===================================================================
 
-This chapter has presented the two theoretical models used in the present work. The three-layered interphase model (Section~\ref{sec:interphase_model}) treats the graded region between inclusion and matrix as a set of coating layers with piecewise-constant properties. Volume fractions, concentration tensors, and homogenization formulas were defined for both fibre (2D, CCA) and particle (3D, CSA) composites. The Extended General Interface Model (Section~\ref{sec:interface_model}) takes a different approach: it collapses the interphase onto a zero-thickness surface governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ that encode the orthogonal stiffness, tangential elasticity, and interface position.
+This chapter has presented the theoretical foundations of the present work. The three-layered interphase model (Section~\ref{sec:interphase_model}) treats the graded region between inclusion and matrix as a set of coating layers with piecewise-constant properties. Volume fractions, concentration tensors, and homogenization formulas were defined for both fibre (2D, CCA) and particle (3D, CSA) composites. The Extended General Interface Model (Section~\ref{sec:interface_model}) takes a different approach: it collapses the interphase onto a zero-thickness surface governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ that encode the orthogonal stiffness, tangential elasticity, and interface position.
 
 Both models produce equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that feed into the same Mori-Tanaka formula. The central difference lies in how these tensors are obtained: multi-layer BVPs with perfect bonding for the interphase model, versus interface-modified BVPs for the EGIM. This shared representation is what makes the parameter identification problem possible---one seeks interface parameters whose concentration tensors match those from the interphase model. At the same time, the assumptions differ (finite-thickness layers versus zero-thickness surface), and these differences have consequences for the accuracy of the equivalence, as we quantify in Chapter~\ref{ch:results}.
 
-Chapter~\ref{ch:methodology} now develops the specific boundary value problems that determine the concentration tensor components for both models and geometries, followed by the neural network architectures that exploit this connection.
+Section~\ref{sec:nn_background} introduced the neural network and physics-informed learning concepts that underpin the inverse parameter identification method. The feedforward architecture, gradient-based training, and the physics-informed loss formulation provide the tools needed; Chapter~\ref{ch:methodology} develops their specific application to the interphase--interface problem, detailing the boundary value problems, network architecture, training data, and loss function.
 
 
 % ===================================================================
@@ -1800,7 +1890,7 @@ Chapter~\ref{ch:methodology} now develops the specific boundary value problems t
 \chapter{Methodology}
 \label{ch:methodology}
 
-Chapter~\ref{ch:theory} established the theoretical models---the three-layered interphase and the Extended General Interface Model---together with the concentration tensor framework that connects them. This chapter develops the boundary value problems that determine those tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the neural network architecture---an inverse physics-informed network---that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
+Chapter~\ref{ch:theory} established the theoretical models---the three-layered interphase and the Extended General Interface Model---together with the concentration tensor framework that connects them and the neural network concepts that underpin the inverse methodology. This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture---building on the concepts introduced in Section~\ref{sec:nn_background}---that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
 
 \begin{figure}[htbp]
     \centering
