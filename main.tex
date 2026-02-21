@@ -935,48 +935,23 @@ Consider a concrete example: given a CFRP system with a sizing layer of known th
 \paragraph{Graded Properties:} Real interphases rarely exhibit uniform properties. Sizing agents create cross-linking density gradients \cite{Wu2019}, diffusion processes generate compositional profiles, and damage accumulation produces spatially varying stiffness. Mapping such complexity onto equivalent interface parameters requires systematic methodology.
 
 
-% ===================================================================
-% NEW SUBSECTION TO ADD IN SECTION 1.5 (after "Graded Properties" paragraph)
-% Place this BEFORE Section 1.6 "Bridging the Gap: A Data-Driven Approach"
-% ===================================================================
-
 \subsection{Approaches to Parameter Identification}
 \label{subsec:approaches_param_id}
 
 Two fundamentally different strategies exist for determining interface parameters from interphase descriptions: asymptotic derivation and direct parametric identification. Understanding their limitations motivates the data-driven approach adopted in this thesis.
 
 \paragraph{Asymptotic Approach.}
-The most rigorous route to interface parameters proceeds through asymptotic analysis, treating the interphase thickness $\varepsilon$ as a small parameter and examining the limiting behavior as $\varepsilon \to 0$. Pioneered by B\"{o}vik \cite{Bovik1994} and systematically developed by Benveniste \cite{Benveniste2006}, this methodology expands the fields within the interphase using Taylor series about the mid-surface, then enforces continuity conditions at the boundaries. The resulting transmission conditions across the zero-thickness interface emerge naturally from this limiting process.
-
-The key insight from asymptotic analysis is that the \textit{scaling} of interphase stiffness with thickness determines the interface type. When the Lam\'{e} parameters scale as $\lambda^\varepsilon = \varepsilon\bar{\lambda}$ and $\mu^\varepsilon = \varepsilon\bar{\mu}$ (soft interphase), the analysis yields a cohesive-type interface with stiffness $\bar{k} = \mu/h$. Conversely, when stiffness scales inversely with thickness (stiff interphase), a membrane-type interface emerges with surface elastic parameters \cite{Lebon2010, Lebon2011}. Serpilli et al.\ \cite{Serpilli2019} extended this framework to multiphysics problems, while Baranova and Mogilevskaya \cite{Baranova2022} provided a comprehensive comparison of related methodologies.
-
-The elegance of asymptotic methods lies in deriving interface parameters directly from known interphase properties---no curve fitting or optimization is required. However, this approach presupposes complete knowledge of the interphase: its thickness, elastic moduli, and how these scale with geometric parameters. In practice, interphase properties are often uncertain, spatially graded, or only partially characterized through indirect measurements. Moreover, asymptotic analysis assumes specific scaling regimes; real interphases may exhibit mixed soft-hard behavior that does not fit neatly into these categories.
+Asymptotic analysis treats the interphase thickness $\varepsilon$ as a small parameter and examines the limiting behavior as $\varepsilon \to 0$. Pioneered by B\"{o}vik \cite{Bovik1994} and developed by Benveniste \cite{Benveniste2006}, this methodology expands the displacement and stress fields within the interphase as Taylor series about the mid-surface, then enforces continuity conditions at the boundaries. The \textit{scaling} of interphase stiffness with thickness determines the resulting interface type: soft scaling ($\mathbb{C} \sim \varepsilon$) yields a cohesive interface with $\bar{k} = \mu/h$, while stiff scaling ($\mathbb{C} \sim \varepsilon^{-1}$) produces a membrane-type interface \cite{Lebon2010, Lebon2011}. Although elegant, this approach presupposes complete knowledge of the interphase properties and their scaling regime---conditions rarely met for real interphases that are spatially graded or only partially characterised through indirect measurements.
 
 \paragraph{Direct Parametric Identification.}
-An alternative strategy attempts to identify interface parameters by requiring that the interface model reproduce the same effective composite response as the interphase model. Given concentration tensors $\mathbb{T}^{\text{eq}}_{\text{interphase}}$ and $\mathbb{H}^{\text{eq}}_{\text{interphase}}$ computed from a multi-coated inclusion analysis, one seeks interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ such that:
+An alternative strategy requires the interface model to reproduce the same effective composite response as the interphase model. One seeks interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ such that:
 %
 \begin{equation}
     \mathbb{T}^{\text{eq}}_{\text{interface}}(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}) = \mathbb{T}^{\text{eq}}_{\text{interphase}}
     \label{eq:matching_condition}
 \end{equation}
-
-This matching condition, while conceptually appealing, leads to a fundamental mathematical difficulty. For isotropic particle composites, the concentration tensors provide only two independent scalar equations---one from the bulk response ($T_\kappa^{\text{eq}}$) and one from the shear response ($T_\mu^{\text{eq}}$). Yet the Extended General Interface Model contains three to four unknown parameters: orthogonal stiffness $\bar{k}$, interface Lam\'{e} parameters $\bar{\lambda}$ and $\bar{\mu}$, and position parameter $\bar{\alpha}$.
-
-The system is therefore \textit{underdetermined}: more unknowns than equations. Even for fiber composites, where three independent loading modes (bulk, transverse shear, axial shear) provide additional constraints, the position parameter $\bar{\alpha}$ introduces coupling that prevents straightforward inversion. Physically, this underdetermination reflects the fact that different interface mechanisms can produce identical macroscopic responses---a stiffer interface positioned closer to the matrix may yield the same effective modulus as a more compliant interface closer to the fiber \cite{Firooz2021}.
-
-Attempts to close the system through simplifying assumptions---such as fixing $\bar{\alpha} = 0.5$ (mid-plane position) or assuming $\bar{\lambda} = \bar{\mu}$---sacrifice generality and may introduce systematic errors for graded or asymmetric interphases. The direct parametric approach, despite its intuitive appeal, cannot provide a unique and general solution to the parameter identification problem.
-
-\paragraph{Motivation for Data-Driven Methods.}
-The limitations of both approaches point toward an alternative strategy. Asymptotic methods require detailed interphase characterization that may be unavailable; direct matching yields underdetermined systems without unique solutions. What is needed is a framework that can:
 %
-\begin{enumerate}
-    \item Learn the complex, potentially non-unique mapping between mechanical response and interface parameters from data
-    \item Generalize across different material systems and interphase configurations
-    \item Provide rapid predictions once trained, enabling efficient material design
-\end{enumerate}
-%
-Neural networks are naturally suited to such inverse problems. By training on a large database of forward simulations---where interface parameters are varied and the resulting concentration tensors computed---the network learns to navigate the parameter space and identify physically meaningful solutions even when the analytical inverse does not exist. This data-driven approach forms the core of the methodology developed in this thesis.
-
+This matching condition leads to an \textit{underdetermined} system: the EGIM has four unknown parameters, but the concentration tensors provide at most two (CSA) or three (CCA) independent scalar equations \cite{Firooz2021}. Straightforward analytical inversion is therefore not possible, and the system must be solved numerically---a task well suited to data-driven methods.
 
 
 
