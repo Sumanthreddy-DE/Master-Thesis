@@ -838,7 +838,21 @@ From a computational perspective, the interphase presents a significant challeng
 \label{sec:interface_models_intro}
 % -------------------------------------------------------------------
 
-A well-established strategy to address the computational challenges of finite-thickness interphases is to replace them with zero-thickness \textit{interface} models characterized by field discontinuities \cite{SanchezPalencia1974}. In elasticity, these discontinuities manifest as jumps in displacement and/or traction across the interface. This approach trades geometric fidelity for computational efficiency while preserving the essential mechanical response.
+A well-established strategy to address the computational challenges of finite-thickness interphases is to replace them with zero-thickness \textit{interface} models characterized by field discontinuities \cite{SanchezPalencia1974}. In elasticity, these discontinuities manifest as jumps in displacement and/or traction across the interface. This approach trades geometric fidelity for computational efficiency while preserving the essential mechanical response. Figure~\ref{fig:model_hierarchy} illustrates the hierarchy of interface and interphase models studied in this thesis.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/model_hierarchy.pdf}
+    \caption{Hierarchy of interface and interphase models. Left branch: zero-thickness
+    interface models, ordered from the simplest (perfect interface, no field jumps) to
+    the most general (EGIM, arbitrary jumps with position parameter~$\bar{\alpha}$).
+    Right branch: the finite-thickness 3-layer interphase model used as the
+    ground-truth reference. The green arrow denotes the homogenization pathway
+    developed in this thesis, which maps 3-layer interphase parameters onto EGIM
+    interface parameters (Chapter~\ref{ch:methodology}). Parameter counts refer to
+    the isotropic / anisotropic parameterisations used in Section~\ref{sec:ei_gap}.}
+    \label{fig:model_hierarchy}
+\end{figure}
 
 Figure~\ref{fig:interface_classification} classifies interface models based on which field continuities are relaxed. The simplest case---the \textit{perfect interface}---enforces continuity of both displacement and traction:
 %
@@ -2746,6 +2760,25 @@ Based on the results of this chapter, we propose the following guidelines:
     \item \textit{CCA composites}: The Extended Interface pathway is not viable for~$G_{\text{tr}}$. Applications requiring all three transversely isotropic moduli should use the 3-layer interphase model directly, or employ alternative computational approaches that do not route through the interface abstraction.
     \item \textit{Mixed or unknown geometry}: Evaluate the interface model fit first using the optimisation-based gap analysis of Section~\ref{sec:ei_gap}. If the best-fit error exceeds~$5\,\%$, the interface model is structurally inadequate for that configuration.
 \end{itemize}
+
+Figure~\ref{fig:grand_comparison} places all four approaches on a single chart for direct comparison.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/grand_comparison.pdf}
+    \caption{Summary comparison of mean relative errors across all approaches studied
+    in this thesis. Three property groups are shown: transverse bulk
+    modulus~$K_{\mathrm{tr}}$ (or~$K_{\mathrm{eff}}$ for CSA), transverse shear
+    modulus~$G_{\mathrm{tr}}$ (or~$G_{\mathrm{eff}}$), and axial shear
+    modulus~$G_{\mathrm{ax}}$ (CCA geometry only). The CSA inverse PINN achieves
+    below~$2\,\%$ error on both moduli (28/28 pass). All CCA-based approaches
+    exceed the $5\,\%$ threshold (dashed line) on~$G_{\mathrm{tr}}$, confirming
+    the structural limitation of the Extended Interface model for fibre composites.
+    Pass rates at the 5\% threshold are indicated below the $G_{\mathrm{tr}}$ group.
+    CCA PINN errors are computed from the 28-configuration validation set; EI
+    optimizer errors are the mean over the same configurations.}
+    \label{fig:grand_comparison}
+\end{figure}
 
 % -------------------------------------------------------------------
 %   CHAPTER 5: CONCLUSION
