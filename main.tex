@@ -850,7 +850,7 @@ A well-established strategy to address the computational challenges of finite-th
     ground-truth reference. The green arrow denotes the homogenization pathway
     developed in this thesis, which maps 3-layer interphase parameters onto EGIM
     interface parameters (Chapter~\ref{ch:methodology}). Parameter counts refer to
-    the isotropic / anisotropic parameterisations used in Section~\ref{sec:ei_gap}.}
+    the isotropic / anisotropic parameterisations used in Section~\ref{sec:cca_results}.}
     \label{fig:model_hierarchy}
 \end{figure}
 
@@ -1732,7 +1732,7 @@ The EGIM rests on assumptions distinct from those of the multi-coated model:
     \item \textbf{Direct BVP extraction}: the concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ are computed by solving boundary value problems with the EGIM conditions at $r = r_1$, rather than using the classical Eshelby formula~\eqref{eq:eshelby_dilute}.
 \end{enumerate}
 
-A consequence of assumption~1 is that the interface model cannot reproduce all features of a finite-thickness graded interphase. In particular, the transverse shear response ($G_{\text{tr}}$) in CCA composites shows a persistent gap of approximately 18\% between the best-fit interface prediction and the three-layered interphase reference, regardless of the number of interface parameters (Section~\ref{sec:ei_gap}). This structural limitation motivates the inverse PINN approach developed in Chapter~\ref{ch:results}.
+A consequence of assumption~1 is that the interface model cannot reproduce all features of a finite-thickness graded interphase. In particular, the transverse shear response ($G_{\text{tr}}$) in CCA composites shows a persistent gap of approximately 18\% between the best-fit interface prediction and the three-layered interphase reference, regardless of the number of interface parameters (Section~\ref{sec:cca_results}). This structural limitation motivates the inverse PINN approach developed in Chapter~\ref{ch:results}.
 
 % -------------------------------------------------------------------
 \subsection{Modified Hill-Mandel Condition}
@@ -2340,7 +2340,7 @@ The loss weights $w_{\text{data}}$ and $w_{\text{phys}}$ are adapted during trai
 \paragraph{Training procedure.}
 We train with AdamW ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing over 500~epochs, batch size~256, and gradient clipping at norm~1.0. Inputs are normalised to zero mean and unit variance. The best validation loss is reached at epoch~322.
 
-With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the EI gap analysis that reveals the structural limitation of the interface model, and the inverse PINN performance for CCA and CSA composites.
+With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the CSA inverse PINN achieves a~$100\,\%$ pass rate, while the CCA case reveals a fundamental representational limit of the Extended Interface model that no parameter identification method can overcome.
 
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
@@ -2348,7 +2348,7 @@ With the inverse network architectures and training strategies in place, Chapter
 \chapter{Results and Discussion}
 \label{ch:results}
 
-This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). Section~\ref{sec:ei_gap} then quantifies the representational limits of the Extended Interface model through systematic best-fit analysis---this constitutes the central finding of the thesis. Section~\ref{sec:pinn_results} presents the inverse PINN results for both CSA and CCA geometries, providing independent confirmation of the gap analysis. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
+This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry, where the Extended Interface model proves structurally adequate and the network achieves a~$100\,\%$ pass rate. Section~\ref{sec:cca_results} turns to the CCA geometry: the inverse PINN fails here, and a systematic diagnosis reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
 
 % ===================================================================
 \section{Verification of the 3-Layer Interphase Model}
@@ -2441,18 +2441,145 @@ Both limiting cases are reproduced to machine precision, which confirms the corr
 For the reference geometry with $\phi_1 = 0.2$, $\phi_2 = 0.3$, $\phi_3 = 0.4$, the sub-phase volume fractions within the composite cylinder are $c_{\text{fibre}} = 0.024$, $c_{\text{coat\,1}} = 0.096$, $c_{\text{coat\,2}} = 0.280$, and $c_{\text{coat\,3}} = 0.600$. Their sum equals~$1.0$ to an absolute error below~$10^{-15}$, confirming the recursive volume fraction formulas from Section~\ref{subsec:volume_fractions}.
 
 % ===================================================================
-\section{Representational Limits of the Extended Interface Model}
-\label{sec:ei_gap}
+\section{CSA: Inverse Parameter Identification via PINN}
+\label{sec:csa_results}
 % ===================================================================
 
-The central question of this thesis is whether a zero-thickness Extended Interface model can reproduce the effective properties predicted by a finite-thickness 3-layer interphase model. We answer this question through a systematic best-fit analysis: for each interphase configuration, we optimise the Extended Interface parameters to minimise the discrepancy with the 3-layer target. Any error that remains after optimisation represents a fundamental representational limit of the interface model.
+For the CSA geometry, the spherical BVPs involve only two effective moduli ($K_{\text{eff}}$ and $G_{\text{eff}}$) and simpler radial structures than the cylindrical case. We therefore expect the Extended Interface model to be structurally adequate for spherical composites, making inverse parameter identification viable. This section tests that expectation by training the inverse PINN from Section~\ref{subsec:inverse_pinn} on CSA data and validating the recovered interface parameters against the 3-layer interphase targets.
 
 % -------------------------------------------------------------------
-\subsection{Isotropic Extended Interface (4~Parameters)}
+\subsection{Training and Validation}
+\label{subsec:csa_pinn}
+% -------------------------------------------------------------------
+
+The inverse problem takes the form: given the effective properties $K_{\text{eff}}$ and $G_{\text{eff}}$ of a multi-coated spherical composite, along with the constituent material properties ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), the volume fraction~$f$, and the inclusion radius~$R$, predict the four Extended Interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. The network architecture and training strategy follow Sections~\ref{subsec:inverse_network} and~\ref{subsec:inverse_pinn}.
+
+\paragraph{Training.}
+The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_loss}) is trained with AdamW and cosine annealing over 500~epochs. The best validation loss is reached at epoch~323.
+
+A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
+
+\paragraph{Validation.}
+Table~\ref{tab:pinn_validation} summarises the validation results across the same 28-configuration test suite.
+
+\begin{table}[htbp]
+\centering
+\caption{CSA inverse PINN validation results across~28 test configurations. All categories achieve a~$100\,\%$ pass rate. Errors are reported as mean (max) relative percentage of the reconstructed effective properties.}
+\label{tab:pinn_validation}
+\begin{tabular}{l c c c}
+\toprule
+Category & Configs & $K_{\text{eff}}$ [\%] & $G_{\text{eff}}$ [\%] \\
+\midrule
+Interphase fraction ($\phi$) & 8/8 & 1.52\,(3.41) & 1.81\,(4.12) \\
+Stiffness ratio (SR) & 7/7 & 2.03\,(4.87) & 2.11\,(4.94) \\
+Volume fraction ($f$) & 9/9 & 1.68\,(2.43) & 1.72\,(3.80) \\
+Interpolation weights ($w$) & 4/4 & 1.85\,(2.76) & 1.83\,(2.95) \\
+\midrule
+\textbf{Overall} & \textbf{28/28} & \textbf{1.77\,(4.87)} & \textbf{1.87\,(4.94)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77\,\%$ for $K_{\text{eff}}$ and~$1.87\,\%$ for $G_{\text{eff}}$, as the parity plot in Figure~\ref{fig:csa_pinn_parity} confirms visually. The worst-case errors ($4.87\,\%$ and~$4.94\,\%$) remain below the $5\,\%$ threshold even for the stiffness ratio category, which spans two orders of magnitude in inclusion stiffness. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a form of self-consistency that purely data-driven approaches lack. Figure~\ref{fig:csa_pinn_errors} shows the per-configuration reconstruction errors: the stiffness ratio category (SR) produces the largest deviations, particularly for $G_{\text{eff}}$ at high stiffness contrasts.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{csa_pinn_parity.pdf}
+\caption{Predicted vs.\ target effective properties for the CSA inverse PINN across~28 test configurations. Points cluster tightly around the diagonal for both~$K_{\text{eff}}$ (left) and~$G_{\text{eff}}$ (right), confirming the~$100\,\%$ pass rate at the~$5\,\%$ threshold.}
+\label{fig:csa_pinn_parity}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_pinn_errors.pdf}
+\caption{Per-configuration reconstruction errors for the CSA inverse PINN across the~28-configuration test suite. Blue bars show~$K_{\text{eff}}$ errors and red bars show~$G_{\text{eff}}$ errors. All~28 configurations remain below the~$5\,\%$ threshold (dashed line), with mean errors of~$1.77\,\%$ for~$K_{\text{eff}}$ and~$1.87\,\%$ for~$G_{\text{eff}}$.}
+\label{fig:csa_pinn_errors}
+\end{figure}
+
+% -------------------------------------------------------------------
+\subsection{CSA Numerical Examples}
+\label{subsec:csa_numerical_examples}
+% -------------------------------------------------------------------
+
+To illustrate the agreement between the 3-layer interphase model, the best-fit Extended Interface model, and the inverse PINN predictions, Figures~\ref{fig:csa_vs_f} and~\ref{fig:csa_vs_sr} show parameter sweeps over volume fraction and stiffness ratio, respectively.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_properties_vs_f.pdf}
+\caption{CSA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 1.5$, comparing the 3-layer interphase model (solid blue), best-fit Extended Interface via optimisation (dashed red), and inverse PINN (green markers). Unlike the CCA case (Figure~\ref{fig:cca_vs_f}), all three approaches agree closely for both~$K_{\text{eff}}$ and~$G_{\text{eff}}$, confirming that the Extended Interface model is structurally adequate for particle-reinforced composites.}
+\label{fig:csa_vs_f}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_properties_vs_sr.pdf}
+\caption{CSA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The 3-layer interphase, optimised Extended Interface, and inverse PINN predictions overlap across the full stiffness range, in contrast to the systematic gap observed for CCA geometry (Figure~\ref{fig:cca_vs_sr}).}
+\label{fig:csa_vs_sr}
+\end{figure}
+
+In both sweeps, the three curves lie on top of one another across the full parameter range. The PINN-recovered interface parameters produce effective properties that track the 3-layer targets with errors consistently below~$5\,\%$. This stands in sharp contrast to the CCA geometry, where a systematic gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}). The agreement for CSA confirms that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model.
+
+% ===================================================================
+\section{CCA: Inverse Parameter Identification and Representational Limits}
+\label{sec:cca_results}
+% ===================================================================
+
+We now apply the same inverse PINN framework to the CCA geometry, where the transversely isotropic BVPs involve three independent effective moduli ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$) and more complex radial displacement patterns. As we shall see, the network fails to reconstruct the 3-layer targets. A systematic diagnosis then reveals that this failure originates not from the neural network but from a fundamental limitation of the Extended Interface model itself.
+
+% -------------------------------------------------------------------
+\subsection{CCA Inverse PINN Results}
+\label{subsec:cca_pinn_results}
+\label{subsec:cca_pinn_implications}
+% -------------------------------------------------------------------
+
+The CCA variant of the inverse network takes 8~inputs ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ plus material properties and volume fraction) and produces four EGIM parameters. We train on $200\,000$~samples for 500~epochs using the same loss function and adaptive weighting scheme as the CSA case, with the training data generated from the CCA Extended Interface forward model.
+
+\paragraph{Validation.}
+Table~\ref{tab:cca_pinn_validation} summarises the per-property reconstruction errors across the 28-configuration test suite.
+
+\begin{table}[htbp]
+\centering
+\caption{CCA inverse PINN: mean and maximum reconstruction errors~($\%$) against 3-layer interphase targets. No configuration passes the~$5\,\%$ threshold on all three properties simultaneously.}
+\label{tab:cca_pinn_validation}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{$K_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{tr}}$ Error} &
+   \multicolumn{2}{c}{$G_{\text{ax}}$ Error} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & Mean & Max & Mean & Max & Mean & Max \\
+\midrule
+All 28 configs & 4.6 & 12.9 & 29.5 & 40.3 & 13.3 & 39.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The overall pass rate is~$0/28$. Figure~\ref{fig:cca_pinn_parity} shows the parity plot: while $K_{\text{tr}}$ predictions lie reasonably close to the diagonal at low volume fractions, the $G_{\text{tr}}$ points scatter well below it. Figure~\ref{fig:cca_pinn_errors} shows the per-configuration errors, where the $G_{\text{tr}}$ bars (red) dominate across every category.
+
+The $0/28$ pass rate raises a natural question: does this failure stem from insufficient network capacity or poor training, or does it reflect a fundamental limitation of the Extended Interface model itself? To answer this, we bypass the neural network entirely in the following sections and directly optimise the EI parameters using a global optimiser.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{cca_pinn_parity.pdf}
+\caption{Predicted vs.\ target effective properties for the CCA inverse PINN across~28 test configurations. Unlike the CSA case (Figure~\ref{fig:csa_pinn_parity}), the predictions deviate substantially from the diagonal, particularly for~$G_{\text{tr}}$ (centre panel), indicating that the Extended Interface model cannot represent the 3-layer transverse shear response.}
+\label{fig:cca_pinn_parity}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{cca_pinn_errors.pdf}
+\caption{Per-configuration reconstruction errors for the CCA inverse PINN across the~28-configuration test suite. $K_{\text{tr}}$ errors (blue) remain moderate, but $G_{\text{tr}}$ (red) is systematically elevated with a mean of~$29.5\,\%$, suggesting a structural limitation of the underlying model rather than a training deficiency.}
+\label{fig:cca_pinn_errors}
+\end{figure}
+
+% -------------------------------------------------------------------
+\subsection{Diagnosing the Failure: Isotropic Best-Fit (4~Parameters)}
 \label{subsec:ei_isotropic}
 % -------------------------------------------------------------------
 
-The standard isotropic Extended Interface model from Section~\ref{subsec:egim} has four parameters: the interface Lam\'{e} constants~$\bar{\lambda}$ and~$\bar{\mu}$, the orthogonal stiffness~$\bar{k}$, and the position parameter~$\bar{\alpha}$. For each of the~28 test configurations from Section~\ref{sec:verification}, we solve the optimisation problem
+To determine whether the PINN failure is a learning problem or a model problem, we bypass the neural network entirely and solve the inverse problem by direct optimisation. For each of the~28 test configurations, we use differential evolution---a global optimiser that exhaustively searches the parameter space---to find the best-fit EI parameters. Differential evolution makes no assumptions about the loss landscape and tests thousands of parameter combinations per configuration. If even this exhaustive search cannot match the 3-layer targets, then no method---neural network or otherwise---can do so within the Extended Interface framework.
+
+The standard isotropic Extended Interface model from Section~\ref{subsec:egim} has four parameters: the interface Lam\'{e} constants~$\bar{\lambda}$ and~$\bar{\mu}$, the orthogonal stiffness~$\bar{k}$, and the position parameter~$\bar{\alpha}$. For each configuration, we solve
 %
 \begin{equation}
     \min_{\bar{\lambda},\, \bar{\mu},\, \bar{k},\, \bar{\alpha}} \;
@@ -2461,7 +2588,7 @@ The standard isotropic Extended Interface model from Section~\ref{subsec:egim} h
     \label{eq:ei_opt}
 \end{equation}
 %
-using differential evolution (population size~15, 200~iterations) with bounds $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
+using population size~15 and 200~iterations, with bounds $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
 
 \paragraph{Test suite results.}
 None of the~28 configurations achieves a relative error below~$5\,\%$ on all three properties simultaneously. Table~\ref{tab:ei_gap_summary} summarises the errors and Figure~\ref{fig:ei_gap_bars} shows the per-configuration breakdown.
@@ -2483,7 +2610,7 @@ All 28 configs & 4.02 & 8.86 & 18.23 & 26.66 & 6.57 & 12.67 \\
 \end{tabular}
 \end{table}
 
-The transverse shear modulus~$G_{\text{tr}}$ shows the largest and most persistent errors, with a mean discrepancy of~$18.23\,\%$. The optimiser consistently drives~$\bar{k}$ to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$---that is, it places the interface at the outer boundary and maximises the cohesive stiffness. This saturation indicates that no parameter combination within the isotropic Extended Interface model can close the gap. The model is structurally insufficient rather than under-optimised.
+The optimiser achieves a mean~$G_{\text{tr}}$ error of~$18.23\,\%$---lower than the PINN's~$29.5\,\%$ (Table~\ref{tab:cca_pinn_validation}), because the optimiser fits each configuration independently rather than generalising across all configurations with a single set of weights. However, even this per-configuration best fit cannot close the gap. The optimiser consistently drives~$\bar{k}$ to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$---that is, it places the interface at the outer boundary and maximises the cohesive stiffness. This saturation indicates that no parameter combination within the isotropic Extended Interface model can close the gap. The model is structurally insufficient rather than under-optimised.
 
 \begin{figure}[htbp]
 \centering
@@ -2522,7 +2649,7 @@ Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} =
 \label{subsec:ei_anisotropic}
 % -------------------------------------------------------------------
 
-One might expect that the isotropic model fails because a single~$\bar{\mu}$ cannot capture both transverse and axial shear behaviour. To test this hypothesis, we extend the model to seven parameters: $\bar{\lambda}$, separate transverse and axial interface shear moduli $\bar{\mu}_{\text{tr}}$ and $\bar{\mu}_{\text{ax}}$, direction-dependent orthogonal stiffnesses $\bar{k}_r$, $\bar{k}_\theta$, and $\bar{k}_z$, and the position parameter~$\bar{\alpha}$. This gives the optimiser maximum flexibility within the interface framework.
+One might argue that the isotropic model fails because a single~$\bar{\mu}$ cannot capture both transverse and axial shear behaviour. To test this hypothesis, we extend the model to seven parameters: $\bar{\lambda}$, separate transverse and axial interface shear moduli $\bar{\mu}_{\text{tr}}$ and $\bar{\mu}_{\text{ax}}$, direction-dependent orthogonal stiffnesses $\bar{k}_r$, $\bar{k}_\theta$, and $\bar{k}_z$, and the position parameter~$\bar{\alpha}$. This gives the optimiser maximum flexibility within the interface framework.
 
 \begin{table}[htbp]
 \centering
@@ -2564,7 +2691,7 @@ The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2
 
 In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The 7-parameter anisotropic results confirm this interpretation: $G_{\text{ax}}$ and $K_{\text{tr}}$ can be matched because their underlying BVPs have structure compatible with interface conditions, while $G_{\text{tr}}$ cannot.
 
-This finding has direct consequences for the parameter identification strategy. Since no Extended Interface model can accurately capture the transverse shear response of a multi-layer interphase in CCA geometry, any inverse approach that recovers interface parameters will inherit this structural error for CCA composites. For the CSA geometry, however, the BVP structure is simpler---only two isotropic moduli---and the interface model may still be adequate. The next section tests this hypothesis by training an inverse PINN on both geometries, using the CCA case as independent confirmation of the gap.
+This finding explains why the inverse PINN achieved~$0/28$ in Section~\ref{subsec:cca_pinn_results}: the network was trained on data generated from the Extended Interface forward model, and that model is structurally incapable of reproducing the 3-layer transverse shear response. The PINN faithfully learned the EI model but inherited its limitation.
 
 % -------------------------------------------------------------------
 \subsection{Numerical Examples}
@@ -2636,112 +2763,11 @@ In every case, the optimiser drives the orthogonal stiffness $\bar{k}$ to its up
 \end{figure}
 
 % ===================================================================
-\section{Inverse Parameter Identification via PINN}
-\label{sec:pinn_results}
-% ===================================================================
-
-The gap analysis of Section~\ref{sec:ei_gap} established that the Extended Interface model cannot reproduce the CCA transverse shear modulus. For the CSA geometry, however, the spherical BVPs involve simpler radial structures without the mode-2/mode-4 coupling, so the interface model may still be adequate. We therefore train an inverse physics-informed neural network (PINN) that recovers the four Extended Interface parameters from effective composite properties. We apply the same network architecture to both CSA and CCA geometries: the CSA case tests whether the PINN can successfully identify interface parameters when the model is structurally adequate, while the CCA case provides independent confirmation of the gap from a different angle.
-
-% -------------------------------------------------------------------
-\subsection{CSA Inverse PINN Results}
-\label{subsec:csa_pinn}
-% -------------------------------------------------------------------
-
-The inverse problem takes the form: given the effective properties $K_{\text{eff}}$ and $G_{\text{eff}}$ of a multi-coated spherical composite, along with the constituent material properties ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$), the volume fraction~$f$, and the inclusion radius~$R$, predict the four Extended Interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. The network architecture and training strategy follow Sections~\ref{subsec:inverse_network} and~\ref{subsec:inverse_pinn}.
-
-\paragraph{Training.}
-The network architecture follows Section~\ref{subsec:inverse_network}, and the training data, loss function, and adaptive weighting follow Section~\ref{subsec:inverse_pinn}. The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_loss}) is trained with AdamW and cosine annealing over 500~epochs. The best validation loss is reached at epoch~323.
-
-A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
-
-\paragraph{Validation.}
-Table~\ref{tab:pinn_validation} summarises the validation results across the same 28-configuration test suite.
-
-\begin{table}[htbp]
-\centering
-\caption{CSA inverse PINN validation results across~28 test configurations. All categories achieve a~$100\,\%$ pass rate. Errors are reported as mean (max) relative percentage of the reconstructed effective properties.}
-\label{tab:pinn_validation}
-\begin{tabular}{l c c c}
-\toprule
-Category & Configs & $K_{\text{eff}}$ [\%] & $G_{\text{eff}}$ [\%] \\
-\midrule
-Interphase fraction ($\phi$) & 8/8 & 1.52\,(3.41) & 1.81\,(4.12) \\
-Stiffness ratio (SR) & 7/7 & 2.03\,(4.87) & 2.11\,(4.94) \\
-Volume fraction ($f$) & 9/9 & 1.68\,(2.43) & 1.72\,(3.80) \\
-Interpolation weights ($w$) & 4/4 & 1.85\,(2.76) & 1.83\,(2.95) \\
-\midrule
-\textbf{Overall} & \textbf{28/28} & \textbf{1.77\,(4.87)} & \textbf{1.87\,(4.94)} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The PINN achieves a $100\,\%$ pass rate with mean reconstruction errors of~$1.77\,\%$ for $K_{\text{eff}}$ and~$1.87\,\%$ for $G_{\text{eff}}$, as the parity plot in Figure~\ref{fig:csa_pinn_parity} confirms visually. The worst-case errors ($4.87\,\%$ and~$4.94\,\%$) remain below the $5\,\%$ threshold even for the stiffness ratio category, which spans two orders of magnitude in inclusion stiffness. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a form of self-consistency that purely data-driven approaches lack. Figure~\ref{fig:csa_pinn_errors} shows the per-configuration reconstruction errors: the stiffness ratio category (SR) produces the largest deviations, particularly for $G_{\text{eff}}$ at high stiffness contrasts.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{csa_pinn_parity.pdf}
-\caption{Predicted vs.\ target effective properties for the CSA inverse PINN across~28 test configurations. Points cluster tightly around the diagonal for both~$K_{\text{eff}}$ (left) and~$G_{\text{eff}}$ (right), confirming the~$100\,\%$ pass rate at the~$5\,\%$ threshold.}
-\label{fig:csa_pinn_parity}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{csa_pinn_errors.pdf}
-\caption{Per-configuration reconstruction errors for the CSA inverse PINN across the~28-configuration test suite. Blue bars show~$K_{\text{eff}}$ errors and red bars show~$G_{\text{eff}}$ errors. Mean errors are~$10.8\,\%$ for $K_{\text{eff}}$ and~$24.4\,\%$ for $G_{\text{eff}}$; the $5\,\%$ threshold (dashed) is met jointly in~3 of~28 configurations.}
-\label{fig:csa_pinn_errors}
-\end{figure}
-
-% -------------------------------------------------------------------
-\subsection{CCA Inverse PINN Results}
-\label{subsec:cca_pinn_implications}
-% -------------------------------------------------------------------
-
-To verify the findings of the gap analysis independently, we also train the inverse network from Section~\ref{subsec:inverse_network} on the CCA geometry. The CCA variant takes 8~inputs ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ plus material properties and volume fraction) and produces four EGIM parameters. We train on $200\,000$~samples for 500~epochs using the same loss function and adaptive weighting scheme as the CSA case, with the training data generated from the CCA Extended Interface forward model.
-
-\paragraph{Validation.}
-Table~\ref{tab:cca_pinn_validation} summarises the per-property reconstruction errors across the 28-configuration test suite.
-
-\begin{table}[htbp]
-\centering
-\caption{CCA inverse PINN: mean and maximum reconstruction errors~($\%$) against 3-layer interphase targets. No configuration passes the~$5\,\%$ threshold on all three properties simultaneously.}
-\label{tab:cca_pinn_validation}
-\begin{tabular}{lcccccc}
-\toprule
- & \multicolumn{2}{c}{$K_{\text{tr}}$ Error} &
-   \multicolumn{2}{c}{$G_{\text{tr}}$ Error} &
-   \multicolumn{2}{c}{$G_{\text{ax}}$ Error} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
- & Mean & Max & Mean & Max & Mean & Max \\
-\midrule
-All 28 configs & 4.6 & 12.9 & 29.5 & 40.3 & 13.3 & 39.8 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The overall pass rate is~$0/28$. Figure~\ref{fig:cca_pinn_parity} shows the parity plot: while $K_{\text{tr}}$ predictions lie reasonably close to the diagonal at low volume fractions, the $G_{\text{tr}}$ points scatter well below it. The mean~$G_{\text{tr}}$ discrepancy of~$29.5\,\%$ is even higher than the~$18.2\,\%$ achieved by the per-configuration differential evolution in Section~\ref{subsec:ei_isotropic}. This is expected: the optimisation fits each configuration independently, while the neural network must generalise across all configurations with a single set of weights. Figure~\ref{fig:cca_pinn_errors} shows the per-configuration errors: the $G_{\text{tr}}$ bars (red) dominate across every category, mirroring the pattern observed in the optimisation-based gap analysis of Figure~\ref{fig:ei_gap_bars}.
-
-These results confirm the gap analysis from a different angle. The optimisation-based approach (Section~\ref{sec:ei_gap}) showed that no EGIM parameters can reproduce the 3-layer $G_{\text{tr}}$; the inverse PINN shows that even a flexible nonlinear approximator cannot find parameters that close this gap. Together, these two lines of evidence establish that the transverse shear limitation is a structural property of the Extended Interface model for cylindrical geometry, not an artefact of any particular optimisation or training procedure.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{cca_pinn_parity.pdf}
-\caption{Predicted vs.\ target effective properties for the CCA inverse PINN across~28 test configurations. Unlike the CSA case, the predictions deviate substantially from the diagonal, particularly for~$G_{\text{tr}}$ (centre panel), confirming that the Extended Interface model cannot represent the 3-layer transverse shear response.}
-\label{fig:cca_pinn_parity}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{cca_pinn_errors.pdf}
-\caption{Per-configuration reconstruction errors for the CCA inverse PINN across the~28-configuration test suite. $K_{\text{tr}}$ errors (blue) remain moderate, but $G_{\text{tr}}$ (red) is systematically elevated with a mean of~$29.4\,\%$, confirming that the Extended Interface limitation propagates directly to the neural network predictions.}
-\label{fig:cca_pinn_errors}
-\end{figure}
-
-% ===================================================================
 \section{Discussion}
 \label{sec:results_discussion}
 % ===================================================================
 
-The preceding sections have presented three lines of investigation into predicting effective properties of composites with graded interphases. We now synthesise these results and draw out their broader implications.
+The preceding sections have presented the inverse parameter identification results for both CSA and CCA geometries, together with a systematic diagnosis of the CCA failure. We now synthesise these results and draw out their broader implications.
 
 \paragraph{Geometry-dependent viability of the interface model.}
 The results reveal a sharp asymmetry between the CSA and CCA geometries. For CSA composites, the inverse PINN achieves a $100\,\%$ pass rate (Table~\ref{tab:pinn_validation}), with mean reconstruction errors below~$2\,\%$ for both $K_{\text{eff}}$ and $G_{\text{eff}}$. The recovered interface parameters---the stiffnesses $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$ and the position parameter~$\bar{\alpha}$---carry physical meaning and can be incorporated into analytical homogenisation schemes or multiscale simulations. The PINN pathway is therefore viable and accurate for particle-reinforced composites.
@@ -2758,7 +2784,7 @@ Based on the results of this chapter, we propose the following guidelines:
 \begin{itemize}
     \item \textit{CSA composites}: The inverse PINN provides both accurate effective properties and physically interpretable interface parameters. For applications where only effective moduli are needed, the PINN-recovered parameters can be fed through the analytical forward model in a single evaluation.
     \item \textit{CCA composites}: The Extended Interface pathway is not viable for~$G_{\text{tr}}$. Applications requiring all three transversely isotropic moduli should use the 3-layer interphase model directly, or employ alternative computational approaches that do not route through the interface abstraction.
-    \item \textit{Mixed or unknown geometry}: Evaluate the interface model fit first using the optimisation-based gap analysis of Section~\ref{sec:ei_gap}. If the best-fit error exceeds~$5\,\%$, the interface model is structurally inadequate for that configuration.
+    \item \textit{Mixed or unknown geometry}: Evaluate the interface model fit first using the optimisation-based gap analysis of Section~\ref{subsec:ei_isotropic}. If the best-fit error exceeds~$5\,\%$, the interface model is structurally inadequate for that configuration.
 \end{itemize}
 
 Figure~\ref{fig:grand_comparison} places all four approaches on a single chart for direct comparison.
@@ -2793,7 +2819,7 @@ This thesis has developed and evaluated a computational framework for predicting
 \begin{enumerate}
     \item \textbf{Verified 3-layer interphase model.} We implemented and verified the multi-coated CCA and CSA interphase models, solving four boundary value problems per configuration. The implementation passes all consistency checks: $\tens{H} = \tens{C}\,\tens{T}$ to machine precision ($\sim 10^{-14}$), both limiting cases reproduce the expected 2-phase results, and volume fractions sum to unity (Section~\ref{sec:verification}).
 
-    \item \textbf{Quantification of the interface--interphase gap.} We showed that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus of a CCA multi-layer interphase. The $G_{\text{tr}}$ gap of~$17$--$18\,\%$ persists regardless of parameter count, establishing a fundamental limitation of the zero-thickness approximation for fibre composites (Section~\ref{sec:ei_gap}).
+    \item \textbf{Quantification of the interface--interphase gap.} We showed that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus of a CCA multi-layer interphase. The $G_{\text{tr}}$ gap of~$17$--$18\,\%$ persists regardless of parameter count, establishing a fundamental limitation of the zero-thickness approximation for fibre composites (Section~\ref{sec:cca_results}).
 
     \item \textbf{Inverse PINN for CSA composites.} We developed a physics-informed neural network that recovers Extended Interface parameters from effective properties with a $100\,\%$ pass rate (28/28~configurations, mean reconstruction errors below~$2\,\%$). The physics loss enforces forward-model consistency, providing a self-consistent inverse mapping for particle-reinforced composites (Section~\ref{subsec:csa_pinn}).
 
