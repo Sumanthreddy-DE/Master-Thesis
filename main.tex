@@ -2272,137 +2272,175 @@ Once the per-phase tensors are known, the equivalent concentration tensors $\mat
 \label{sec:interface_forward}
 % ===================================================================
 
-Where the interphase model uses multiple coating layers, the EGIM collapses the interphase onto a single zero-thickness surface at $r = r_1$, governed by four parameters ($\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$) defined in Section~\ref{sec:interface_model}. The BVPs have the same displacement ansatz as before, but the continuity conditions are replaced by the interface jump and average conditions from the EGIM constitutive law.
+Where the interphase model (Section~\ref{sec:multicoated_forward}) uses multiple coating layers, the EGIM collapses the graded region onto a single zero-thickness surface at $r = r_1$, governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ defined in Section~\ref{sec:interface_model}. The displacement ans\"{a}tze from Section~\ref{sec:multicoated_forward} carry over directly, but the perfect-bonding conditions at $r = r_1$ are replaced by the EGIM cohesive and elastic jump conditions from Section~\ref{subsec:interface_constitutive_relations}. Four BVPs are needed for CCA composites and two for CSA composites.
 
 % -------------------------------------------------------------------
 \subsection{Problem Setup}
 \label{subsec:interface_problem_setup}
 % -------------------------------------------------------------------
 
-We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ directly embedded in the matrix $(\kappa^{(2)}, \mu^{(2)})$---there are no coating layers. At the interface $r = r_1$, the EGIM boundary conditions replace the perfect-bonding conditions of the interphase model. These conditions come in two types. The \textit{orthogonal (cohesive)} condition relates the weighted traction average to the displacement jump:
+We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ embedded directly in the matrix $(\kappa^{(2)}, \mu^{(2)})$---there are no coating layers. At the interface $r = r_1$, two types of condition hold. The \textit{cohesive} condition relates the weighted traction average to the displacement jump:
 %
 \begin{equation}
     \mean{\bs{t}}_{1-\bar{\alpha}} = \bar{k}\jump{\bs{u}}
-    \label{eq:egim_orthogonal}
+    \label{eq:egim_cohesive}
 \end{equation}
 %
-where $\mean{\cdot}_{1-\bar{\alpha}} = (1-\bar{\alpha})(\cdot)^+ + \bar{\alpha}(\cdot)^-$. The \textit{tangential (elastic)} condition relates the traction jump to the surface divergence of the interface stress:
+where $\mean{\cdot}_{1-\bar{\alpha}} = (1-\bar{\alpha})(\cdot)^{(2)} + \bar{\alpha}(\cdot)^{(1)}$ is the weighted average. The \textit{elastic} condition relates the traction jump to the surface divergence of the interface stress:
 %
 \begin{equation}
     \jump{\bs{t}} = -\nabla_s \cdot \bar{\bs{\sigma}}
-    \label{eq:egim_tangential}
+    \label{eq:egim_elastic}
 \end{equation}
 %
-where the interface stress $\bar{\bs{\sigma}}$ depends on $\bar{\lambda}$ and $\bar{\mu}$ through the interface constitutive law (Section~\ref{subsec:interface_constitutive_relations}). Solving these BVPs yields the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ as functions of the four interface parameters and the constituent properties.
+where the interface stress $\bar{\bs{\sigma}}$ depends on $(\bar{\lambda}, \bar{\mu})$ through the constitutive law of Section~\ref{subsec:interface_constitutive_relations} and acts on the weighted average displacement $\mean{\bs{u}}_{\bar{\alpha}}$. Solving the resulting BVPs yields the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ as functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ and the constituent properties.
 
 % -------------------------------------------------------------------
 \subsection{Fibre-Reinforced Composites (CCA)}
 \label{subsec:interface_bvp}
 % -------------------------------------------------------------------
 
-For cylindrical fibres, three independent BVPs determine the transversely isotropic concentration tensor: bulk, transverse shear, and axial shear.
+For cylindrical fibres, the transversely isotropic concentration tensor (Section~\ref{subsec:tensor_structure_fiber}) requires four independent BVPs: in-plane bulk, transverse shear, axial shear, and overall axisymmetric loading. Each BVP uses the same displacement ansatz as the corresponding interphase BVP in Section~\ref{subsec:fiber_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
 
-\subsubsection{Bulk Response with EGIM}
+\subsubsection{BVP 1: In-Plane Bulk Response}
 
-For the radial expansion problem, the displacement ansatz remains Eq.~\eqref{eq:ur_bulk_fiber}, but the boundary conditions at $r = r_1$ become:
+The displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. With $X_2 = 0$ (finite at the origin) and $X_3 = 1$ (far-field condition), the EGIM interface conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Cohesive:} \quad & (1-\bar{\alpha})\cdot 2(\lambda^{(2)} + \mu^{(2)})\Xi_1^{(2)} + \bar{\alpha}\cdot 2(\lambda^{(1)} + \mu^{(1)})\Xi_1^{(1)} \nonumber\\
-    &= \bar{k} r_1 \left(\Xi_1^{(2)} - \Xi_1^{(1)}\right) + \bar{k}\left(\Xi_2^{(2)} - \Xi_2^{(1)}\right)/r_1 \label{eq:bc_bulk_cohesive}\\[6pt]
-    \text{Elastic:} \quad & \frac{(\bar{\lambda} + 2\bar{\mu})}{r_1}\left[\mean{u_r}_{\bar{\alpha}} + \frac{1}{r_1}\frac{\partial \mean{u_\theta}_{\bar{\alpha}}}{\partial \theta}\right] + \sigma_{rr}^{(2)}(r_1) - \sigma_{rr}^{(1)}(r_1) = 0 \label{eq:bc_bulk_elastic}
+    \text{Cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_bulk_coh}\\[6pt]
+    \text{Elastic:} \quad & \frac{\bar{\lambda} + 2\bar{\mu}}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_bulk_el}
 \end{align}
-
-These conditions couple the interface parameters to the unknown coefficients, yielding:
 %
-\begin{empheq}[box=\fbox]{equation}
-    \mathbb{T}^{\text{eq}} = \mathbb{T}^{\text{eq}}(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}; \kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, r_1)
-    \label{eq:Teq_interface}
+These two conditions yield a $2 \times 2$ linear system for the unknowns $\{X_1, X_4\}$; see~\cite{Firooz2022} for the explicit coefficient matrix. The concentration tensor components are:
+%
+\begin{empheq}[box=\fbox]{align}
+    T_{\kappa}^{\text{eq}} &= \frac{1 + X_4}{2} \label{eq:Tkappa_egim}\\[6pt]
+    H_{\kappa}^{\text{eq}} &= \kappa^{(2)} - \mu^{(2)} X_4 \label{eq:Hkappa_egim}\\[6pt]
+    H_{31}^{\text{eq}} &= \lambda^{(1)} X_1 \label{eq:H31_egim}
+\end{empheq}
+%
+where $\kappa^{(q)} = \lambda^{(q)} + \mu^{(q)}$ is the plane-strain bulk modulus.
+
+\subsubsection{BVP 2: Transverse Shear Response}
+
+The displacement field takes the same form as Equations~\eqref{eq:Ur_transverse}--\eqref{eq:Utheta_transverse}, with eight unknowns $X_1, \ldots, X_8$ (four per phase). With $X_1 = X_2 = 0$ (finite at the origin) and far-field conditions on the matrix coefficients, the EGIM conditions at $r = r_1$ are:
+%
+\begin{align}
+    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_ts_coh_r}\\
+    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:egim_cca_ts_coh_t}\\
+    \text{Radial equilibrium:} \quad & \frac{\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{rr}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_ts_el_r}\\
+    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{2\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:egim_cca_ts_el_t}
+\end{align}
+%
+These four conditions, together with the boundary conditions, yield a $4 \times 4$ linear system for the free unknowns; see~\cite{Firooz2022} for the explicit system. The equivalent concentration tensor components are:
+%
+\begin{empheq}[box=\fbox]{align}
+    T_{44}^{\text{eq}} &= 1 + \frac{\kappa^{(2)} + 2\mu^{(2)}}{2\mu^{(2)}} \, X_8 \label{eq:T44_egim}\\[6pt]
+    H_{44}^{\text{eq}} &= \mu^{(2)} - \frac{\kappa^{(2)}}{2} \, X_8 \label{eq:H44_egim}
 \end{empheq}
 
-\subsubsection{Transverse Shear with EGIM}
+\subsubsection{BVP 3: Axial Shear Response}
 
-For the transverse shear problem, the interface conditions at $r = r_1$ read:
+The displacement field takes the same form as Equation~\eqref{eq:uz_axial}. With $X_2 = 0$ and $X_3 = 1$, the EGIM conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \\
-    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \\
-    \text{Radial equilibrium:} \quad & \frac{\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{rr}}{r_1} + \jump{\sigma_{rr}} = 0 \\
-    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{2\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0
+    \text{Cohesive:} \quad & \mean{\sigma_{rz}}_{1-\bar{\alpha}} = \bar{k}\jump{u_z} \label{eq:egim_cca_as_coh}\\[6pt]
+    \text{Elastic:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta z}}{\partial \theta} + \jump{\sigma_{rz}} = 0 \label{eq:egim_cca_as_el}
 \end{align}
-
-\subsubsection{Axial Shear with EGIM}
-
-For the axial shear problem:
 %
-\begin{align}
-    \text{Cohesive:} \quad & \mean{\sigma_{rz}}_{1-\bar{\alpha}} = \bar{k}\jump{u_z} \\
-    \text{Equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta z}}{\partial \theta} + \jump{\sigma_{rz}} = 0
-\end{align}
-
-Following Firooz et al.~\cite{Firooz2022}, the resulting concentration tensor components take explicit rational forms. For the bulk response:
+The resulting $2 \times 2$ system for $\{X_1, X_4\}$ yields:
 %
-\begin{equation}
-    T_{\kappa}^{\text{eq}} = \frac{A_\kappa}{D_\kappa}, \quad H_{\kappa}^{\text{eq}} = \frac{B_\kappa}{D_\kappa}
-\end{equation}
-%
-where $A_\kappa$, $B_\kappa$, and $D_\kappa$ are functions of the material properties and interface parameters.
+\begin{empheq}[box=\fbox]{align}
+    T_{55}^{\text{eq}} &= 1 + X_4 \label{eq:T55_egim}\\[6pt]
+    H_{55}^{\text{eq}} &= \mu^{(2)}(1 - X_4) \label{eq:H55_egim}
+\end{empheq}
 
-For the transverse shear:
-%
-\begin{equation}
-    T_{44}^{\text{eq}} = \frac{A_{44}}{D_{44}}, \quad H_{44}^{\text{eq}} = \frac{B_{44}}{D_{44}}
-\end{equation}
+\subsubsection{BVP 4: Overall Axisymmetric Response}
 
-For the axial shear:
+As in Section~\ref{subsec:fiber_bvp}, we apply an additional uniform axial stretch $u_z = \beta z$ together with the radial displacement from BVP~1. For the EGIM, the radial component satisfies the same interface conditions as BVP~1 with an identical coefficient matrix and right-hand side (since $u_z$ is continuous and does not contribute to the radial interface conditions). Hence the unknowns $X_1$ and $X_4$ are the same as in BVP~1. The coupling components of the concentration tensor are then:
 %
-\begin{equation}
-    T_{55}^{\text{eq}} = \frac{A_{55}}{D_{55}}, \quad H_{55}^{\text{eq}} = \frac{B_{55}}{D_{55}}
-\end{equation}
-
-The full expressions for $A$, $B$, and $D$ are lengthy and are given in~\cite{Firooz2022}.
+\begin{empheq}[box=\fbox]{align}
+    T_{13}^{\text{eq}} &= 1 + X_4 + T_{44}^{\text{eq}} - 2T_{11}^{(1)} \label{eq:T13_egim}\\[6pt]
+    H_{13}^{\text{eq}} &= \lambda^{(2)} \label{eq:H13_egim}\\[6pt]
+    H_{33}^{\text{eq}} &= \kappa^{(1)} + \mu^{(1)} + \frac{4\bar{\mu}}{r_1} - 2H_{31}^{\text{eq}} \label{eq:H33_egim}
+\end{empheq}
+%
+where $X_1$, $X_4$ are from BVP~1, $T_{44}^{\text{eq}}$ is from BVP~2, $H_{31}^{\text{eq}}$ is from BVP~1, and $T_{11}^{(1)} = \tfrac{1}{2}(X_1 + T_{44}^{(1)})$ combines the inclusion unknowns from BVPs~1 and~2 (see Equation~\eqref{eq:T_voigt_assembly} below for the relation between $T_{11}$ and $T_{\kappa}$, $T_{44}$). The remaining Voigt entry $T_{33}^{\text{eq}} = 1$ for all configurations.
 
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
 \label{subsec:interface_bvp_csa}
 % -------------------------------------------------------------------
 
-For spherical particles, the EGIM conditions at $r = r_1$ follow the same cohesive-elastic structure, but the surface divergence now acts on a spherical surface, which changes the tangential equilibrium terms.
+For spherical particles, the isotropic concentration tensor (Section~\ref{subsec:tensor_structure_particle}) requires two BVPs: hydrostatic and deviatoric. The EGIM conditions follow the same cohesive-elastic structure as for CCA, but the surface divergence now acts on a spherical surface, which changes the elastic equilibrium terms.
 
-\subsubsection{Hydrostatic Response with EGIM}
+\subsubsection{BVP 1: Hydrostatic Response}
 
-The displacement ansatz remains $u_r^{(q)} = X_{2q-1} r + X_{2q}/r^2$, but the interface conditions at $r = r_1$ become:
+The displacement field takes the same form as in Section~\ref{subsec:particle_bvp}, with $X_2 = 0$ (finite at the origin) and $X_3 = 1$ (far-field). The EGIM conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Cohesive:} \quad & (1-\bar{\alpha})\sigma_{rr}^{(2)}(r_1) + \bar{\alpha}\sigma_{rr}^{(1)}(r_1) = \bar{k}\left[u_r^{(2)}(r_1) - u_r^{(1)}(r_1)\right] \label{eq:bc_bulk_csa_cohesive}\\[6pt]
-    \text{Elastic:} \quad & \frac{2(\bar{\lambda} + \bar{\mu})}{r_1}\mean{u_r}_{\bar{\alpha}} + \sigma_{rr}^{(2)}(r_1) - \sigma_{rr}^{(1)}(r_1) = 0 \label{eq:bc_bulk_csa_elastic}
+    \text{Cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_csa_hydro_coh}\\[6pt]
+    \text{Elastic:} \quad & \frac{2(\bar{\lambda} + \bar{\mu})}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_csa_hydro_el}
 \end{align}
 %
-where the factor 2 in the elastic condition arises from the curvature of the spherical surface ($\nabla_s \cdot \bar{\bs{\sigma}}$ on a sphere gives $2\bar{\sigma}_{\theta\theta}/r$ for hydrostatic loading). This yields an explicit formula:
+where the factor of~2 in the elastic condition arises from the curvature of the spherical surface ($\nabla_s \cdot \bar{\bs{\sigma}}$ on a sphere gives $2\bar{\sigma}_{\theta\theta}/r_1$ for hydrostatic loading). The $2 \times 2$ system for $\{X_1, X_4\}$ yields:
 %
-\begin{equation}
-    T_{\kappa}^{\text{eq}} = \frac{A_\kappa^{\text{sph}}}{D_\kappa^{\text{sph}}}, \quad H_{\kappa}^{\text{eq}} = \frac{B_\kappa^{\text{sph}}}{D_\kappa^{\text{sph}}}
-    \label{eq:Tkappa_interface_csa}
-\end{equation}
+\begin{empheq}[box=\fbox]{align}
+    T_{\kappa}^{\text{eq}} &= 1 + X_4 \label{eq:Tkappa_egim_csa}\\[6pt]
+    H_{\kappa}^{\text{eq}} &= 3\kappa^{(2)} - 4\mu^{(2)} X_4 \label{eq:Hkappa_egim_csa}
+\end{empheq}
+%
+where $\kappa^{(q)} = \lambda^{(q)} + \tfrac{2}{3}\mu^{(q)}$ is the three-dimensional bulk modulus.
 
-\subsubsection{Deviatoric Response with EGIM}
+\subsubsection{BVP 2: Deviatoric Response}
 
-For the deviatoric problem, the interface conditions at $r = r_1$ involve four conditions coupling the eight unknown amplitudes. The radial and tangential components of the cohesive and elastic conditions read:
+The displacement field takes the same form as Equations~\eqref{eq:ur_deviatoric}--\eqref{eq:utheta_deviatoric}, with eight unknowns. With $X_3 = X_4 = 0$ (finite at the origin) and far-field conditions on the matrix coefficients, the EGIM conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:bc_dev_csa_coh_r}\\
-    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:bc_dev_csa_coh_t}\\
-    \text{Radial equilibrium:} \quad & \frac{2\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{\phi\phi}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:bc_dev_csa_el_r}\\
-    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{3\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:bc_dev_csa_el_t}
+    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_csa_dev_coh_r}\\
+    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:egim_csa_dev_coh_t}\\
+    \text{Radial equilibrium:} \quad & \frac{2\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{\phi\phi}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:egim_csa_dev_el_r}\\
+    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{3\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:egim_csa_dev_el_t}
 \end{align}
 %
-where the interface stresses are computed from the surface strains of the weighted average displacement. The resulting concentration tensor takes the same $A/D$ form as the bulk case:
+where the interface stresses are computed from the surface strains of the weighted average displacement. The resulting $4 \times 4$ system~\cite{Firooz2022} yields:
+%
+\begin{empheq}[box=\fbox]{align}
+    T_{\mu}^{\text{eq}} &= 1 + \frac{6}{5}\!\left(2 + \frac{\kappa^{(2)}}{\mu^{(2)}}\right) X_8 \label{eq:Tmu_egim_csa}\\[6pt]
+    H_{\mu}^{\text{eq}} &= 2\mu^{(2)} - \frac{2}{5}\!\left(9\kappa^{(2)} + 8\mu^{(2)}\right) X_8 \label{eq:Hmu_egim_csa}
+\end{empheq}
+
+% -------------------------------------------------------------------
+\subsection{Tensor Assembly and Effective Properties}
+\label{subsec:tensor_assembly}
+% -------------------------------------------------------------------
+
+The BVP solutions populate the full concentration tensors whose Voigt structure was defined in Section~\ref{subsec:tensor_structure_fiber} (CCA) and Section~\ref{subsec:tensor_structure_particle} (CSA). For the CCA case, the Voigt diagonal entry is related to the Walpole bulk and shear components by:
 %
 \begin{equation}
-    T_{\mu}^{\text{eq}} = \frac{A_\mu^{\text{sph}}}{D_\mu^{\text{sph}}}, \quad H_{\mu}^{\text{eq}} = \frac{B_\mu^{\text{sph}}}{D_\mu^{\text{sph}}}
-    \label{eq:Tmu_interface_csa}
+    T_{11}^{\text{eq}} = T_{\kappa}^{\text{eq}} + \frac{T_{44}^{\text{eq}}}{2}, \qquad
+    T_{12}^{\text{eq}} = T_{11}^{\text{eq}} - T_{44}^{\text{eq}}, \qquad
+    T_{33}^{\text{eq}} = 1
+    \label{eq:T_voigt_assembly}
 \end{equation}
 %
-The explicit expressions for $A$, $B$, and $D$ coefficients for both BVPs are given in Firooz et al.~\cite{Firooz2022} and implemented in the Python code. For the CSA geometry, the isotropic symmetry ensures that only two independent moduli ($\kappa_{\text{eff}}$ and $\mu_{\text{eff}}$) need to be determined, whereas the CCA case requires five.
+with $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and $T_{13}^{\text{eq}}$ coming directly from BVPs~2, 3, and~4. The stress concentration tensor $\mathbb{H}^{\text{eq}}$ follows the same structure with its own independent components from each BVP. For CSA, the isotropic tensor is determined entirely by $T_{\kappa}^{\text{eq}}$ and $T_{\mu}^{\text{eq}}$ from BVPs~1 and~2.
+
+The equivalent stiffness of the inclusion-with-interface system is:
+%
+\begin{empheq}[box=\fbox]{equation}
+    \mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot \left(\mathbb{T}^{\text{eq}}\right)^{-1}
+    \label{eq:Ceq_interface}
+\end{empheq}
+%
+This $\mathbb{C}^{\text{eq}}$ represents the stiffness of a homogeneous inclusion that produces the same far-field perturbation as the original inclusion surrounded by the imperfect interface. The macroscopic effective stiffness is then obtained from the Mori-Tanaka formula (Equation~\eqref{eq:MT_interface}) using $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$:
+%
+\begin{equation}
+    {}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\mathbb{T}^{\text{eq}}\right]^{-1}
+    \label{eq:MT_interface_ch3}
+\end{equation}
+%
+which yields the scalar effective moduli listed in Equations~\eqref{eq:kappa_eff_interface}--\eqref{eq:muax_eff_interface} for CCA and Equations~\eqref{eq:kappa_eff_interface_csa}--\eqref{eq:mu_eff_interface_csa} for CSA.
 
 % ===================================================================
 \section{Neural Network Architectures}
