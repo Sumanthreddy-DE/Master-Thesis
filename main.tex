@@ -615,7 +615,14 @@
 \ofoot{\pagemark}
 \pagestyle{scrheadings}
 
-% --- 8. HYPERLINKS (Load Last) ---
+% --- 8. TITLE PAGE PACKAGES ---
+\usepackage[absolute]{textpos}
+\textblockorigin{0mm}{0mm}
+\usepackage{helvet}
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{FAU_Blue}{RGB}{0,73,116}
+
+% --- 9. HYPERLINKS (Load Last) ---
 \usepackage[colorlinks=true, linkcolor=blue, citecolor=green, urlcolor=blue]{hyperref}
 \usepackage{bookmark}
 
@@ -634,42 +641,47 @@
 %   TITLE PAGE
 % -------------------------------------------------------------------
 \begin{titlepage}
-    \centering
-    % Uncomment and add logo if available:
-    % \includegraphics[width=0.4\textwidth]{fau_logo.png} 
-    \vspace{3.5cm}
-    
-    {\scshape\large Friedrich-Alexander-Universität \par}
-    {\scshape\large Erlangen-Nürnberg \par}
-    \vspace{0.4cm}
-    {\scshape\large Faculty of Engineering \par}
-    
-    \vspace{1.5cm}
-    
-    {\huge\bfseries Bridging Interphase and Interface Models for Composites — Parameter Identification in Mechanical Problems \par}
-    
-    \vspace{1 cm}
-    
-    {\Large\itshape Master's Thesis \par}
-    \vspace{0.3cm}
-    {\Large Submitted in partial fulfillment of the requirements for the degree \par}
-    {\large\bfseries Master of Science (M.Sc.) \par}
-    {\small in \par}
-    {\large\bfseries Computational Engineering \par}
-    
-    \vspace{1cm}
-    
-    \begin{tabular}{ll}
-        \textbf{Author:} & Sumanth Reddy Settipalli \\
-        \textbf{Matriculation Number:} & 23152542 \\
-        \textbf{Submission Date:} & 02.03.2026 \\
-        \textbf{Supervisor:} & Soheil Firooz, M.Sc. \\
-        \textbf{Advisor:} & Prof. Dr.-Ing. Paul Steinmann \\
-        \textbf{Chair:} & Lehrstuhl für Technische Mechanik (LTM)
-    \end{tabular}
-    
-    \vfill
-    {\large Erlangen, Germany}
+    \sffamily  % Use Helvetica for title page only
+
+    \begin{textblock*}{40mm}[0,1](55mm,50mm)
+      \includegraphics[scale=0.15]{LTM_Logo.png}
+    \end{textblock*}
+
+    \begin{textblock*}{110mm}[0,1](110mm,50mm)
+      \color{FAU_Blue}\bfseries\Large
+      Lehrstuhl f{\"u}r Technische Mechanik
+    \end{textblock*}
+
+    \begin{center}
+      \color{black}
+      \vspace*{40mm}
+
+      \parbox{0.5\textwidth}{\LARGE \centering Bridging Interphase and Interface Models for Composites --- Parameter Identification in Mechanical Problems}
+
+      \vspace*{12mm}
+
+      \parbox{0.5\textwidth}{\large \centering Master's Thesis}
+
+      \vspace*{23mm}
+
+      \parbox{0.5\textwidth}{\large \centering Sumanth Reddy Settipalli}
+
+      \vspace*{2mm}
+
+      \parbox{0.5\textwidth}{\large \centering 23152542}
+
+      \vspace*{90mm}
+
+      \parbox{0.5\textwidth}{\large \centering 02.03.2026}
+
+      \vspace*{2mm}
+
+      \parbox{0.8\textwidth}{\large \centering Supervisor: Soheil Firooz, M.Sc. \\ Advisor: Prof. Dr.-Ing. Paul Steinmann}
+    \end{center}
+
+    \begin{textblock*}{60mm}[0,1](55mm,310mm)
+      \includegraphics[scale=0.17]{FAU_Logo.png}
+    \end{textblock*}
 \end{titlepage}
 
 % -------------------------------------------------------------------
