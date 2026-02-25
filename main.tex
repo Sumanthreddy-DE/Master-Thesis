@@ -640,8 +640,10 @@
 % -------------------------------------------------------------------
 %   TITLE PAGE
 % -------------------------------------------------------------------
+\newgeometry{left=30mm, right=20mm, top=45mm, bottom=22mm}
 \begin{titlepage}
     \sffamily  % Use Helvetica for title page only
+    \setlength{\parindent}{0mm}
 
     \begin{textblock*}{40mm}[0,1](55mm,50mm)
       \includegraphics[scale=0.15]{LTM_Logo.png}
@@ -683,6 +685,7 @@
       \includegraphics[scale=0.17]{FAU_Logo.png}
     \end{textblock*}
 \end{titlepage}
+\restoregeometry
 
 % -------------------------------------------------------------------
 %   DECLARATION OF AUTHORSHIP
