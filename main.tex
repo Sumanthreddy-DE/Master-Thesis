@@ -2279,14 +2279,14 @@ Where the interphase model (Section~\ref{sec:multicoated_forward}) uses multiple
 \label{subsec:interface_problem_setup}
 % -------------------------------------------------------------------
 
-We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ embedded directly in the matrix $(\kappa^{(2)}, \mu^{(2)})$---there are no coating layers. At the interface $r = r_1$, two types of condition hold. The \textit{cohesive} condition relates the weighted traction average to the displacement jump:
+We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ embedded directly in the matrix $(\kappa^{(2)}, \mu^{(2)})$ meaning there are no coating layers. At the interface $r = r_1$, two types of condition hold. The \textit{orthogonal equilibrium} condition relates the weighted traction average to the displacement jump:
 %
 \begin{equation}
     \mean{\bs{t}}_{1-\bar{\alpha}} = \bar{k}\jump{\bs{u}}
     \label{eq:egim_cohesive}
 \end{equation}
 %
-where $\mean{\cdot}_{1-\bar{\alpha}} = (1-\bar{\alpha})(\cdot)^{(2)} + \bar{\alpha}(\cdot)^{(1)}$ is the weighted average. The \textit{elastic} condition relates the traction jump to the surface divergence of the interface stress:
+The \textit{tangential equilibrium} condition relates the traction jump to the surface divergence of the interface stress:
 %
 \begin{equation}
     \jump{\bs{t}} = -\nabla_s \cdot \bar{\bs{\sigma}}
@@ -2307,8 +2307,8 @@ For cylindrical fibres, the transversely isotropic concentration tensor (Section
 The displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. With $X_2 = 0$ (finite at the origin) and $X_3 = 1$ (far-field condition), the EGIM interface conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_bulk_coh}\\[6pt]
-    \text{Elastic:} \quad & \frac{\bar{\lambda} + 2\bar{\mu}}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_bulk_el}
+    \text{Orthogonal Equilibrium:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_bulk_coh}\\[6pt]
+    \text{Tangential Equilibrium:} \quad & \frac{\bar{\lambda} + 2\bar{\mu}}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_bulk_el}
 \end{align}
 %
 These two conditions yield a $2 \times 2$ linear system for the unknowns $\{X_1, X_4\}$; see~\cite{Firooz2022} for the explicit coefficient matrix. The concentration tensor components are:
@@ -2383,7 +2383,7 @@ The displacement field takes the same form as in Section~\ref{subsec:particle_bv
     \text{Elastic:} \quad & \frac{2(\bar{\lambda} + \bar{\mu})}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_csa_hydro_el}
 \end{align}
 %
-where the factor of~2 in the elastic condition arises from the curvature of the spherical surface ($\nabla_s \cdot \bar{\bs{\sigma}}$ on a sphere gives $2\bar{\sigma}_{\theta\theta}/r_1$ for hydrostatic loading). The $2 \times 2$ system for $\{X_1, X_4\}$ yields:
+These equilibrium and boundary conditions gives $2 \times 2$ system for $\{X_1, X_4\}$ which yields:
 %
 \begin{empheq}[box=\fbox]{align}
     T_{\kappa}^{\text{eq}} &= 1 + X_4 \label{eq:Tkappa_egim_csa}\\[6pt]
