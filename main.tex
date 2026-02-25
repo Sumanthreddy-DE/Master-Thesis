@@ -640,9 +640,10 @@
 % -------------------------------------------------------------------
 %   TITLE PAGE
 % -------------------------------------------------------------------
-\newgeometry{left=30mm, right=20mm, top=45mm, bottom=22mm}
+\newgeometry{left=25mm, right=25mm, top=25mm, bottom=15mm}
 \begin{titlepage}
     \sffamily  % Use Helvetica for title page only
+    \begin{spacing}{1.0}  % Override onehalfspacing for title page
     \setlength{\parindent}{0mm}
 
     \begin{textblock*}{40mm}[0,1](55mm,50mm)
@@ -672,7 +673,7 @@
 
       \parbox{0.5\textwidth}{\large \centering 23152542}
 
-      \vspace*{90mm}
+      \vfill
 
       \parbox{0.5\textwidth}{\large \centering 02.03.2026}
 
@@ -681,9 +682,11 @@
       \parbox{0.8\textwidth}{\large \centering Supervisor: Soheil Firooz, M.Sc. \\ Advisor: Prof. Dr.-Ing. Paul Steinmann}
     \end{center}
 
-    \begin{textblock*}{60mm}[0,1](55mm,310mm)
+    \begin{textblock*}{60mm}[0,1](55mm,285mm)
       \includegraphics[scale=0.17]{FAU_Logo.png}
     \end{textblock*}
+
+    \end{spacing}
 \end{titlepage}
 \restoregeometry
 
