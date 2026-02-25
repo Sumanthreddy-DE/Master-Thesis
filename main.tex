@@ -1006,28 +1006,28 @@ This work is structured as follows:
 \chapter{Theoretical Foundations}
 \label{ch:theory}
 
-This chapter presents the theoretical foundations of the present work. We begin with a brief set of preliminaries---the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby frameworks---that the subsequent models build upon. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where a graded interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. Section~\ref{sec:nn_background} then introduces the neural network and physics-informed learning concepts needed for the inverse methodology of Chapter~\ref{ch:methodology}.
+This chapter presents the theoretical foundations of our present work. We begin with a brief set of fundamentals in Section~\ref{sec:preliminaries} starting with the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby formulations. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where an interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. Section~\ref{sec:nn_background} then introduces the neural network and physics-informed learning concepts needed for the inverse parameter Identification which we will continue in Chapter~\ref{ch:methodology}.
 
 % ===================================================================
 \section{Preliminaries}
 \label{sec:preliminaries}
 % ===================================================================
 
-Before developing the two models, we establish the continuum mechanics framework that underpins homogenization.
+Before setting up the two models, we establish the continuum mechanics framework that supports homogenization.
 
 % -------------------------------------------------------------------
 \subsection{Representative Volume Element}
 \label{subsec:rve}
 % -------------------------------------------------------------------
 
-Homogenization relies on the concept of a Representative Volume Element (RVE)---a material domain $\mathcal{V}$ large enough to capture the statistical character of the microstructure yet small enough that macroscopic fields remain approximately uniform across it \cite{Hill1963}. This separation of scales,
+Homogenization relies on the concept of a Representative Volume Element (RVE) which is basically a material domain $\mathcal{V}$ that is large enough to capture the characteristics of the microstructure yet small enough that macroscopic fields remain approximately uniform across it \cite{Hill1963}. This separation of scales,
 %
 \begin{equation}
     \ell_{\text{micro}} \;\ll\; \ell_{\text{RVE}} \;\ll\; \ell_{\text{macro}},
     \label{eq:scale_separation}
 \end{equation}
 %
-where $\ell_{\text{micro}}$ is the characteristic inclusion size (fibre radius or particle diameter), $\ell_{\text{RVE}}$ the RVE dimension, and $\ell_{\text{macro}}$ the structural length scale, is the basic requirement for any mean-field homogenization scheme. When this condition holds, the heterogeneous material can be replaced by an equivalent homogeneous medium whose effective stiffness ${}^{\mathrm{M}}\hspace{-1pt}\mathbb{C}$ relates macroscopic stress and strain.
+where $\ell_{\text{micro}}$ is the characteristic inclusion size (fiber radius or particle diameter), $\ell_{\text{RVE}}$ is the RVE dimension, and $\ell_{\text{macro}}$ is the structural length scale. This condition is the basic requirement for any mean-field homogenization scheme. When this condition holds, the heterogeneous material can be replaced by an equivalent homogeneous medium whose effective stiffness ${}^{\mathrm{M}}\hspace{-1pt}\mathbb{C}$ relates macroscopic stress and strain.
 
 For composite cylinder and composite sphere assemblages used in this work, the RVE is a single coated inclusion surrounded by matrix material. Hashin \cite{Hashin1964} showed that assemblages of such unit cells, packed to fill all available space, yield exact effective properties. This is a stronger result than approximate mean-field estimates, and it provides the benchmark against which our numerical implementations are verified in Chapter~\ref{ch:results}.
 
@@ -1036,7 +1036,7 @@ For composite cylinder and composite sphere assemblages used in this work, the R
 \label{subsec:balance_equations}
 % -------------------------------------------------------------------
 
-Within the RVE, each phase satisfies the static balance of linear momentum in the absence of body forces:
+Within the RVE, each phase(fiber/coatings/matrix) satisfies the static balance of linear momentum in the absence of body forces:
 %
 \begin{equation}
     \nabla \cdot \bs{\sigma} = \bs{0}, \quad \bs{x} \in \mathcal{B}
@@ -1090,14 +1090,14 @@ where $\lambda$ and $\mu$ are the Lam\'{e} parameters. In matrix form:
     \label{eq:stiffness_matrix}
 \end{equation}
 
-The plane-strain bulk modulus is $\kappa = \lambda + \mu$ and the 3D bulk modulus is $K = \lambda + \frac{2}{3}\mu$.
+The plane-strain bulk modulus is $\kappa = \lambda + \mu$ and the 3D bulk modulus is $\kappa = \lambda + \frac{2}{3}\mu$.
 
 % -------------------------------------------------------------------
 \subsection{Hill-Mandel Condition}
 \label{subsec:hill_mandel}
 % -------------------------------------------------------------------
 
-The Hill-Mandel condition ensures energy consistency between the micro and macro scales. It requires that the macroscopic stress power equals the volume average of the microscopic stress power over the RVE. For a body $\mathcal{B}$ with boundary $\partial\mathcal{B}$ subject to linear displacement boundary conditions $\bs{u} = {}^{\mathrm{M}}\hspace{-1pt}\bs{\varepsilon} \cdot \bs{x}$, the macroscopic strain and stress are defined as boundary integrals \cite{Firooz2022}:
+The Hill-Mandel condition ensures energy consistency between the micro and macro scales. For a body $\mathcal{B}$ with boundary $\partial\mathcal{B}$ subject to linear displacement boundary conditions $\bs{u} = {}^{\mathrm{M}}\hspace{-1pt}\bs{\varepsilon} \cdot \bs{x}$, the macroscopic strain and stress are defined as boundary integrals \cite{Firooz2022}:
 %
 \begin{align}
     {}^{\mathrm{M}}\hspace{-1pt}\bs{\varepsilon} &= \frac{1}{\mathcal{V}} \int_{\partial\mathcal{B}} \frac{1}{2} \left(\bs{u} \otimes \bs{n} + \bs{n} \otimes \bs{u}\right) \dd A \label{eq:macro_strain_boundary}\\[4pt]
@@ -1120,17 +1120,17 @@ This is satisfied by linear displacement (Dirichlet) boundary conditions, unifor
 \label{subsec:eshelby_problem}
 % -------------------------------------------------------------------
 
-The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{L}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the \textit{dilute} strain concentration tensor $\mathbb{T}_{\text{dil}}$ satisfies:
+The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{L}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the  strain concentration tensor $\mathbb{T}$ satisfies:
 %
 \begin{equation}
-    \bs{\varepsilon}^{(1)} = \mathbb{T}_{\text{dil}} : \bs{\varepsilon}^{(0)}, \quad
-    \mathbb{T}_{\text{dil}} = \left[\mathbb{I} + \mathbb{S} : \left(\mathbb{L}^{(0)}\right)^{-1} : \left(\mathbb{L}^{(1)} - \mathbb{L}^{(0)}\right)\right]^{-1}
+    \bs{\varepsilon}^{(1)} = \mathbb{T} : \bs{\varepsilon}^{(0)}, \quad
+    \mathbb{T} = \left[\mathbb{I} + \mathbb{S} : \left(\mathbb{L}^{(0)}\right)^{-1} : \left(\mathbb{L}^{(1)} - \mathbb{L}^{(0)}\right)\right]^{-1}
     \label{eq:eshelby_dilute}
 \end{equation}
 %
 where $\mathbb{S}$ is the Eshelby tensor, which depends only on the inclusion shape and the matrix Poisson's ratio. For spherical inclusions and cylindrical fibres, $\mathbb{S}$ has well-known closed-form expressions \cite{Eshelby1957}.
 
-The Mori-Tanaka method \cite{Mori1973, Benveniste1987} extends this dilute result to finite inclusion volume fractions by a mean-field assumption: each inclusion experiences the \textit{average matrix strain} $\bs{\varepsilon}^{(2)}$ (rather than the macroscopic strain) as its far-field condition. The effective stiffness then follows from the dilute tensors and volume fractions.
+The Mori-Tanaka method \cite{Mori1973, Benveniste1987} extends this result to finite inclusion volume fractions by a mean-field assumption: each inclusion experiences the \textit{average matrix strain} $\bs{\varepsilon}^{(2)}$ (rather than the macroscopic strain) as its far-field condition. The effective stiffness then follows from the dilute tensors and volume fractions.
 
 For composites with imperfect interfaces, the classical Eshelby formula~\eqref{eq:eshelby_dilute} no longer applies directly, because the interface conditions modify the stress and displacement fields around the inclusion. In this case, the concentration tensors are computed by solving boundary value problems that incorporate the specific interface constitutive law---a procedure detailed in Chapter~\ref{ch:methodology}.
 
@@ -1139,7 +1139,7 @@ For composites with imperfect interfaces, the classical Eshelby formula~\eqref{e
 \label{sec:interphase_model}
 % ===================================================================
 
-In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}_h$ is surrounded by coating layers with stiffnesses $\mathbb{L}_1, \mathbb{L}_2, \ldots, \mathbb{L}_N$, all embedded in an infinite matrix with stiffness $\mathbb{L}_0$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}^{(h)}$ is surrounded by coating layers with stiffnesses $\mathbb{L}^{(1)}, \mathbb{L}^{(2)}, \ldots, \mathbb{L}^{(N)}$, all embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles.
 
 % -------------------------------------------------------------------
 \subsection{Average Fields and Volume Fractions}
@@ -1202,12 +1202,11 @@ where $r_1$ is the core radius and $r_m$ denotes the outer radius of coating lay
 The multi-coated inclusion model rests on the following assumptions:
 
 \begin{enumerate}
-    \item \textbf{Linear elasticity} in all phases---the core, each coating layer, and the matrix obey Hooke's law with small deformations.
-    \item \textbf{Isotropic phase materials}: each phase is characterised by two Lam\'{e} parameters $(\lambda^{(q)}, \mu^{(q)})$, constant within each phase.
-    \item \textbf{Perfect bonding} between adjacent layers---displacement and traction are continuous across every internal boundary $\partial\Omega_m$.
+    \item \textbf{Linear elasticity} in all phases i.e, core, each coating layer, and matrix obey Hooke's law with small deformations.
+    \item \textbf{Isotropic phase materials}: Each phase is characterised by two Lam\'{e} parameters $(\kappa^{(q)}, \mu^{(q)})$, constant within each phase.
+    \item \textbf{Perfect bonding} between adjacent layers which means displacement and traction are continuous across every internal boundary $\partial\Omega_m$.
     \item \textbf{Piecewise-constant property approximation}: a continuously graded interphase is discretised into $N$ layers of uniform properties.
     \item \textbf{Dilute embedding}: the multicoated inclusion sits in an infinite matrix subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$ (Eshelby problem setting).
-    \item \textbf{Concentration tensor extraction}: the tensors $\mathbb{T}^{(q)}$ and $\mathbb{H}^{(q)}$ are obtained from volume-averaged strain and stress fields over each phase, computed from the BVP solutions derived in Chapter~\ref{ch:methodology}.
 \end{enumerate}
 
 % -------------------------------------------------------------------
@@ -1215,7 +1214,7 @@ The multi-coated inclusion model rests on the following assumptions:
 \label{sec:coordinate_transform}
 % -------------------------------------------------------------------
 
-The boundary value problems are formulated in curvilinear coordinates---cylindrical $(r, \theta, z)$ for fibres and spherical $(r, \theta, \phi)$ for particles. Since the concentration tensors are expressed in Voigt notation with respect to Cartesian axes, we need transformation matrices that convert between coordinate systems.
+The boundary value problems are formulated in cylindrical coordinates $(r, \theta, z)$ for fibres and spherical coordinates $(r, \theta, \phi)$ for particles. Since the concentration tensors are expressed in Voigt notation with respect to Cartesian axes, we need transformation matrices that convert between coordinate systems.
 
 \subsubsection{Rotation Matrix}
 \label{subsec:rotation_matrix}
@@ -1259,7 +1258,7 @@ For \textbf{spherical coordinates} (3D, CSA):
 \subsubsection{Voigt Transformation Matrices}
 \label{subsec:Q_matrices}
 
-The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively. The distinction arises from the engineering shear strain convention: strain components carry a factor of 2 (e.g., $\gamma_{12} = 2\varepsilon_{12}$), while stress components do not.
+The rotator $\bs{R}$ is represented in Voigt notation by two $6 \times 6$ matrices $\bs{Q}_\varepsilon$ and $\bs{Q}_\sigma$ for transforming strains and stresses, respectively. 
 
 The strain transformation matrix $\bs{Q}_\varepsilon$ ($\bs{\varepsilon}' = \bs{Q}_\varepsilon \cdot \bs{\varepsilon}$):
 %
@@ -1363,28 +1362,28 @@ These are volume-weighted averages over all sub-phases. The BVPs that determine 
 \subsubsection{Tensor Structure for Fibre-Reinforced Composites (2D, CCA)}
 \label{subsec:tensor_structure_fiber}
 
-For aligned cylindrical fibres, the composite exhibits transverse isotropy. The concentration tensors in Voigt notation take the block-diagonal form:
+For long cylindrical fibers, the composite exhibits transverse isotropy. The strain concentration tensor in Voigt notation take the block-diagonal form:
 %
 \begin{equation}
     \mathbb{T}^{(q)} =
     \begin{bmatrix}
-        T_{\kappa}^{(q)} + \frac{4}{3}T_{44}^{(q)} & T_{\kappa}^{(q)} - \frac{2}{3}T_{44}^{(q)} & T_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
-        T_{\kappa}^{(q)} - \frac{2}{3}T_{44}^{(q)} & T_{\kappa}^{(q)} + \frac{4}{3}T_{44}^{(q)} & T_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
-        T_{31}^{(q)} & T_{31}^{(q)} & T_{33}^{(q)} & 0 & 0 & 0 \\[4pt]
-        0 & 0 & 0 & T_{44}^{(q)} & 0 & 0 \\[4pt]
-        0 & 0 & 0 & 0 & T_{55}^{(q)} & 0 \\[4pt]
-        0 & 0 & 0 & 0 & 0 & T_{55}^{(q)}
+        T_{\kappa}^{(q)} + T_{44}^{(q)} & T_{\kappa}^{(q)} - T_{44}^{(q)} & T_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
+        T_{\kappa}^{(q)} - T_{44}^{(q)} & T_{\kappa}^{(q)} + T_{44}^{(q)} & T_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 1 & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 2T_{44}^{(q)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 2T_{55}^{(q)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & 2T_{55}^{(q)}
     \end{bmatrix}
     \label{eq:T_fiber_structure}
 \end{equation}
 %
-The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T_{44}^{(q)}$ and $T_{55}^{(q)}$ govern transverse and axial shear. The stress-strain concentration tensor has the corresponding structure:
+The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T_{44}^{(q)}$ and $T_{55}^{(q)}$ govern transverse and axial shear. The stress concentration tensor has the corresponding structure:
 %
 \begin{equation}
     \mathbb{H}^{(q)} =
     \begin{bmatrix}
-        H_{11}^{(q)} & H_{11}^{(q)} - 2H_{44}^{(q)} & H_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
-        H_{11}^{(q)} - 2H_{44}^{(q)} & H_{11}^{(q)} & H_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
+        H_{\kappa}^{(q)} + H_{44}^{(q)} & H_{\kappa}^{(q)} - H_{44}^{(q)} & H_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
+        H_{\kappa}^{(q)} - H_{44}^{(q)} & H_{\kappa}^{(q)} + H_{44}^{(q)} & H_{13}^{(q)} & 0 & 0 & 0 \\[4pt]
         H_{31}^{(q)} & H_{31}^{(q)} & H_{33}^{(q)} & 0 & 0 & 0 \\[4pt]
         0 & 0 & 0 & H_{44}^{(q)} & 0 & 0 \\[4pt]
         0 & 0 & 0 & 0 & H_{55}^{(q)} & 0 \\[4pt]
@@ -1393,13 +1392,14 @@ The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T
     \label{eq:H_fiber_structure}
 \end{equation}
 
-Six independent components are needed: $T_{\kappa}^{(q)}$, $T_{44}^{(q)}$, $T_{55}^{(q)}$ for $\mathbb{T}$, and $H_{11}^{(q)}$, $H_{44}^{(q)}$, $H_{55}^{(q)}$ for $\mathbb{H}$. The remaining entries ($T_{13}$, $T_{31}$, $T_{33}$, $H_{13}$, $H_{31}$, $H_{33}$) follow from the in-plane and axisymmetric BVP solutions (Section~\ref{subsec:fiber_bvp}).
+All the independent components needed for $\mathbb{T}$, and $\mathbb{H}$ are calculated from the BVP solutions (Section~\ref{subsec:fiber_bvp}).
 
 \subsubsection{Tensor Structure for Particle-Reinforced Composites (3D, CSA)}
 \label{subsec:tensor_structure_particle}
 
 For spherical particles, the tensors exhibit full isotropy:
 %
+The strain concentration tensor in Voigt notation take the block-diagonal form:
 \begin{equation}
     \mathbb{T}^{(q)} =
     \begin{bmatrix}
@@ -1412,8 +1412,22 @@ For spherical particles, the tensors exhibit full isotropy:
     \end{bmatrix}
     \label{eq:T_particle_structure}
 \end{equation}
+The stress concentration tensor has the corresponding structure:
+\begin{equation}
+    \mathbb{H}^{(q)} =
+    \begin{bmatrix}
+        H_{\kappa}^{(q)} + \frac{4}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & 0 & 0 & 0 \\[4pt]
+        H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} + \frac{4}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & 0 & 0 & 0 \\[4pt]
+        H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} - \frac{2}{3}H_{\mu}^{(q)} & H_{\kappa}^{(q)} + \frac{4}{3}H_{\mu}^{(q)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & H_{\mu}^{(q)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & H_{\mu}^{(q)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & H_{\mu}^{(q)}
+    \end{bmatrix}
+    \label{eq:H_particle_structure}
+\end{equation}
 
-Only two independent components are needed: $T_{\kappa}^{(q)}$ (bulk) and $T_{\mu}^{(q)}$ (shear). This simplification---compared to the six components for fibres---makes the CSA geometry more tractable for inverse parameter identification (Chapter~\ref{ch:results}).
+
+All the independent components needed for $\mathbb{T}$, and $\mathbb{H}$ are calculated from the BVP solutions (Section~\ref{subsec:particle_bvp}).
 
 % -------------------------------------------------------------------
 \subsection{Homogenization}
@@ -1461,7 +1475,7 @@ where $\kappa^{(2)} = \lambda^{(2)} + \frac{2}{3}\mu^{(2)}$ is the 3D bulk modul
 \label{sec:interface_models}
 % ===================================================================
 
-An alternative to modelling the interphase as a volumetric region is to collapse it onto a zero-thickness surface with its own constitutive law. This is the idea behind interface models. Instead of discretising the graded region into layers, one assigns material-like parameters directly to the surface separating inclusion and matrix. In this section we develop the Extended General Interface Model (EGIM) \cite{Firooz2022}, which is the most general linear interface model and encompasses all simpler interface models as special cases.
+An alternative to modelling the interphase as a volumetric region is to shrink it to a zero-thickness interface with its own constitutive law. This is the idea behind interface models. Instead of discretising the graded region into layers, we can assign material-like parameters directly to the surface separating inclusion and matrix. In this section we develop the Extended General Interface Model (EGIM) \cite{Firooz2022}, which is the most general linear interface model and encompasses all simpler interface models as special cases.
 
 % -------------------------------------------------------------------
 \subsection{Interface Kinematics}
@@ -1660,11 +1674,22 @@ The surface strains on a cylindrical interface at radius $r_1$ are computed from
 For particle-reinforced composites with a spherical interface, the tangential behaviour in the $(\theta, \phi)$ plane reads:
 %
 \begin{equation}
-    \bar{\bs{\sigma}} = \bar{\lambda}(\text{tr}\,\bar{\bs{\varepsilon}})\bs{P} + 2\bar{\mu}\,\bar{\bs{\varepsilon}}
-    \label{eq:interface_tangential_spherical}
+    \begin{bmatrix}
+        \bar{\sigma}_{\theta\theta} \\ \bar{\sigma}_{\phi\phi} \\ \bar{\sigma}_{\theta \phi}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \bar{\lambda} + 2\bar{\mu} & \bar{\lambda} & 0 \\
+        \bar{\lambda} & \bar{\lambda} + 2\bar{\mu} & 0 \\
+        0 & 0 & \bar{\mu}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \bar{\varepsilon}_{\theta\theta} \\ \bar{\varepsilon}_{\phi\phi} \\ 2\bar{\varepsilon}_{\theta \phi}
+    \end{bmatrix}
+    \label{eq:interface_spherical}
 \end{equation}
 %
-where the surface strain $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}}_{\bar{\alpha}})$ is computed using the weighted average displacement at the spherical interface. Due to the full isotropy of the spherical geometry, only two interface moduli ($\bar{\lambda}$, $\bar{\mu}$) govern the tangential response---there is no distinction between in-plane and out-of-plane shear as in the cylindrical case.
+where the surface strain $\bar{\bs{\varepsilon}} = \text{sym}(\nabla_s \mean{\bs{u}}_{\bar{\alpha}})$ is computed using the weighted average displacement at the spherical interface. Due to the full isotropy of the spherical geometry, only two interface moduli ($\bar{\lambda}$, $\bar{\mu}$) govern the tangential response which means there is no distinction between in-plane and out-of-plane shear as in the cylindrical case.
 
 \subsubsection{Orthogonal (Cohesive) Response}
 
@@ -1683,7 +1708,7 @@ The traction-displacement relation across the interface follows:
     \label{eq:interface_orthogonal}
 \end{equation}
 %
-For isotropic interfaces, a single parameter $\bar{k}$ suffices:
+For isotropic interfaces, a single parameter $\bar{k}$ is enough:
 %
 \begin{equation}
     \bar{k}_r = \bar{k}_\theta = \bar{k}_z = \bar{k}
@@ -1701,24 +1726,22 @@ The complete EGIM is characterised by four independent parameters:
     \item $\bar{\alpha}$ --- interface position parameter (location within the original interphase)
 \end{enumerate}
 
-For 2D plane-strain analysis, the interface in-plane bulk modulus $\bar{\kappa} = \bar{\lambda} + \bar{\mu}$ provides a convenient alternative to $\bar{\lambda}$.
+
 
 % -------------------------------------------------------------------
 \subsection{Model Assumptions}
 \label{subsec:interface_assumptions}
 % -------------------------------------------------------------------
 
-The EGIM rests on assumptions distinct from those of the multi-coated model:
+The EGIM rests on assumptions different from those of the multi-coated model:
 
 \begin{enumerate}
     \item \textbf{Zero-thickness interface}: the finite-thickness interphase is collapsed onto a surface $\mathcal{I}$ with no volume. All interphase effects are encoded in the surface constitutive law.
     \item \textbf{Linear interface response}: both the tangential (elastic/membrane) and orthogonal (cohesive/spring) components obey linear constitutive relations with constant parameters.
     \item \textbf{Isotropic interface}: for the standard model, a single set of four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ governs the entire interface behaviour.
     \item \textbf{Small deformations}: consistent with the bulk linearised kinematics.
-    \item \textbf{Direct BVP extraction}: the concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ are computed by solving boundary value problems with the EGIM conditions at $r = r_1$, rather than using the classical Eshelby formula~\eqref{eq:eshelby_dilute}.
 \end{enumerate}
 
-A consequence of assumption~1 is that the interface model cannot reproduce all features of a finite-thickness graded interphase. In particular, the transverse shear response ($G_{\text{tr}}$) in CCA composites shows a persistent gap of approximately 18\% between the best-fit interface prediction and the three-layered interphase reference, regardless of the number of interface parameters (Section~\ref{sec:ei_gap}). This structural limitation motivates the inverse PINN approach developed in Chapter~\ref{ch:results}.
 
 % -------------------------------------------------------------------
 \subsection{Modified Hill-Mandel Condition}
@@ -1752,20 +1775,137 @@ In contrast to the interphase model, where $\mathbb{T}^{\text{eq}}$ and $\mathbb
 The concentration tensors satisfy the same relations as before:
 %
 \begin{equation}
-    \bs{\varepsilon}^{(1)} = \mathbb{T}^{\text{eq}} : \bs{\varepsilon}^{(0)}, \quad
-    \bs{\sigma}^{(1)} = \mathbb{H}^{\text{eq}} : \bs{\varepsilon}^{(0)}
+    \bs{\varepsilon}^{(1)} = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)} = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)}
     \label{eq:interface_concentration_def}
 \end{equation}
 %
+\begin{equation}
+    \bs{\varepsilon}^{(eq)} = \mathbb{T}^{\text{eq}} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)} = \mathbb{H}^{\text{eq}} : \bs{\varepsilon}^{(0)}
+    \label{eq:interface_concentration_def}
+\end{equation}
 but now the components of $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ depend on the interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ in addition to the bulk material properties. They are obtained by solving interface-modified BVPs, as derived in Chapter~\ref{ch:methodology}.
 
 \subsubsection{Tensor Structure for Fibre Composites (2D, CCA)}
 
-The transversely isotropic structure is the same as in Equation~\eqref{eq:T_fiber_structure}. The tensor $\mathbb{T}^{\text{eq}}$ for the interface model has the same block-diagonal form with components $T_{\kappa}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and the off-diagonal entries $T_{13}^{\text{eq}}$, $T_{31}^{\text{eq}}$, $T_{33}^{\text{eq}}$. The stress-strain tensor $\mathbb{H}^{\text{eq}}$ follows the same pattern. The key difference is that these components are functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ rather than being volume-weighted sums over coating layers.
+For long cylindrical fibers, the composite exhibits transverse isotropy. The strain concentration tensor for fiber in Voigt notation take the block-diagonal form:
+%
+\begin{equation}
+    \mathbb{T}^{(1)} =
+    \begin{bmatrix}
+        T_{11}^{(1)}  & T_{11}^{(1)} - T_{44}^{(1)} & T_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(1)} - T_{44}^{(1)} &  T_{11}^{(1)} & T_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 1 & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & T_{44}^{(1)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & T_{55}^{(1)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & T_{55}^{(1)}
+    \end{bmatrix}
+    \label{eq:T_fiber_Interface}
+\end{equation}
+%
+The stress concentration tensor has the corresponding structure:
+%
+\begin{equation}
+    \mathbb{H}^{(1)} =
+    \begin{bmatrix}
+        H_{11}^{(1)} & H_{11}^{(1)} - 2H_{44}^{(1)} & H_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(1)} - 2H_{44}^{(1)} & H_{11}^{(1)} & H_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        H_{31}^{(1)} & H_{31}^{(1)} & H_{33}^{(1)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & H_{44}^{(1)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & H_{55}^{(1)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & H_{55}^{(1)}
+    \end{bmatrix}
+    \label{eq:H_fiber_interface}
+\end{equation}
+
+For the equivalent inhomogeneity, the strain interaction tensor read
+\begin{equation}
+    \mathbb{T}^{(eq)} =
+    \begin{bmatrix}
+        T_{11}^{(eq)}  & T_{11}^{(eq)} - T_{44}^{(eq)} & T_{13}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(eq)} - T_{44}^{(eq)} &  T_{11}^{(eq)} & T_{13}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 1 & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & T_{44}^{(eq)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & T_{55}^{(eq)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & T_{55}^{(eq)}
+    \end{bmatrix}
+    \label{eq:T_fiber_Interface}
+\end{equation}
+The stress concentration tensor for the equivalent inhomogenity has the corresponding structure:
+\begin{equation}
+    \mathbb{H}^{(eq)} =
+    \begin{bmatrix}
+        H_{11}^{(eq)} & H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{13}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{11}^{(eq)} & H_{13}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        H_{31}^{(eq)} & H_{31}^{(eq)} & H_{33}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & H_{44}^{(eq)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & H_{55}^{(eq)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & H_{55}^{(eq)}
+    \end{bmatrix}
+    \label{eq:H_fiber_interface}
+\end{equation}
+
+The tensor $\mathbb{T}^{\text{eq}}$ for the interface model has the same block-diagonal form with components $T_{\kappa}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and the off-diagonal entries $T_{13}^{\text{eq}}$, $T_{31}^{\text{eq}}$, $T_{33}^{\text{eq}}$. The stress-strain tensor $\mathbb{H}^{\text{eq}}$ follows the same pattern. The key difference is that these components are functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ rather than being volume-weighted sums over coating layers.
 
 \subsubsection{Tensor Structure for Particle Composites (3D, CSA)}
 
-The isotropic structure is the same as in Equation~\eqref{eq:T_particle_structure}, with only two independent components: $T_{\kappa}^{\text{eq}}$ (bulk) and $T_{\mu}^{\text{eq}}$ (shear). Again, these depend on interface parameters rather than on multi-layer volume averages.
+For spherical particles, the composite exhibits full isotropy. The strain concentration tensor for fiber in Voigt notation take the block-diagonal form:
+%
+\begin{equation}
+    \mathbb{T}^{(1)} =
+    \begin{bmatrix}
+        T_{11}^{(1)}  & T_{11}^{(1)} - T_{44}^{(1)} & T_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(1)} - T_{44}^{(1)} &  T_{11}^{(1)} & T_{13}^{(1)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(1)} - T_{44}^{(1)} & T_{11}^{(1)} - T_{44}^{(1)} & T_{11}^{(1)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & T_{44}^{(1)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & T_{44}^{(1)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & T_{44}^{(1)}
+    \end{bmatrix}
+    \label{eq:T_fiber_Interface}
+\end{equation}
+%
+The stress concentration tensor for the fiber has the corresponding structure:
+%
+\begin{equation}
+    \mathbb{H}^{(1)} =
+    \begin{bmatrix}
+        H_{11}^{(1)} & H_{11}^{(1)} - 2H_{44}^{(1)} & H_{11}^{(1)} - 2H_{44}^{(1)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(1)} - 2H_{44}^{(1)} & H_{11}^{(1)} & H_{11}^{(1)} - 2H_{44}^{(1)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(1)} - 2H_{44}^{(1)} & H_{11}^{(1)} - 2H_{44}^{(1)} & H_{11}^{(1)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & H_{44}^{(1)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & H_{44}^{(1)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & H_{44}^{(1)}
+    \end{bmatrix}
+    \label{eq:H_fiber_interface}
+\end{equation}
+
+For the equivalent inhomogeneity, the strain interaction tensor read
+\begin{equation}
+    \mathbb{T}^{(eq)} =
+    \begin{bmatrix}
+        T_{11}^{(eq)}  & T_{11}^{(eq)} - T_{44}^{(eq)} & T_{11}^{(eq)} - T_{44}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(eq)} - T_{44}^{(eq)} &  T_{11}^{(eq)} & T_{11}^{(eq)} - T_{44}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        T_{11}^{(eq)} - T_{44}^{(eq)} & T_{11}^{(eq)} - T_{44}^{(eq)} & T_{11}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & T_{44}^{(eq)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & T_{44}^{(eq)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & T_{44}^{(eq)}
+    \end{bmatrix}
+    \label{eq:T_fiber_Interface}
+\end{equation}
+The stress concentration tensor for the equivalent inhomogenity has the corresponding structure:
+\begin{equation}
+    \mathbb{H}^{(eq)} =
+    \begin{bmatrix}
+        H_{11}^{(eq)} & H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{11}^{(eq)} - 2H_{44}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{11}^{(eq)} & H_{11}^{(eq)} - 2H_{44}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{11}^{(eq)} - 2H_{44}^{(eq)} & H_{11}^{(eq)} & 0 & 0 & 0 \\[4pt]
+        0 & 0 & 0 & H_{44}^{(eq)} & 0 & 0 \\[4pt]
+        0 & 0 & 0 & 0 & H_{44}^{(eq)} & 0 \\[4pt]
+        0 & 0 & 0 & 0 & 0 & H_{44}^{(eq)}
+    \end{bmatrix}
+    \label{eq:H_fiber_interface}
+\end{equation} Again, these depend on interface parameters rather than on multi-layer volume averages.
 
 % -------------------------------------------------------------------
 \subsection{Mori-Tanaka Homogenization with Interfaces}
@@ -1860,7 +2000,7 @@ Section~\ref{sec:nn_background} introduced the neural network and physics-inform
 \chapter{Methodology}
 \label{ch:methodology}
 
-Chapter~\ref{ch:theory} established the theoretical models---the three-layered interphase and the Extended General Interface Model---together with the concentration tensor framework that connects them and the neural network concepts that underpin the inverse methodology. This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture---building on the concepts introduced in Section~\ref{sec:nn_background}---that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
+Chapter~\ref{ch:theory} established the theoretical models, the three-layered interphase model and the Extended General Interface Model together with the concentration tensor framework that connects them and the neural network concepts that underpin the inverse methodology. This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture -- based on the concepts introduced in Section~\ref{sec:nn_background} -- that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
 
 \begin{figure}[htbp]
     \centering
@@ -1874,7 +2014,7 @@ Chapter~\ref{ch:theory} established the theoretical models---the three-layered i
 \label{sec:multicoated_forward}
 % ===================================================================
 
-The three-layered interphase model introduced in Section~\ref{sec:interphase_model} treats the graded region between inclusion and matrix as $N$ coating layers with piecewise-constant properties. To determine the concentration tensors $\mathbb{T}^{(q)}$ and $\mathbb{H}^{(q)}$ for each phase, we solve a set of boundary value problems. Four BVPs are needed for CCA (fibre) composites and two for CSA (particle) composites.
+The three-layered interphase model introduced in Section~\ref{sec:interphase_model} treats the graded region between inclusion and matrix as $3$ coating layers with piecewise-constant properties. To determine the concentration tensors $\mathbb{T}^{(q)}$ and $\mathbb{H}^{(q)}$ for each phase, we solve a set of boundary value problems. Four BVPs are needed for CCA (fibre) composites and two for CSA (particle) composites.
 
 % -------------------------------------------------------------------
 \subsection{Problem Setup}
@@ -1894,7 +2034,7 @@ The transversely isotropic tensor structure (Section~\ref{subsec:tensor_structur
 
 \subsubsection{BVP 1: In-Plane Bulk Response}
 
-For far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in cylindrical coordinates, producing far-field strain $\bs{\varepsilon}^{(0)} = [\beta, \beta, 0, 0, 0, 0]^T$, the displacement field in each phase is:
+For far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in cylindrical coordinates, producing far-field strain $\bs{\varepsilon}^{(0)} = [\beta, \beta, 0, 0, 0, 0]^T$, then the displacement field in each phase/constituent is:
 %
 \begin{equation}
     u_r^{(q)} = \beta\left(X_{2q-1} \, r + \frac{X_{2q}}{r}\right), \quad u_\theta^{(q)} = u_z^{(q)} = 0
@@ -1913,16 +2053,21 @@ The radial stress in each phase q is:
 The boundary conditions are:
 \begin{enumerate}
     \item Finite displacement at origin: $X_2 = 0$
-    \item Continuity of displacement at each interface $r = r_m$
-    \item Continuity of traction at each interface $r = r_m$
+    \item Continuity of displacement at each interphase $r = r_m\implies u_r^{(1)} = u_r^{(m)}$
+    \item Continuity of traction at each interphase $r = r_m \implies \sigma_{rr}^{(1)} = \sigma_{rr}^{(m)}$
     \item Prescribed displacement: $u_r^{(4)}(r \to \infty) = \beta r$ implies $X_7 = 1$
 \end{enumerate}
 
-The average strain over phase $q$ (with inner radius $r_a$ and outer radius $r_b$) yields:
+The average strain field over phase $q$ (with inner radius $r_a$ and outer radius $r_b$) yields:
 %
 \begin{equation}
-    \langle \bs{\varepsilon}^{(q)} \rangle = [X_{2q-1}, \, X_{2q-1}, \, 0, \, 0, \, 0, \, 0]^T
+    \langle \bs{\varepsilon}^{(q)} \rangle = [X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0, \, 0]^T
     \label{eq:avg_strain_bulk_fiber}
+\end{equation}
+The average stress field over phase $q$ (with inner radius $r_a$ and outer radius $r_b$) yields:
+\begin{equation}
+    \langle \bs{\sigma}^{(q)} \rangle = [2\kappa^{(q)} X_{2q-1}\beta, \, 2\kappa^{(q)} X_{2q-1}\beta, \, 2(\kappa^{(q)}-\mu^{(q)}) X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
+    \label{eq:avg_stress_bulk_fiber}
 \end{equation}
 
 The concentration tensor components are:
@@ -1968,7 +2113,7 @@ with:
 The volume-averaged strain in phase $q$ (over the annulus $r_a < r < r_b$) gives the transverse shear concentration:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4\beta_0 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\
+    T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\
     H_{44}^{(q)} &= \mu^{(q)} T_{44}^{(q)}
 \end{empheq}
 
@@ -1977,7 +2122,7 @@ The volume-averaged strain in phase $q$ (over the annulus $r_a < r < r_b$) gives
 For far-field displacement $\bs{u}^{(0)} = [0, 0, \beta r \cos\theta]^T$, the displacement field is:
 %
 \begin{equation}
-    u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(X_{2q-1} + X_{2q} \frac{1}{(r/r_1)^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
+    u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(X_{2q-1} + X_{2q} \frac{1}{r^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
     \label{eq:uz_axial}
 \end{equation}
 
@@ -1985,7 +2130,7 @@ For the core, $X_{2q} = 0$ to ensure bounded displacement. The concentration ten
 %
 \begin{empheq}[box=\fbox]{align}
     T_{55}^{(q)} &= \frac{X_{2q-1}}{2 \cos \theta} \label{eq:T55_fiber}\\[6pt]
-    H_{55}^{(q)} &= \frac{\mu^{(q)} X_{2q-1}}{2 \cos \theta} \label{eq:H55_fiber}
+    H_{55}^{(q)} &= \frac{\mu^{(q)} X_{2q-1}}{ \cos \theta} \label{eq:H55_fiber}
 \end{empheq}
 
 \subsubsection{BVP 4: Overall Axisymmetric Response}
@@ -1999,7 +2144,7 @@ The first three BVPs determine the in-plane concentration tensor components. To 
     \end{bmatrix}, \quad
     \bs{\varepsilon}^{(0)} =
     \begin{bmatrix}
-        \beta & 0 & \beta & 0 & 0 & 0
+        \beta & \beta & \beta & 0 & 0 & 0
     \end{bmatrix}^T
     \label{eq:bvp4_farfield}
 \end{equation}
@@ -2021,7 +2166,7 @@ where $u_z = \beta z$ holds in all phases due to continuity of axial displacemen
 where $m = 1, 2, \ldots, N$ index the coating interfaces. Then the off-diagonal concentration tensor components are :
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{13}^{(q)} &=  X_{2q-1} - 2 T_{\kappa}\beta  \label{eq:T13_fiber}\\[6pt]
+    T_{13}^{(q)} &=  X_{2q-1} - 2 T_{\kappa}  \label{eq:T13_fiber}\\[6pt]
     H_{13}^{(q)} &= 2\kappa^{(q)} \, X_{2q-1} + \lambda^{(q)} - 2 H_{\kappa}^{(q)}\label{eq:H13_fiber}\\[6pt]
     H_{33}^{(q)} &= 2\lambda^{(q)} \, X_{2q-1} + \left(\kappa^{(q)} + \mu^{(q)}\right) - 2 H_{31}^{(q)} \label{eq:H33_fiber}
 \end{empheq}
@@ -2040,20 +2185,20 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 For far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
 %
 \begin{equation}
-    u_r^{(q)} = \Xi_1^{(q)} r + \frac{\Xi_2^{(q)}}{r^2}, \quad u_\theta^{(q)} = u_\phi^{(q)} = 0
+    u_r^{(q)} = \beta(X_{2q-1} r + \frac{X_{2q}}{r^2}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0
 \end{equation}
 
-For the particle (core), $\Xi_2^{(1)} = 0$. The average strain yields:
+For the particle (core), $X_{2} = 0$. The average strain yields:
 %
 \begin{equation}
-    \langle \bs{\varepsilon}^{(q)} \rangle = [\Xi_1^{(q)}, \, \Xi_1^{(q)}, \, \Xi_1^{(q)}, \, 0, \, 0, \, 0]^T
+    \langle \bs{\varepsilon}^{(q)} \rangle = [X_{2q-1}\beta, \, X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
 \end{equation}
 
 The concentration tensor components are:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{\kappa}^{(q)} &= \Xi_1^{(q)} \label{eq:Tkappa_particle}\\[6pt]
-    H_{\kappa}^{(q)} &= 3\kappa^{(q)} \Xi_1^{(q)} \label{eq:Hkappa_particle}
+    T_{\kappa}^{(q)} &= X_{2q-1} \label{eq:Tkappa_particle}\\[6pt]
+    H_{\kappa}^{(q)} &= 3\kappa^{(q)} X_{2q-1}\label{eq:Hkappa_particle}
 \end{empheq}
 
 \subsubsection{BVP 2: Deviatoric Response}
@@ -2075,20 +2220,15 @@ with the corresponding Cartesian far-field strain tensor having $\varepsilon_{11
 In each phase, the displacement fields involve four radial modes with exponents $\xi_i$:
 %
 \begin{align}
-    u_r^{(q)} &= \beta \, r \sum_{i=1}^{4} a_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin^2\!\theta \, \cos 2\phi \label{eq:ur_deviatoric}\\
-    u_\theta^{(q)} &= \beta \, r \sum_{i=1}^{4} b_i^{(q)} \Xi_i^{(q)} \left(\frac{r}{r_1}\right)^{\xi_i-1} \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:utheta_deviatoric}
+    u_r^{(q)} &= \beta \, r \sum_{i=1}^{4} A_i^{(q)} X_{4(q-1)+i} r^{\xi_i-1} \sin^2\!\theta \, \cos 2\phi \label{eq:ur_deviatoric}\\
+    u_\theta^{(q)} &= \beta \, r \sum_{i=1}^{4}  X_{4(q-1)+i} r^{\xi_i-1} \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:utheta_deviatoric}
 \end{align}
 %
-where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratios $a_i^{(q)}$ and $b_i^{(q)}$ depend on the material properties of phase~$q$:
+where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratio $a_i^{(q)}$ depend on the material properties of phase~$q$:
 %
 \begin{equation}
-    a_1 = 1, \quad a_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad a_3 = -\frac{3}{2}, \quad a_4 = \frac{3(\kappa + \mu)}{2\mu}
+    A_1 = 1, \quad A_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad A_3 = -\frac{3}{2}, \quad A_4 = \frac{3(\kappa + \mu)}{2\mu}
     \label{eq:a_coefficients}
-\end{equation}
-%
-\begin{equation}
-    b_1 = 1, \quad b_2 = -\frac{6(\kappa + 2\mu)}{15\kappa + 11\mu}, \quad b_3 = \frac{1}{2}, \quad b_4 = \frac{\kappa + \mu}{2\mu}
-    \label{eq:b_coefficients}
 \end{equation}
 %
 where $\kappa$ and $\mu$ here refer to the 3D bulk and shear moduli of the respective phase.
@@ -2100,16 +2240,16 @@ The relevant stress components for the traction boundary conditions at radial in
     \sigma_{r\theta}^{(q)} &= \beta \, \Sigma_{r\theta}^{(q)}(r) \, \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:sigma_rtheta_sph}
 \end{align}
 
-For the core, $\Xi_3^{(1)} = \Xi_4^{(1)} = 0$ to ensure bounded displacement at the origin. The far-field condition requires $\Xi_1^{(0)} = 1$ and $\Xi_2^{(0)} = 0$. At each interface $r = r_m$, the continuity of both displacement components and both traction components produces four conditions per interface, yielding the same $8 \times 8$ system structure as the CCA transverse shear BVP, but with spherical amplitude ratios.
+For the core, $X_3 = X_4 = 0$ to ensure bounded displacement at the origin. The far-field condition requires $X_{13} = 1$ and $X_{14} = 0$. At each interface $r = r_m$, the continuity of both displacement components and both traction components produces four conditions per interface, yielding the same $8 \times 8$ system structure as the CCA transverse shear BVP, but with spherical amplitude ratios.
 
 After volume averaging over the annular shell $r_a < r < r_b$ with the spherical Jacobian, the shear concentration tensor component is:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{\mu}^{(q)} &= \Xi_1^{(q)} + \frac{63\kappa^{(q)} + 21\mu^{(q)}}{5(15\kappa^{(q)} + 11\mu^{(q)})} \cdot \frac{r_b^5 - r_a^5}{r_b^3 - r_a^3} \cdot \Xi_2^{(q)} \label{eq:Tmu_particle}\\[6pt]
+    T_{\mu}^{(q)} &= X_{4(q-1)+1} + \frac{63\kappa^{(q)} + 21\mu^{(q)}}{5(15\kappa^{(q)} + 11\mu^{(q)})} \cdot \frac{r_b^5 - r_a^5}{r_b^3 - r_a^3} \cdot X_{4(q-1)+2} \label{eq:Tmu_particle}\\[6pt]
     H_{\mu}^{(q)} &= 2\mu^{(q)} T_{\mu}^{(q)} \label{eq:Hmu_particle}
 \end{empheq}
 %
-The first term is the uniform mode ($\xi_1 = 1$) contribution, while the second involves the $\xi_2 = 3$ mode weighted by the radii ratio $r_b^5/r_a^5$. The $\xi_3 = -4$ and $\xi_4 = -2$ modes vanish upon volume averaging due to their radial decay.
+The first term is the contribution of the uniform mode ($\xi_1 = 1$), while the second involves the $\xi_2 = 3$ mode weighted by the radii ratio $r_b^5/r_a^5$. The $\xi_3 = -4$ and $\xi_4 = -2$ modes vanish upon volume averaging due to their radial decay.
 
 Once the per-phase tensors are known, the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ follow from the volume-weighted averages defined in Equations~\eqref{eq:Teq}--\eqref{eq:Heq}, using the volume fractions from Equations~\eqref{eq:volume_fractions_cylindrical} and~\eqref{eq:volume_fractions_spherical}.
 
