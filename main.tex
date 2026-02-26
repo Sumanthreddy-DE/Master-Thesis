@@ -1102,7 +1102,7 @@ For composites with imperfect interfaces, the classical Eshelby formula~\eqref{e
 \label{sec:interphase_model}
 % ===================================================================
 
-In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{L}^{(2)}, \mathbb{L}^{(3)}, \ldots, \mathbb{L}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with large number of material phases, It is advantageous to replace the inhomogeneity and the multiple coatings into single equivalent inhomogeneity. And then we apply Mori Tanaka Homogenization to find the Effective properties of whole composite system.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{L}^{(2)}, \mathbb{L}^{(3)}, \ldots, \mathbb{L}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
 
 % -------------------------------------------------------------------
 \subsection{Average Fields and Volume Fractions}
@@ -1150,7 +1150,9 @@ For phases with constant material properties, these tensors are related by:
     \label{eq:H_T_relation}
 \end{equation}
 
+\subsubsection{Volume Fractions}
 \label{subsec:volume_fractions}
+
 The volume fractions characterise the relative sizes of the phases within the equivalent inhomogeneity:
 %
 \begin{equation}
@@ -1402,17 +1404,26 @@ All the independent components needed for $\mathbb{T}$, and $\mathbb{H}$ are cal
 \label{subsec:interphase_homogenization}
 % -------------------------------------------------------------------
 
-With the equivalent concentration tensors in hand, the equivalent stiffness of the multi-coated inhomogeneity is:
+With the equivalent concentration tensors in hand, we obtain the stiffness of the multi-coated inhomogeneity:
 %
 \begin{equation}
     \mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} : \left(\mathbb{T}^{\text{eq}}\right)^{-1}
     \label{eq:equivalent_stiffness}
 \end{equation}
+%
+The tensor $\mathbb{C}^{\text{eq}}$ represents the stiffness of a single homogeneous inclusion that would produce the same average response as the original multi-coated particle. An important subtlety arises at this stage. The tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ from the multi-layer BVPs encode the internal coating structure, and they are \textit{not} the standard Eshelby dilute concentration tensors for a homogeneous inclusion. Substituting them directly into the Mori-Tanaka formula gives incorrect results for the shear moduli.
 
-The macroscopic stiffness of the composite follows from the Mori-Tanaka method. Since all internal boundaries have perfect bonding (no displacement or traction jumps), the standard volume averaging applies and the effective stiffness is:
+We therefore follow a two-step homogenization procedure \cite{Herve1995}. In the first step, $\mathbb{C}^{\text{eq}}$ is computed from Equation~\eqref{eq:equivalent_stiffness}. In the second step, we treat $\mathbb{C}^{\text{eq}}$ as a homogeneous inclusion embedded in the matrix and compute its dilute strain concentration tensor via the Eshelby approach (Section~\ref{subsec:eshelby_problem}):
 %
 \begin{equation}
-    \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\mathbb{T}^{\text{eq}}\right]^{-1}}
+    \mathbb{T}^{\text{dil}} = \left[\mathbb{I} + \mathbb{S} : \left(\mathbb{C}^{(2)}\right)^{-1} : \left(\mathbb{C}^{\text{eq}} - \mathbb{C}^{(2)}\right)\right]^{-1}
+    \label{eq:T_dilute_equiv}
+\end{equation}
+%
+where $\mathbb{S}$ is the Eshelby tensor for the inclusion geometry (cylindrical for CCA, spherical for CSA), which depends only on the shape and the matrix Poisson ratio. The corresponding stress-strain tensor is $\mathbb{H}^{\text{dil}} = \mathbb{C}^{\text{eq}} : \mathbb{T}^{\text{dil}}$. Since all internal boundaries within the multi-coated inclusion have perfect bonding (no displacement or traction jumps), the standard volume averaging applies. The macroscopic composite stiffness then follows from the Mori-Tanaka formula:
+%
+\begin{equation}
+    \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\,\mathbb{H}^{\text{dil}}\right] : \left[(1-f)\mathbb{I} + f\,\mathbb{T}^{\text{dil}}\right]^{-1}}
     \label{eq:MT_interphase}
 \end{equation}
 %
@@ -1421,9 +1432,9 @@ where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)
 For \textbf{fibre-reinforced composites} (2D, CCA), three independent effective moduli are obtained:
 %
 \begin{align}
-    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}} &= \frac{(1-f)\mu^{(2)} + f H_{44}^{\text{eq}}}{(1-f) + f T_{44}^{\text{eq}}} \label{eq:mutr_eff_interphase}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}} &= \frac{(1-f)\mu^{(2)} + f H_{55}^{\text{eq}}}{(1-f) + f T_{55}^{\text{eq}}} \label{eq:muax_eff_interphase}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f \, H_{\kappa}^{\text{dil}}}{(1-f) + f \, T_{\kappa}^{\text{dil}}} \label{eq:kappa_eff_interphase}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}} &= \frac{(1-f)\mu^{(2)} + f \, H_{44}^{\text{dil}}}{(1-f) + f \, T_{44}^{\text{dil}}} \label{eq:mutr_eff_interphase}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}} &= \frac{(1-f)\mu^{(2)} + f \, H_{55}^{\text{dil}}}{(1-f) + f \, T_{55}^{\text{dil}}} \label{eq:muax_eff_interphase}
 \end{align}
 %
 where $\kappa^{(2)} = \lambda^{(2)} + \mu^{(2)}$ is the plane-strain bulk modulus of the matrix.
@@ -1431,8 +1442,8 @@ where $\kappa^{(2)} = \lambda^{(2)} + \mu^{(2)}$ is the plane-strain bulk modulu
 For \textbf{particle-reinforced composites} (3D, CSA), two effective moduli suffice:
 %
 \begin{align}
-    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f H_{\kappa}^{\text{eq}}}{(1-f) + f T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase_csa}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu &= \frac{(1-f)\mu^{(2)} + f H_{\mu}^{\text{eq}}}{(1-f) + f T_{\mu}^{\text{eq}}} \label{eq:mu_eff_interphase_csa}
+    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f \, H_{\kappa}^{\text{dil}}}{(1-f) + f \, T_{\kappa}^{\text{dil}}} \label{eq:kappa_eff_interphase_csa}\\[6pt]
+    {}^{\mathrm{M}}\hspace{-1pt}\mu &= \frac{(1-f)\mu^{(2)} + f \, H_{\mu}^{\text{dil}}}{(1-f) + f \, T_{\mu}^{\text{dil}}} \label{eq:mu_eff_interphase_csa}
 \end{align}
 %
 where $\kappa^{(2)} = \lambda^{(2)} + \frac{2}{3}\mu^{(2)}$ is the 3D bulk modulus.
@@ -1549,7 +1560,7 @@ The \textbf{interface displacement} $\bar{\bs{u}}$ and \textbf{interface tractio
 %
 \begin{align}
     \bar{\bs{u}} &:= \{\!\{\bs{u} \}\!\}_{\bar{\alpha}} = \bar{\alpha}\bs{u}^+ + (1 - \bar{\alpha})\bs{u}^- \label{eq:interface_position}\\
-    \bar{\bs{t}} &:= \{\!\{\bs{\sigma}\}\!\}_{\bar{\alpha}} \cdot \bar{\bs{n}} =  \bar{\alpha}\bs{\sigma}^+ \cdot \bar{\bs{n}} + \bar{\alpha}\bs{\sigma}^- \cdot \bar{\bs{n}} \label{eq:interface_traction}
+    \bar{\bs{t}} &:= \{\!\{\bs{\sigma}\}\!\}_{1-\bar{\alpha}} \cdot \bar{\bs{n}} =  (1-\bar{\alpha})\,\bs{\sigma}^+ \cdot \bar{\bs{n}} + \bar{\alpha}\,\bs{\sigma}^- \cdot \bar{\bs{n}} \label{eq:interface_traction}
 \end{align}
 
 
@@ -1728,13 +1739,13 @@ The concentration tensors satisfy the same relations as before:
 \begin{equation}
     \bs{\varepsilon}^{(eq)} = \mathbb{T}^{\text{eq}} : \bs{\varepsilon}^{(0)}, \quad
     \bs{\sigma}^{(eq)} = \mathbb{H}^{\text{eq}} : \bs{\varepsilon}^{(0)}
-    \label{eq:interface_concentration_def}
+    \label{eq:interface_concentration_eq}
 \end{equation}
 but now the components of $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ depend on the interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ in addition to the bulk material properties. They are obtained by solving interface-modified BVPs, as derived in Chapter~\ref{ch:methodology}.
 
 \subsubsection{Tensor Structure for Fibre Composites (2D, CCA)}
 
-For long cylindrical fibers, the composite exhibits transverse isotropy. The strain concentration tensor for fiber in Voigt notation take the block-diagonal form:
+For long cylindrical fibres, the composite exhibits transverse isotropy. The strain concentration tensor for the fibre in Voigt notation takes the block-diagonal form:
 %
 \begin{equation}
     \mathbb{T}^{(1)} =
@@ -1746,7 +1757,7 @@ For long cylindrical fibers, the composite exhibits transverse isotropy. The str
         0 & 0 & 0 & 0 & T_{55}^{(1)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & T_{55}^{(1)}
     \end{bmatrix}
-    \label{eq:T_fiber_Interface}
+    \label{eq:T_fiber_interface_cca}
 \end{equation}
 %
 The stress concentration tensor has the corresponding structure:
@@ -1761,10 +1772,11 @@ The stress concentration tensor has the corresponding structure:
         0 & 0 & 0 & 0 & H_{55}^{(1)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & H_{55}^{(1)}
     \end{bmatrix}
-    \label{eq:H_fiber_interface}
+    \label{eq:H_fiber_interface_cca}
 \end{equation}
 
-For the equivalent inhomogeneity, the strain interaction tensor read
+For the equivalent inhomogeneity, the strain concentration tensor reads:
+%
 \begin{equation}
     \mathbb{T}^{(eq)} =
     \begin{bmatrix}
@@ -1775,9 +1787,10 @@ For the equivalent inhomogeneity, the strain interaction tensor read
         0 & 0 & 0 & 0 & T_{55}^{(eq)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & T_{55}^{(eq)}
     \end{bmatrix}
-    \label{eq:T_fiber_Interface}
+    \label{eq:T_eq_interface_cca}
 \end{equation}
-The stress concentration tensor for the equivalent inhomogenity has the corresponding structure:
+The stress concentration tensor for the equivalent inhomogeneity has the corresponding structure:
+%
 \begin{equation}
     \mathbb{H}^{(eq)} =
     \begin{bmatrix}
@@ -1788,14 +1801,14 @@ The stress concentration tensor for the equivalent inhomogenity has the correspo
         0 & 0 & 0 & 0 & H_{55}^{(eq)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & H_{55}^{(eq)}
     \end{bmatrix}
-    \label{eq:H_fiber_interface}
+    \label{eq:H_eq_interface_cca}
 \end{equation}
 
 The tensor $\mathbb{T}^{\text{eq}}$ for the interface model has the same block-diagonal form with components $T_{\kappa}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and the off-diagonal entries $T_{13}^{\text{eq}}$, $T_{31}^{\text{eq}}$, $T_{33}^{\text{eq}}$. The stress-strain tensor $\mathbb{H}^{\text{eq}}$ follows the same pattern. The key difference is that these components are functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ rather than being volume-weighted sums over coating layers.
 
 \subsubsection{Tensor Structure for Particle Composites (3D, CSA)}
 
-For spherical particles, the composite exhibits full isotropy. The strain concentration tensor for fiber in Voigt notation take the block-diagonal form:
+For spherical particles, the composite exhibits full isotropy. The strain concentration tensor for the particle in Voigt notation takes the block-diagonal form:
 %
 \begin{equation}
     \mathbb{T}^{(1)} =
@@ -1807,10 +1820,10 @@ For spherical particles, the composite exhibits full isotropy. The strain concen
         0 & 0 & 0 & 0 & T_{44}^{(1)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & T_{44}^{(1)}
     \end{bmatrix}
-    \label{eq:T_fiber_Interface}
+    \label{eq:T_particle_interface_csa}
 \end{equation}
 %
-The stress concentration tensor for the fiber has the corresponding structure:
+The stress concentration tensor for the particle has the corresponding structure:
 %
 \begin{equation}
     \mathbb{H}^{(1)} =
@@ -1822,10 +1835,11 @@ The stress concentration tensor for the fiber has the corresponding structure:
         0 & 0 & 0 & 0 & H_{44}^{(1)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & H_{44}^{(1)}
     \end{bmatrix}
-    \label{eq:H_fiber_interface}
+    \label{eq:H_particle_interface_csa}
 \end{equation}
 
-For the equivalent inhomogeneity, the strain interaction tensor read
+For the equivalent inhomogeneity, the strain concentration tensor reads:
+%
 \begin{equation}
     \mathbb{T}^{(eq)} =
     \begin{bmatrix}
@@ -1836,9 +1850,10 @@ For the equivalent inhomogeneity, the strain interaction tensor read
         0 & 0 & 0 & 0 & T_{44}^{(eq)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & T_{44}^{(eq)}
     \end{bmatrix}
-    \label{eq:T_fiber_Interface}
+    \label{eq:T_eq_interface_csa}
 \end{equation}
-The stress concentration tensor for the equivalent inhomogenity has the corresponding structure:
+The stress concentration tensor for the equivalent inhomogeneity has the corresponding structure:
+%
 \begin{equation}
     \mathbb{H}^{(eq)} =
     \begin{bmatrix}
@@ -1849,7 +1864,7 @@ The stress concentration tensor for the equivalent inhomogenity has the correspo
         0 & 0 & 0 & 0 & H_{44}^{(eq)} & 0 \\[4pt]
         0 & 0 & 0 & 0 & 0 & H_{44}^{(eq)}
     \end{bmatrix}
-    \label{eq:H_fiber_interface}
+    \label{eq:H_eq_interface_csa}
 \end{equation} Again, these depend on interface parameters rather than on multi-layer volume averages.
 
 % -------------------------------------------------------------------
@@ -1857,14 +1872,14 @@ The stress concentration tensor for the equivalent inhomogenity has the correspo
 \label{subsec:interface_mori_tanaka}
 % -------------------------------------------------------------------
 
-The Mori-Tanaka method assumes each inclusion experiences the average matrix strain as its far-field condition: $\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$. With this assumption, the macroscopic stiffness tensor takes the same form as Equation~\eqref{eq:MT_interphase}:
+The Mori-Tanaka method assumes each inclusion experiences the average matrix strain as its far-field condition: $\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$. With this assumption, the macroscopic stiffness tensor is:
 %
 \begin{equation}
     \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\mathbb{T}^{\text{eq}}\right]^{-1}}
     \label{eq:MT_interface}
 \end{equation}
 %
-where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ now incorporate interface effects. The formula is structurally identical to the interphase case, but the meaning of the equivalent tensors is different: here they come from interface-modified BVPs rather than volume-weighted averages over coating layers.
+where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ incorporate the interface effects. Unlike the interphase model (Equation~\eqref{eq:MT_interphase}), the interface BVPs solve for a single inclusion with modified boundary conditions---there are no internal coating layers. As a result, $\mathbb{T}^{\text{eq}}$ from the interface BVPs already serves as the dilute concentration tensor and can be substituted directly into the Mori-Tanaka formula without the additional Eshelby step described in Section~\ref{subsec:interphase_homogenization}.
 
 
 
