@@ -734,9 +734,7 @@ The mechanical behaviour of composite materials depends strongly on the thin int
 
 In this work, we develop a physics-informed neural network (PINN) that identifies the four parameters of the Extended General Interface Model directly from target effective properties computed via a three-layer interphase model. The network is trained on Mori-Tanaka homogenization data and embeds the governing equations into its loss function to ensure physically self-consistent predictions.
 
-We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN achieves a 100\% pass rate across 28 validation configurations with mean errors below 2\%. For fibre-reinforced composites (CCA), no configuration meets the 5\% threshold --- transverse shear errors persist at 18\% even under global optimisation with an extended 7-parameter model, confirming a structural limitation of the zero-thickness interface approximation.
-
-The results define clear scope boundaries: the interface route is viable for spherical inclusions but not for fibres when transverse shear accuracy is required.
+We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN achieves a 100\% pass rate across 28 validation configurations with mean errors below 2\%. For fibre-reinforced composites (CCA), the transverse shear response cannot be matched within the interface framework, pointing to a fundamental limitation of the zero-thickness approximation for fibre composites.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Composite Materials, Interphase, Extended General Interface Model, Physics-Informed Neural Networks, Inverse Parameter Identification, Mori-Tanaka Homogenization, CCA, CSA.
@@ -870,8 +868,7 @@ A well-established strategy to address the computational challenges of finite-th
     Right branch: the finite-thickness 3-layer interphase model used as the
     ground-truth reference. The green arrow denotes the homogenization pathway
     developed in this thesis, which maps 3-layer interphase parameters onto EGIM
-    interface parameters (Chapter~\ref{ch:methodology}). Parameter counts refer to
-    the isotropic / anisotropic parameterisations used in Section~\ref{sec:cca_results}.}
+    interface parameters (Chapter~\ref{ch:methodology}).}
     \label{fig:model_hierarchy}
 \end{figure}
 
@@ -927,13 +924,9 @@ This matching condition leads to an \textit{underdetermined} system: the EGIM ha
 \section{Bridging the Gap: A Data-Driven Approach}
 % -------------------------------------------------------------------
 
-The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation---suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges through two complementary strategies.
+The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation---suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges.
 
-\paragraph{Gap Analysis of the Extended Interface Model.}
-A natural question is whether the Extended General Interface Model, with suitably chosen parameters, can reproduce the multi-coated interphase predictions. We investigate this systematically by allowing a global optimiser to find the best-fit interface parameters for each configuration independently---giving the interface model every possible advantage. This analysis reveals whether the discrepancy between the two models is parametric (fixable by better parameter choices) or structural (inherent to the zero-thickness assumption). As shown in Chapter~\ref{ch:results}, the gap turns out to be structural for fibre composites---persisting even under generous optimisation---while particle composites remain well represented by the interface model.
-
-\paragraph{Inverse Parameter Identification via Physics-Informed Neural Networks.}
-Where the interface model is applicable, we develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function~\cite{Raissi2019}, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries---the CSA case tests the method where the interface model is structurally adequate, while the CCA case provides independent confirmation of the gap analysis.
+We develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function~\cite{Raissi2019}, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries to test the scope of the interface model across different composite types.
 
 Neural networks are preferred over alternatives such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002} because the mapping is highly nonlinear, the input space is seven- to eight-dimensional, and the training datasets contain $200\,000$ samples---a regime where Gaussian processes become computationally prohibitive \cite{Liu2020} and polynomial expansions struggle with the strong nonlinearities. The detailed justification is given in Section~\ref{sec:neural_network}.
 
@@ -946,13 +939,11 @@ The primary objective of this thesis is to investigate the relationship between 
 \begin{enumerate}
     \item \textbf{Implement and Verify the Multi-Coated Interphase Model:} Develop and validate implementations of the three-layered interphase boundary value problems for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites, establishing a trusted reference solution through consistency checks and limiting-case verification.
 
-    \item \textbf{Quantify the Representational Limits of the Extended Interface Model:} Systematically compare the Extended General Interface Model against the three-layered interphase predictions, using both isotropic (4-parameter) and anisotropic (7-parameter) formulations with globally optimised parameters, to determine whether discrepancies are parametric or structural in nature.
+    \item \textbf{Develop an Inverse PINN for Parameter Identification:} Construct a physics-informed neural network that identifies interface parameters from target mechanical response, embedding the homogenization equations directly into the training process.
 
-    \item \textbf{Develop an Inverse PINN for Parameter Identification:} Construct a physics-informed neural network that identifies interface parameters from target mechanical response, embedding the homogenization equations directly into the training process. Apply this to the CSA geometry where the interface model is structurally adequate.
+    \item \textbf{Apply to Both Composite Geometries:} Deploy the inverse PINN on CSA and CCA composites to recover Extended Interface parameters that reproduce the three-layered interphase effective properties, and examine where the method succeeds and where it encounters limits.
 
-    \item \textbf{Confirm the Gap via CCA Inverse PINN:} Apply the same inverse PINN to CCA composites to verify independently that the interface--interphase discrepancy is structural rather than an artefact of the optimisation procedure.
-
-    \item \textbf{Synthesise the Findings:} Compare all methods---analytical optimisation, inverse PINN for CSA, and inverse PINN for CCA---to establish when the Extended Interface model is applicable and when it is not, defining clear scope boundaries for different composite geometries.
+    \item \textbf{Synthesise the Findings:} Establish when the Extended Interface model is applicable and when it is not, defining clear scope boundaries for different composite geometries.
 \end{enumerate}
 \newpage
 % -------------------------------------------------------------------
