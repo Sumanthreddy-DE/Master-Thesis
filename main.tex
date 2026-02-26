@@ -875,71 +875,11 @@ A well-established strategy to address the computational challenges of finite-th
     \label{fig:model_hierarchy}
 \end{figure}
 
-Figure~\ref{fig:interface_classification} classifies interface models based on which field continuities are relaxed. The simplest case---the \textit{perfect interface}---enforces continuity of both displacement and traction:
-%
-\begin{equation}
-    \jump{\bs{u}} = \bs{0}, \quad \jump{\bs{t}} = \bs{0}
-    \label{eq:perfect_interface}
-\end{equation}
-%
-where $\jump{\cdot}$ denotes the jump across the interface. While convenient, this assumption cannot capture any interphase physics.
+Interface models form a hierarchy of increasing generality, as illustrated in the left branch of Figure~\ref{fig:model_hierarchy}. The simplest is the \textit{perfect interface}, which enforces continuity of both displacement and traction across the surface---convenient, but unable to capture any interphase physics. Relaxing one continuity condition while maintaining the other leads to two classical imperfect models. The \textit{cohesive} (spring-layer) interface \cite{Hashin1991, Needleman1987} allows displacement jumps proportional to the interface traction, representing compliant interphases such as soft coatings or degraded bonds. The \textit{elastic} (membrane) interface \cite{Gurtin1975, Gurtin1978}, based on Gurtin-Murdoch surface elasticity theory, permits traction jumps driven by surface stresses while maintaining displacement continuity, and captures stiff interphases that resist tangential deformation.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/interface_classification.png}
-    \caption{Classification of interface models based on the continuity of displacement and traction fields and the interface position. The extended general interface model encompasses all classical models while additionally allowing arbitrary interface positioning. Adapted from \cite{Firooz2022}.}
-    \label{fig:interface_classification}
-\end{figure}
+Real interphases often exhibit characteristics of both compliant and stiff behaviour simultaneously. Hashin \cite{Hashin2002} and Benveniste and Miloh \cite{Benveniste2001} unified the above into a \textit{general interface model} (GIM) that admits both displacement and traction jumps. All earlier models emerge as limiting cases of the GIM. However, the GIM implicitly assumes the interface lies at the geometric mid-plane of the original interphase---an assumption that becomes problematic for graded or asymmetric interphases. Firooz et al.\ \cite{Firooz2019, Firooz2021} addressed this by introducing the \textit{Extended General Interface Model} (EGIM), which adds a position parameter $\bar{\alpha} \in [0, 1]$ that allows the interface to sit anywhere within the original interphase region.
 
-\subsection{Imperfect Interface Models}
-
-Relaxing one continuity condition while maintaining the other leads to two canonical imperfect interface models:
-
-\paragraph{Cohesive (Spring-Layer) Interface:}
-Traction remains continuous while displacement may jump in proportion to the interface traction \cite{Hashin1991, Needleman1987}:
-%
-\begin{equation}
-    \jump{\bs{t}} = \bs{0}, \quad \mean{\bs{t}} = \bar{k} \jump{\bs{u}}
-    \label{eq:cohesive_interface}
-\end{equation}
-%
-where $\mean{\cdot}$ denotes the average across the interface and $\bar{k}$ is the interface stiffness. This model represents compliant interphases---soft coatings, adhesive layers, or degraded bonds.
-
-\paragraph{Elastic (Membrane) Interface:}
-Displacement remains continuous while traction may jump due to surface stresses \cite{Gurtin1975}:
-%
-\begin{equation}
-    \jump{\bs{u}} = \bs{0}, \quad \jump{\bs{t}} = -\nabla_{\mathcal{I}} \cdot \bar{\bs{\sigma}}
-    \label{eq:elastic_interface}
-\end{equation}
-%
-where $\bar{\bs{\sigma}}$ is the interface stress and $\nabla_{\mathcal{I}}$ is the surface divergence operator. Based on Gurtin-Murdoch surface elasticity theory \cite{Gurtin1975, Gurtin1978}, this model captures stiff interphases that resist tangential deformation, characterized by interface elastic modulus $\bar{\mu}$.
-
-\subsection{General Interface Model}
-
-Real interphases often exhibit characteristics of both soft and hard behavior simultaneously. Hashin \cite{Hashin2002} and Benveniste and Miloh \cite{Benveniste2001} unified the cohesive and elastic models into a \textit{general interface model} (GIM) admitting both displacement and traction jumps:
-%
-\begin{align}
-    \mean{\bs{t}} &= \bar{k} \jump{\bs{u}} \label{eq:gim_cohesive_intro} \\
-    \jump{\bs{t}} &= -\nabla_{\mathcal{I}} \cdot \bar{\bs{\sigma}} \label{eq:gim_elastic_intro}
-\end{align}
-%
-The cohesive and elastic models emerge as limiting cases: $\bar{k} \to \infty$ with $\bar{\mu} = 0$ recovers the perfect interface; finite $\bar{k}$ with $\bar{\mu} = 0$ gives the cohesive interface; $\bar{k} \to \infty$ with finite $\bar{\mu}$ produces the elastic interface.
-
-These phenomenological models find rigorous justification through asymptotic analysis. Lebon and Rizzoni \cite{Lebon2010, Lebon2011} showed that as interphase thickness $\varepsilon \to 0$, the emergent interface law depends on how stiffness scales with thickness: soft scaling ($\mathbb{C} \sim \varepsilon$) yields the cohesive model, while stiff scaling ($\mathbb{C} \sim \varepsilon^{-1}$) produces the elastic model.
-
-\subsection{Extended General Interface Model}
-
-A crucial limitation of the classical GIM is the implicit assumption that the interface coincides with the geometric mid-plane of the interphase---problematic for graded or asymmetric interphases. Firooz et al. \cite{Firooz2019, Firooz2021} addressed this by introducing the \textit{Extended General Interface Model} (EGIM), which allows the interface to occupy any position within the original interphase through a weighted average operator:
-%
-\begin{equation}
-    \mean{\phi}_{\bar{\alpha}} := \bar{\alpha} \phi^+ + (1 - \bar{\alpha}) \phi^-
-    \label{eq:weighted_average_intro}
-\end{equation}
-%
-where $\bar{\alpha} \in [0, 1]$ is the interface position parameter. Setting $\bar{\alpha} = 0.5$ recovers the standard mid-plane assumption, while $\bar{\alpha} = 0$ or $1$ places the interface at the inclusion or matrix boundary, respectively.
-
-The complete EGIM is characterized by four independent parameters:
+The complete EGIM is thus characterised by four independent parameters:
 %
 \begin{itemize}
     \item $\bar{k}$ --- orthogonal stiffness (resistance to normal separation)
@@ -948,7 +888,7 @@ The complete EGIM is characterized by four independent parameters:
     \item $\bar{\alpha}$ --- position parameter (location within the interphase)
 \end{itemize}
 %
-This extended model can recover all classical interface types while additionally capturing graded interphases through appropriate choice of $\bar{\alpha}$ \cite{Firooz2021}.
+The formal mathematical definitions of these parameters---the jump and average operators, interface constitutive relations, and the resulting concentration tensors---are developed in Chapter~\ref{ch:theory}.
 
 % -------------------------------------------------------------------
 \section{The Research Gap: Parameter Identification}
@@ -958,9 +898,7 @@ The theoretical framework described above provides a coherent path from finite-t
 
 Consider a concrete example: given a CFRP system with a sizing layer of known thickness $h$ and elastic moduli ($\lambda_{\text{sizing}}$, $\mu_{\text{sizing}}$), what interface stiffness $\bar{k}$ produces the same effective composite response? The answer is not obvious, and several complicating factors arise:
 
-\paragraph{Non-uniqueness:} Different combinations of interface parameters can yield identical macroscopic responses. For instance, increasing $\bar{k}$ while simultaneously adjusting $\bar{\alpha}$ may leave the effective bulk modulus unchanged \cite{Firooz2021}.
-
-\paragraph{Coupled Effects:} The interface parameters influence multiple effective properties simultaneously. The stiffness $\bar{k}$ affects both bulk and shear moduli, making independent identification from single loading cases difficult \cite{Firooz2019}.
+\paragraph{Non-uniqueness and coupling:} The interface parameters interact in complex ways---different combinations of $\bar{k}$ and $\bar{\alpha}$ can yield identical macroscopic responses \cite{Firooz2021}, and a single parameter like $\bar{k}$ affects both bulk and shear moduli simultaneously, making independent identification from individual loading cases difficult \cite{Firooz2019}.
 
 \paragraph{Graded Properties:} Real interphases rarely exhibit uniform properties. Sizing agents create cross-linking density gradients \cite{Wu2019}, diffusion processes generate compositional profiles, and damage accumulation produces spatially varying stiffness \cite{Ciprari2006, Jones1991}. Mapping such complexity onto equivalent interface parameters requires systematic methodology.
 
@@ -997,7 +935,7 @@ A natural question is whether the Extended General Interface Model, with suitabl
 \paragraph{Inverse Parameter Identification via Physics-Informed Neural Networks.}
 Where the interface model is applicable, we develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function~\cite{Raissi2019}, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries---the CSA case tests the method where the interface model is structurally adequate, while the CCA case provides independent confirmation of the gap analysis.
 
-The choice of neural networks over alternative methods---such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002}---is motivated by the problem characteristics. The input space is seven- to eight-dimensional (effective moduli, elastic constants, and volume fraction), the input-output mapping is highly nonlinear, and the material properties span several orders of magnitude. Gaussian processes scale cubically with training set size, making them impractical for the $200\,000$-sample datasets used here \cite{Liu2020}. Polynomial expansions struggle with the strong nonlinearities and high dimensionality of the parameter space. Neural networks handle both challenges naturally through their universal approximation capability and efficient mini-batch training \cite{Hornik1989}.
+Neural networks are preferred over alternatives such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002} because the mapping is highly nonlinear, the input space is seven- to eight-dimensional, and the training datasets contain $200\,000$ samples---a regime where Gaussian processes become computationally prohibitive \cite{Liu2020} and polynomial expansions struggle with the strong nonlinearities. The detailed justification is given in Section~\ref{sec:neural_network}.
 
 % -------------------------------------------------------------------
 \section{Objectives}
