@@ -625,7 +625,7 @@
 \definecolor{FAU_Blue}{RGB}{0,73,116}
 
 % --- 9. HYPERLINKS (Load Last) ---
-\usepackage[colorlinks=true, linkcolor=blue, citecolor=green, urlcolor=blue]{hyperref}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black, filecolor=black]{hyperref}
 \usepackage{bookmark}
 
 % ===================================================================
@@ -679,10 +679,7 @@
         \textbf{Betreuer:} & Soheil Firooz, M.Sc. \\
     \end{tabular}
     
-      \vspace*{23mm}
-
-
-      \vspace*{2mm}
+      \vspace*{25mm}
     \end{center}
 
     \begin{textblock*}{60mm}[0,1](30mm,240mm)
@@ -724,7 +721,7 @@ I would like to express my sincere gratitude to Soheil Firooz, M.Sc., for superv
 
 I also extend my thanks to Fodil MERAGHNI, Professor at Arts et Métiers (ENSAM) Institute of Technology for providing access to the resources and collaborative environment that made this work possible.
 
-Finally, I thank my family and friends for their unwavering support and encouragement throughout my academic persuit. Their love and support have constant source of motivation and inspiration for me  
+Finally, I thank my family and friends for their unwavering support and encouragement throughout my academic pursuit. Their love and support have been a constant source of motivation and inspiration for me.
 
 % -------------------------------------------------------------------
 %   ABSTRACT
@@ -732,14 +729,16 @@ Finally, I thank my family and friends for their unwavering support and encourag
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-The mechanical behavior of composite materials is critically governed by the interaction between constituent phases at their boundaries. This thesis develops a computational framework for bridging finite-thickness interphase models with zero-thickness interface models, focusing on the inverse identification of Extended General Interface Model (EGIM) parameters.
+The mechanical behaviour of composite materials depends strongly on the thin interphase region between inclusion and matrix. Explicitly modelling this region in numerical simulations is expensive, so it is often replaced by a zero-thickness interface characterised by a small set of phenomenological parameters. However, identifying these parameters from known interphase properties is a non-trivial inverse problem.
 
-Using asymptotic analysis and Mori-Tanaka homogenization theory, we establish equivalence relationships between volumetric interphase descriptions and their interface counterparts. A systematic parameter identification methodology is implemented to determine the phenomenological interface parameters (stiffness tensor $\bs{K}$, surface elasticity $\bs{L}$, and position parameter $\eta$) from full-field virtual experiments on finite-thickness interphases.
+In this work, we develop a physics-informed neural network (PINN) that identifies the four parameters of the Extended General Interface Model directly from target effective properties computed via a three-layer interphase model. The network is trained on Mori-Tanaka homogenization data and embeds the governing equations into its loss function to ensure physically self-consistent predictions.
 
-The framework is validated for both particle-reinforced and fiber-reinforced composites with constant and graded interphase properties. Results demonstrate that the EGIM can accurately capture the effective mechanical response of composites with complex interphase morphologies, enabling computationally efficient FEM simulations without artificial discontinuities.
+We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN achieves a 100\% pass rate across 28 validation configurations with mean errors below 2\%. For fibre-reinforced composites (CCA), no configuration meets the 5\% threshold --- transverse shear errors persist at 18\% even under global optimisation with an extended 7-parameter model, confirming a structural limitation of the zero-thickness interface approximation.
+
+The results define clear scope boundaries: the interface route is viable for spherical inclusions but not for fibres when transverse shear accuracy is required.
 
 \vspace{1cm}
-\noindent\textbf{Keywords:} Composite Materials, Interface Mechanics, Interphase, Homogenization, Mori-Tanaka, Parameter Identification, EGIM.
+\noindent\textbf{Keywords:} Composite Materials, Interphase, Extended General Interface Model, Physics-Informed Neural Networks, Inverse Parameter Identification, Mori-Tanaka Homogenization, CCA, CSA.
 
 % -------------------------------------------------------------------
 %   TABLE OF CONTENTS
@@ -1038,7 +1037,7 @@ This work is structured as follows:
 %   CHAPTER 2: THEORETICAL FOUNDATIONS 
 %   Aligned with Methodology using Extended Mori-Tanaka Framework
 % ===================================================================
-\chapter{2. Theoretical Foundations}
+\chapter{Theoretical Foundations}
 \label{ch:theory}
 
 This chapter presents the theoretical foundations of our present work. We begin with a brief set of fundamentals in Section~\ref{sec:preliminaries} starting with the Representative Volume Element, balance of momentum, constitutive relations, and the Hill-Mandel and Eshelby formulations. Section~\ref{sec:interphase_model} then develops the three-layered interphase model, where an interphase region is discretised into coating layers with piecewise-constant properties. We define the volume fractions, concentration tensors, and homogenization formulas for both fibre-reinforced (2D, CCA) and particle-reinforced (3D, CSA) composites. Section~\ref{sec:interface_model} presents the alternative approach: the Extended General Interface Model (EGIM), which replaces the finite-thickness interphase with a zero-thickness surface governed by interface constitutive laws. We develop the interface kinematics, model hierarchy, modified averaging relations, and the Mori-Tanaka homogenization with interface effects. Section~\ref{sec:nn_background} then introduces the neural network and physics-informed learning concepts needed for the inverse parameter Identification which we will continue in Chapter~\ref{ch:methodology}.
@@ -2000,7 +1999,7 @@ Section~\ref{sec:nn_background} introduced the neural network and physics-inform
 % ===================================================================
 %   CHAPTER 3: METHODOLOGY
 % ===================================================================
-\chapter{3. Methodology}
+\chapter{Methodology}
 \label{ch:methodology}
 
 Chapter~\ref{ch:theory} established the theoretical models, the three-layered interphase model and the Extended General Interface Model together with the concentration tensor framework that connects them and the neural network concepts that underpin the inverse methodology. This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture -- based on the concepts introduced in Section~\ref{sec:nn_background} -- that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
@@ -2517,7 +2516,7 @@ With the inverse network architectures and training strategies in place, Chapter
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
 % -------------------------------------------------------------------
-\chapter{4. Results and Discussion}
+\chapter{Results and Discussion}
 \label{ch:results}
 
 This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementation against analytical identities (Section~\ref{sec:verification}). Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry, where the Extended Interface model proves structurally adequate and the network achieves a~$100\,\%$ pass rate. Section~\ref{sec:cca_results} turns to the CCA geometry: the inverse PINN fails here, and a systematic diagnosis reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
@@ -2981,7 +2980,7 @@ Figure~\ref{fig:grand_comparison} places all four approaches on a single chart f
 % -------------------------------------------------------------------
 %   CHAPTER 5: CONCLUSION
 % -------------------------------------------------------------------
-\chapter{5. Conclusion}
+\chapter{Conclusion}
 \label{ch:conclusion}
 
 \section{Summary of Contributions}
@@ -3026,8 +3025,6 @@ Several directions for future research emerge from this work:
 % ===================================================================
 %   BACK MATTER
 % ===================================================================
-\backmatter
-
 % -------------------------------------------------------------------
 %   APPENDIX
 % -------------------------------------------------------------------
@@ -3047,6 +3044,8 @@ Several directions for future research emerge from this work:
 \label{app:code}
 
 % TODO: Add key code snippets
+
+\backmatter
 
 % -------------------------------------------------------------------
 %   BIBLIOGRAPHY
