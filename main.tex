@@ -604,10 +604,10 @@
 % --- 6. CHAPTER FORMATTING ---
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries}  % format of the title
-  {}                            % label (empty = no "Chapter X")
-  {0pt}                         % separation between label and title
-  {}                            % before-code
+  {\normalfont\huge\bfseries}              % format of the title
+  {\Large\bfseries Chapter \thechapter}    % label: "Chapter 1", "Chapter 2", ...
+  {10pt}                                   % separation between label and title
+  {}                                       % before-code
 \titlespacing*{\chapter}{0pt}{-30pt}{40pt}  % left, before, after spacing
 
 % --- 7. HEADER & FOOTER ---
@@ -625,7 +625,7 @@
 \definecolor{FAU_Blue}{RGB}{0,73,116}
 
 % --- 9. HYPERLINKS (Load Last) ---
-\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black, filecolor=black]{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{bookmark}
 
 % ===================================================================
