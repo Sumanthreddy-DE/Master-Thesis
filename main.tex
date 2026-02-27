@@ -44,7 +44,7 @@
 \usepackage{graphicx}
 \graphicspath{{figures/}}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,calc,patterns,decorations.pathmorphing}
+\usetikzlibrary{shapes,arrows,calc,patterns,decorations.pathmorphing,positioning,fit}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{caption}
@@ -2212,6 +2212,73 @@ Now if we substitute all the unknown Tensor components we just found in Eq ~\eqr
     \mathbb{T}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{T}^{(r)} \label{eq:Teq}\\
     \mathbb{H}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{H}^{(r)} \label{eq:Heq}
 \end{align}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm and 0.4cm,
+    block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    bvpblock/.style={rectangle, draw, fill=orange!10, text width=9em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    resultblock/.style={rectangle, draw, fill=green!10, text width=12em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    arrow/.style={->, >=stealth, thick},
+    dashedarrow/.style={->, >=stealth, thick, dashed}
+]
+
+% Input
+\node[block, text width=16em] (input) {
+    \textbf{Input:} $\kappa^{(q)}, \mu^{(q)}, \lambda^{(q)}$ for fiber, 3 coatings, matrix; radii $r_1, \ldots, r_4$; volume fraction $f$
+};
+
+% BVPs side by side
+\node[bvpblock, below left=1.0cm and 2.2cm of input] (bvp1) {\textbf{BVP 1}\\ In-plane bulk\\ $\rightarrow T_\kappa, H_\kappa, H_{31}$};
+\node[bvpblock, right=0.3cm of bvp1] (bvp2) {\textbf{BVP 2}\\ Transverse shear\\ $\rightarrow T_{44}, H_{44}$};
+\node[bvpblock, right=0.3cm of bvp2] (bvp3) {\textbf{BVP 3}\\ Axial shear\\ $\rightarrow T_{55}, H_{55}$};
+\node[bvpblock, right=0.3cm of bvp3] (bvp4) {\textbf{BVP 4}\\ Axisymmetric\\ $\rightarrow T_{13}, H_{13}, H_{33}$};
+
+% Common step description
+\node[block, text width=22em, below=1.0cm of $(bvp2)!0.5!(bvp3)$] (solve) {
+    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply continuity of $\bs{u}$ and $\bs{t}$ at all interfaces $\rightarrow$ solve linear system for unknowns $\rightarrow$ volume average $\rightarrow$ extract tensor components
+};
+
+% Assembly
+\node[block, text width=18em, below=0.7cm of solve] (assemble) {
+    Assemble per-phase tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$\\ using transversely isotropic structure
+};
+
+% Equivalent tensors
+\node[block, text width=18em, below=0.7cm of assemble] (equiv) {
+    $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, \quad $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
+};
+
+% Mori-Tanaka
+\node[resultblock, text width=18em, below=0.7cm of equiv] (mt) {
+    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(0)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+};
+
+% Output
+\node[resultblock, below=0.7cm of mt] (output) {
+    \textbf{Output:} $K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}, E_{\text{ax}}, \nu_{\text{ax}}$
+};
+
+% Arrows
+\draw[arrow] (input) -| (bvp1);
+\draw[arrow] (input) -- (bvp2);
+\draw[arrow] (input) -- (bvp3);
+\draw[arrow] (input) -| (bvp4);
+\draw[arrow] (bvp1) |- (solve);
+\draw[arrow] (bvp2) -- (solve);
+\draw[arrow] (bvp3) -- (solve);
+\draw[arrow] (bvp4) |- (solve);
+\draw[arrow] (solve) -- (assemble);
+\draw[arrow] (assemble) -- (equiv);
+\draw[arrow] (equiv) -- (mt);
+\draw[arrow] (mt) -- (output);
+
+\end{tikzpicture}
+\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the three-layered interphase model. Four independent BVPs yield the concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
+\label{fig:flowchart_interphase_cca}
+\end{figure}
+
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
 \label{subsec:particle_bvp}
@@ -2322,6 +2389,65 @@ Now if we substitute all the unknown Tensor components we just found in Eq ~\eqr
     \mathbb{T}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{T}^{(r)} \label{eq:Teq}\\
     \mathbb{H}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{H}^{(r)} \label{eq:Heq}
 \end{align}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm and 0.6cm,
+    block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    bvpblock/.style={rectangle, draw, fill=orange!10, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    resultblock/.style={rectangle, draw, fill=green!10, text width=12em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Input
+\node[block, text width=16em] (input) {
+    \textbf{Input:} $\kappa^{(q)}, \mu^{(q)}$ for particle, 3 coatings, matrix; radii $r_1, \ldots, r_4$; volume fraction $f$
+};
+
+% BVPs side by side
+\node[bvpblock, below left=1.0cm and 1.5cm of input] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_\kappa, H_\kappa$};
+\node[bvpblock, below right=1.0cm and 1.5cm of input] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_\mu, H_\mu$};
+
+% Common step
+\node[block, text width=22em, below=1.0cm of $(bvp1)!0.5!(bvp2)$] (solve) {
+    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply continuity of $\bs{u}$ and $\bs{t}$ at all interfaces $\rightarrow$ solve linear system $\rightarrow$ volume average $\rightarrow$ extract tensor components
+};
+
+% Assembly
+\node[block, text width=16em, below=0.7cm of solve] (assemble) {
+    Assemble per-phase tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$\\ using isotropic structure
+};
+
+% Equivalent tensors
+\node[block, text width=16em, below=0.7cm of assemble] (equiv) {
+    $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, \quad $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
+};
+
+% Mori-Tanaka
+\node[resultblock, text width=16em, below=0.7cm of equiv] (mt) {
+    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(0)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+};
+
+% Output
+\node[resultblock, below=0.7cm of mt] (output) {
+    \textbf{Output:} $K_{\text{eff}}, G_{\text{eff}}$
+};
+
+% Arrows
+\draw[arrow] (input) -| (bvp1);
+\draw[arrow] (input) -| (bvp2);
+\draw[arrow] (bvp1) |- (solve);
+\draw[arrow] (bvp2) |- (solve);
+\draw[arrow] (solve) -- (assemble);
+\draw[arrow] (assemble) -- (equiv);
+\draw[arrow] (equiv) -- (mt);
+\draw[arrow] (mt) -- (output);
+
+\end{tikzpicture}
+\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the three-layered interphase model. Two independent BVPs yield the isotropic concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
+\label{fig:flowchart_interphase_csa}
+\end{figure}
 
 % ===================================================================
 \section{Extended General Interface Model with Mori-Tanaka}
@@ -2661,6 +2787,66 @@ The loss weights $w_{\text{data}}$ and $w_{\text{phys}}$ are adapted during trai
 
 \paragraph{Training procedure.}
 We train with AdamW ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing over 500~epochs, batch size~256, and gradient clipping at norm~1.0. Inputs are normalised to zero mean and unit variance. The best validation loss is reached at epoch~322.
+
+Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complete inverse parameter identification pipeline for the CCA and CSA geometries, respectively.
+
+\begin{algorithm}[htbp]
+\caption{Inverse parameter identification pipeline for fibre-reinforced composites (CCA)}
+\label{alg:inverse_cca}
+\begin{algorithmic}[1]
+\Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (fibre), $\kappa^{(0)}, \mu^{(0)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
+\Ensure Interface parameters $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ such that EGIM reproduces the interphase effective properties
+\Statex
+\State \textbf{--- Forward solve (3-layer interphase model) ---}
+\State Solve 4 BVPs (in-plane bulk, transverse shear, axial shear, axisymmetric) for the 5-phase composite (fibre + 3 coatings + matrix) \Comment{Fig.~\ref{fig:flowchart_interphase_cca}}
+\State Extract per-phase concentration tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ from volume-averaged fields
+\State Compute equivalent tensors: $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
+\State Homogenise via Mori-Tanaka $\rightarrow$ target effective moduli: $K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}$
+\Statex
+\State \textbf{--- Inverse prediction (neural network) ---}
+\State Assemble input vector: $\bs{x} = [K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(0)}, \mu^{(0)}, f]$
+\State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$
+\Statex
+\State \textbf{--- Verification (EGIM forward model) ---}
+\State Solve 4 EGIM BVPs using predicted $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ with same fibre/matrix properties
+\State Homogenise via Mori-Tanaka $\rightarrow$ predicted effective moduli: $K_{\text{tr}}^{\text{pred}}, G_{\text{tr}}^{\text{pred}}, G_{\text{ax}}^{\text{pred}}$
+\State Compute relative errors: $e_i = |C_i^{\text{pred}} - C_i^{\text{target}}| / |C_i^{\text{target}}|$ for each modulus
+\If{all $e_i < $ tolerance}
+    \State \Return $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ \Comment{successful identification}
+\Else
+    \State Flag representational gap \Comment{EGIM cannot reproduce interphase behaviour}
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htbp]
+\caption{Inverse parameter identification pipeline for particle-reinforced composites (CSA)}
+\label{alg:inverse_csa}
+\begin{algorithmic}[1]
+\Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (particle), $\kappa^{(0)}, \mu^{(0)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
+\Ensure Interface parameters $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ such that EGIM reproduces the interphase effective properties
+\Statex
+\State \textbf{--- Forward solve (3-layer interphase model) ---}
+\State Solve 2 BVPs (hydrostatic, deviatoric) for the 5-phase composite (particle + 3 coatings + matrix) \Comment{Fig.~\ref{fig:flowchart_interphase_csa}}
+\State Extract per-phase concentration tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ from volume-averaged fields
+\State Compute equivalent tensors: $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
+\State Homogenise via Mori-Tanaka $\rightarrow$ target effective moduli: $K_{\text{eff}}^{\text{target}}, G_{\text{eff}}^{\text{target}}$
+\Statex
+\State \textbf{--- Inverse prediction (neural network) ---}
+\State Assemble input vector: $\bs{x} = [K_{\text{eff}}^{\text{target}}, G_{\text{eff}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(0)}, \mu^{(0)}, f]$
+\State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$
+\Statex
+\State \textbf{--- Verification (EGIM forward model) ---}
+\State Solve 2 EGIM BVPs (hydrostatic, deviatoric) using predicted $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ with same particle/matrix properties
+\State Homogenise via Mori-Tanaka $\rightarrow$ predicted effective moduli: $K_{\text{eff}}^{\text{pred}}, G_{\text{eff}}^{\text{pred}}$
+\State Compute relative errors: $e_i = |C_i^{\text{pred}} - C_i^{\text{target}}| / |C_i^{\text{target}}|$ for each modulus
+\If{all $e_i < $ tolerance}
+    \State \Return $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ \Comment{successful identification}
+\Else
+    \State Flag representational gap \Comment{EGIM cannot reproduce interphase behaviour}
+\EndIf
+\end{algorithmic}
+\end{algorithm}
 
 With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the CSA inverse PINN achieves a~$100\,\%$ pass rate, while the CCA case reveals a fundamental representational limit of the Extended Interface model that no parameter identification method can overcome.
 
