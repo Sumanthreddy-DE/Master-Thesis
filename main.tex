@@ -2264,8 +2264,8 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 };
 
 % BVPs side by side
-\node[bvpblock, below left=1.0cm and 1.5cm of input] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_\kappa, H_\kappa$};
-\node[bvpblock, below right=1.0cm and 1.5cm of input] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_\mu, H_\mu$};
+\node[bvpblock, below left=1.0cm and 0.5cm of input] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_\kappa, H_\kappa$};
+\node[bvpblock, below right=1.0cm and 0.5cm of input] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_\mu, H_\mu$};
 
 % Assembly
 \node[block, text width=16em, below=1.2cm of $(bvp1)!0.5!(bvp2)$] (assemble) {
@@ -2608,24 +2608,19 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 \node[bvpblock, right=0.3cm of bvp2] (bvp3) {\textbf{BVP 3}\\ Axial shear\\ $\rightarrow T_{55}, H_{55}$};
 \node[bvpblock, right=0.3cm of bvp3] (bvp4) {\textbf{BVP 4}\\ Axisymmetric\\ $\rightarrow T_{13}, H_{13}, H_{33}$};
 
-% Solve step
-\node[block, text width=22em, below=1.0cm of $(bvp2)!0.5!(bvp3)$] (solve) {
-    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply EGIM cohesive \& elastic jump conditions at $r = r_1$ $\rightarrow$ solve linear system $\rightarrow$ extract $\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$
-};
-
 % Equivalent stiffness
-\node[block, text width=18em, below=0.7cm of solve] (ceq) {
+\node[block, text width=18em, below=1.2cm of $(bvp2)!0.5!(bvp3)$] (ceq) {
     Equivalent inhomogeneity stiffness:\\ $\mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot (\mathbb{T}^{\text{eq}})^{-1}$
 };
 
 % Mori-Tanaka
 \node[resultblock, text width=18em, below=0.7cm of ceq] (mt) {
-    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+    \textbf{Mori-Tanaka homogenisation}
 };
 
 % Output
 \node[resultblock, below=0.7cm of mt] (output) {
-    \textbf{Output:} $K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}, E_{\text{ax}}, \nu_{\text{ax}}$
+    \textbf{Output:} $K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$
 };
 
 % Arrows
@@ -2635,11 +2630,10 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 \draw[arrow] (setup) -- (bvp2);
 \draw[arrow] (setup) -- (bvp3);
 \draw[arrow] (setup) -| (bvp4);
-\draw[arrow] (bvp1) |- (solve);
-\draw[arrow] (bvp2) -- (solve);
-\draw[arrow] (bvp3) -- (solve);
-\draw[arrow] (bvp4) |- (solve);
-\draw[arrow] (solve) -- (ceq);
+\draw[arrow] (bvp1) |- (ceq);
+\draw[arrow] (bvp2) -- (ceq);
+\draw[arrow] (bvp3) -- (ceq);
+\draw[arrow] (bvp4) |- (ceq);
 \draw[arrow] (ceq) -- (mt);
 \draw[arrow] (mt) -- (output);
 
@@ -2745,19 +2739,14 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 \node[bvpblock, below left=1.0cm and 1.5cm of setup] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_{11}, H_{11}$};
 \node[bvpblock, below right=1.0cm and 1.5cm of setup] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_{44}, H_{44}$};
 
-% Solve step
-\node[block, text width=22em, below=1.0cm of $(bvp1)!0.5!(bvp2)$] (solve) {
-    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply EGIM cohesive \& elastic jump conditions at $r = r_1$ $\rightarrow$ solve linear system $\rightarrow$ extract $\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$
-};
-
 % Equivalent stiffness
-\node[block, text width=16em, below=0.7cm of solve] (ceq) {
+\node[block, text width=16em, below=1.2cm of $(bvp1)!0.5!(bvp2)$] (ceq) {
     Equivalent inhomogeneity stiffness:\\ $\mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot (\mathbb{T}^{\text{eq}})^{-1}$
 };
 
 % Mori-Tanaka
 \node[resultblock, text width=16em, below=0.7cm of ceq] (mt) {
-    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+    \textbf{Mori-Tanaka homogenisation}
 };
 
 % Output
@@ -2770,9 +2759,8 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 \draw[arrow] (params) -- (setup);
 \draw[arrow] (setup) -| (bvp1);
 \draw[arrow] (setup) -| (bvp2);
-\draw[arrow] (bvp1) |- (solve);
-\draw[arrow] (bvp2) |- (solve);
-\draw[arrow] (solve) -- (ceq);
+\draw[arrow] (bvp1) |- (ceq);
+\draw[arrow] (bvp2) |- (ceq);
 \draw[arrow] (ceq) -- (mt);
 \draw[arrow] (mt) -- (output);
 
