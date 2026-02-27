@@ -2713,6 +2713,7 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
     node distance=0.7cm and 0.6cm,
     block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
@@ -2723,21 +2724,21 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 ]
 
 % Inputs
-\node[block, text width=14em] (mat) {
-    \textbf{Material input:} $\kappa^{(1)}, \mu^{(1)}$ (particle), $\kappa^{(2)}, \mu^{(2)}$ (matrix), radius $r_1$, volume fraction $f$
+\node[block, text width=12em] (mat) {
+    \textbf{Material:} $\kappa^{(1)}, \mu^{(1)}$ (particle),\\ $\kappa^{(2)}, \mu^{(2)}$ (matrix), $r_1$, $f$
 };
-\node[inputblock, text width=14em, right=0.8cm of mat] (params) {
+\node[inputblock, text width=12em, right=0.5cm of mat] (params) {
     \textbf{From inverse PINN:}\\ $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$
 };
 
 % Merge point
-\node[block, text width=20em, below=1.0cm of $(mat)!0.5!(params)$] (setup) {
+\node[block, text width=16em, below=1.0cm of $(mat)!0.5!(params)$] (setup) {
     2-phase composite (particle + matrix) with EGIM jump conditions at $r = r_1$
 };
 
 % BVPs side by side
-\node[bvpblock, below left=1.0cm and 1.5cm of setup] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_{11}, H_{11}$};
-\node[bvpblock, below right=1.0cm and 1.5cm of setup] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_{44}, H_{44}$};
+\node[bvpblock, below left=1.0cm and 0.5cm of setup] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_{11}, H_{11}$};
+\node[bvpblock, below right=1.0cm and 0.5cm of setup] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_{44}, H_{44}$};
 
 % Equivalent stiffness
 \node[block, text width=16em, below=1.2cm of $(bvp1)!0.5!(bvp2)$] (ceq) {
@@ -2764,7 +2765,8 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 \draw[arrow] (ceq) -- (mt);
 \draw[arrow] (mt) -- (output);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end \resizebox
 \caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the particle--matrix boundary.}
 \label{fig:flowchart_interface_csa}
 \end{figure}
