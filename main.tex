@@ -891,7 +891,7 @@ The formal mathematical definitions of these parameters---the jump and average o
 \section{The Research Gap: Parameter Identification}
 % -------------------------------------------------------------------
 
-The theoretical framework described above provides a coherent path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties \cite{Firooz2021}.
+The theoretical framework described above provides a coherent path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties \cite{Firooz2021}.
 
 Consider a concrete example: given a CFRP system with a sizing layer of known thickness $h$ and elastic moduli ($\lambda_{\text{sizing}}$, $\mu_{\text{sizing}}$), what interface stiffness $\bar{k}$ produces the same effective composite response? The answer is not obvious, and several complicating factors arise:
 
@@ -926,7 +926,7 @@ This matching condition leads to an \textit{underdetermined} system: the EGIM ha
 
 The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation---suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges.
 
-We develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike conventional inverse optimisation, the PINN embeds the governing homogenization equations into its loss function~\cite{Raissi2019}, enabling parameter identification that respects physical constraints without requiring repeated forward solves. We apply the same inverse network to both CSA and CCA geometries to test the scope of the interface model across different composite types.
+We develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike iterative inverse optimisation, which requires repeated forward solves at each iteration, the trained PINN identifies parameters in a single forward pass; the physics loss embedded during training~\cite{Raissi2019} ensures that predictions remain consistent with the governing homogenization equations. We apply the same inverse network to both CSA and CCA geometries to test the scope of the interface model across different composite types.
 
 Neural networks are preferred over alternatives such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002} because the mapping is highly nonlinear, the input space is seven- to eight-dimensional, and the training datasets contain $200\,000$ samples---a regime where Gaussian processes become computationally prohibitive \cite{Liu2020} and polynomial expansions struggle with the strong nonlinearities. The detailed justification is given in Section~\ref{sec:neural_network}.
 
