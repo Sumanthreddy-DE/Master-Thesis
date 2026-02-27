@@ -3104,18 +3104,18 @@ Table~\ref{tab:csa_worked_examples} presents the results. The PINN passes five o
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: six worked examples combining two material scenarios with three interphase gradient types. The reconstruction error is the relative percentage difference between the 3-layer interphase target and the EGIM-reconstructed effective properties. A case passes if both errors remain below~$5\,\%$.}
+\caption{CSA inverse PINN: six worked examples combining two material scenarios (Scenario~A: soft particle with $\text{SR}=0.25$; Scenario~B: stiff particle with $\text{SR}=2.0$) with three interphase gradient types. Coating~$\kappa$ values are listed from the layer closest to the particle to the layer closest to the matrix. A case passes if both reconstruction errors remain below~$5\,\%$.}
 \label{tab:csa_worked_examples}
-\begin{tabular}{l l l c c c c c}
+\begin{tabular}{l l c c c c c c}
 \toprule
-Case & Scenario & Gradient & $K_{\text{target}}$ & $G_{\text{target}}$ & $K_{\text{err}}$ [\%] & $G_{\text{err}}$ [\%] & Pass \\
+Case & Scenario & $\kappa_{\text{c}_1}, \kappa_{\text{c}_2}, \kappa_{\text{c}_3}$ & $K_{\text{target}}$ & $G_{\text{target}}$ & $K_{\text{err}}$ [\%] & $G_{\text{err}}$ [\%] \\
 \midrule
-A1 & Soft ($\text{SR}=0.25$) & Weak    & 19.651 & 11.957 & 1.61 & 0.35 & \checkmark \\
-A2 & Soft ($\text{SR}=0.25$) & Moderate & 17.895 & 11.919 & 0.08 & 4.74 & \checkmark \\
-A3 & Soft ($\text{SR}=0.25$) & Strong  & 15.234 & 11.286 & 3.29 & 10.68 & $\times$ \\
-B1 & Stiff ($\text{SR}=2.0$) & Weak    & 20.304 & 12.049 & 0.33 & 0.50 & \checkmark \\
-B2 & Stiff ($\text{SR}=2.0$) & Moderate & 21.951 & 12.314 & 0.48 & 0.17 & \checkmark \\
-B3 & Stiff ($\text{SR}=2.0$) & Strong  & 23.667 & 12.991 & 2.40 & 0.95 & \checkmark \\
+A1 & Soft  & 18.5,\; 19.3,\; 19.7  & 19.651 & 11.957 & 1.61 & 0.35 \\
+A2 & Soft  & 8.75,\; 12.5,\; 16.3  & 17.895 & 11.919 & 0.08 & 4.74 \\
+A3 & Soft  & 5.75,\; 7.25,\; 8.75  & 15.234 & 11.286 & 3.29 & 10.68 \\
+B1 & Stiff & 22.0,\; 21.0,\; 20.4  & 20.304 & 12.049 & 0.33 & 0.50 \\
+B2 & Stiff & 35.0,\; 30.0,\; 25.0  & 21.951 & 12.314 & 0.48 & 0.17 \\
+B3 & Stiff & 39.0,\; 37.0,\; 35.0  & 23.667 & 12.991 & 2.40 & 0.95 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -3143,7 +3143,7 @@ To further illustrate how the three modelling approaches compare across a contin
 \label{fig:csa_vs_sr}
 \end{figure}
 
-In both sweeps, the optimised Extended Interface model (dashed red) overlaps the 3-layer interphase target across the full parameter range, confirming that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
+In both sweeps, the optimised Extended Interface model (dashed red) overlaps the 3-layer interphase target across the full parameter range, confirming that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. Note that these sweeps use a different material configuration ($\kappa^{(1)} = 30$, $\kappa^{(2)} = 20$, $\text{SR} = 1.5$) than the worked examples in Table~\ref{tab:csa_worked_examples}, which accounts for the different error magnitudes. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
 
 % ===================================================================
 \section{CCA: Inverse Parameter Identification and Representational Limits}
