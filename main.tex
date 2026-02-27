@@ -3106,10 +3106,10 @@ Table~\ref{tab:csa_worked_examples} presents the results. The PINN passes five o
 \centering
 \caption{CSA inverse PINN: six worked examples combining two material scenarios (Scenario~A: soft particle with $\text{SR}=0.25$; Scenario~B: stiff particle with $\text{SR}=2.0$) with three interphase gradient types. The stiffness profile column shows $\kappa$ values from particle through three coating layers to matrix. A case passes if both reconstruction errors remain below~$5\,\%$.}
 \label{tab:csa_worked_examples}
-{\small
+{\footnotesize
 \begin{tabular}{l c c c c c c c}
 \toprule
-Case & Stiffness profile ($\kappa_{\text{p}} \to \kappa_{\text{c}_1}, \kappa_{\text{c}_2}, \kappa_{\text{c}_3} \to \kappa_{\text{m}}$) & $K_{\text{target}}$ & $K_{\text{pred}}$ & $K_{\text{err}}$ [\%] & $G_{\text{target}}$ & $G_{\text{pred}}$ & $G_{\text{err}}$ [\%] \\
+Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_{\text{pred}}$ & $K_{\text{err}}$ [\%] & $G_{\text{tgt}}$ & $G_{\text{pred}}$ & $G_{\text{err}}$ [\%] \\
 \midrule
 A1 & $5 \to 18.5,\; 19.3,\; 19.7 \to 20$  & 19.651 & 19.335 & 1.61 & 11.957 & 11.915 & 0.35 \\
 A2 & $5 \to 8.75,\; 12.5,\; 16.3 \to 20$  & 17.895 & 17.881 & 0.08 & 11.919 & 11.354 & 4.74 \\
