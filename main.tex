@@ -2011,14 +2011,33 @@ The radial stress in each phase q is:
 
 The average strain field over phase $q$ yields:
 %
-\begin{equation}
-    \langle \bs{\varepsilon}^{(q)} \rangle = [X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0, \, 0]^T
+\begin{align}
+\langle \bs{\varepsilon}^{(q)} \rangle
+&=
+\frac{1}{\pi\left(r_b^{2}-r_a^{2}\right)}
+\int_{0}^{2\pi}
+\int_{r_a}^{r_b}
+\mathbf{Q}_{\varepsilon}^{T}\cdot \varepsilon^{\text{q}}
+\,  \, dr\, d\theta\, \\ 
+&= [X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0, \, 0]^T
     \label{eq:avg_strain_bulk_fiber}
-\end{equation}
+\end{align}
 The average stress field over phase $q$ yields:
-\begin{equation}
-    \langle \bs{\sigma}^{(q)} \rangle = [2\kappa^{(q)} X_{2q-1}\beta, \, 2\kappa^{(q)} X_{2q-1}\beta, \, 2(\kappa^{(q)}-\mu^{(q)}) X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
+\begin{align}
+\langle \bs{\sigma}^{(q)} \rangle
+&=
+\frac{1}{\pi\left(r_b^{2}-r_a^{2}\right)}
+\int_{0}^{2\pi}
+\int_{r_a}^{r_b}
+\mathbf{Q}_{\varepsilon}^{T}\cdot \sigma^{\text{q}}
+\, \, dr\, d\theta\,  \\
+&= [2\kappa^{(q)} X_{2q-1}\beta, \, 2\kappa^{(q)} X_{2q-1}\beta, \, 2(\kappa^{(q)}-\mu^{(q)}) X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
     \label{eq:avg_stress_bulk_fiber}
+\end{align}
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
+\begin{equation}
+    \langle \bs{\varepsilon}^{(q)} \rangle = \mathbb{T}^{(q)} : \bs{\varepsilon}^{(0)}, \quad
+    \langle \bs{\sigma}^{(q)} \rangle = \mathbb{H}^{(q)} : \bs{\varepsilon}^{(0)}
 \end{equation}
 
 (Section~\ref{subsec:tensor_structure_fiber})
@@ -2034,40 +2053,57 @@ where $\kappa^{(q)} = \lambda^{(q)} + \mu^{(q)}$ is the plane-strain bulk modulu
 
 \subsubsection{BVP 2: Transverse Shear Response}
 
-For far-field displacement $\bs{u}^{(0)} = [\beta r \sin 2\theta, \, \beta r \cos 2\theta, \, 0]^T$, the displacement field in each phase is:
+For this case far-field displacement $\bs{u}^{(0)} = [\beta r \sin 2\theta, \, \beta r \cos 2\theta, \, 0]^T$ and the displacement field in each phase is:
 %
 \begin{align}
-    u_r^{(q)}(r, \theta) &= \beta r \, U_r^{(q)}(r) \sin 2\theta \\
-    u_\theta^{(q)}(r, \theta) &= \beta r \, U_\theta^{(q)}(r) \cos 2\theta
+    u_r^{(q)} &= \beta r \sin 2\theta (\frac{\kappa^{(q)} - \mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + X_{4(q-1)+3} - r^4 X_{4(q-1)+1} + \frac{\kappa^{(q)} + \mu^{(q)}}{\mu^{(q)}} r^2 X_{4(q-1)+2}\label{eq:Ur_transverse}) \\
+    u_\theta^{(q)} &= \beta r \cos 2\theta(r^2 X_{4(q-1)+4} + X_{4(q-1)+3} + \frac{1}{r^4} X_{4(q-1)+1}+ \frac{1}{r^2} X_{4(q-1)+2} \\
+    u_z^{(q)} &=0\label{eq:Utheta_transverse}
 \end{align}
 %
-where the radial functions are:
+For all q=1,2,3,4,5
 %
 \begin{align}
-    U_r^{(q)}(r) &= \frac{\kappa^{(q)} - \mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + X_{4(q-1)+3} - r^4 X_{4(q-1)+1} + \frac{\kappa^{(q)} + \mu^{(q)}}{\mu^{(q)}} r^2 X_{4(q-1)+2}\label{eq:Ur_transverse}\\[6pt]
-    U_\theta^{(q)}(r) &= r^2 X_{4(q-1)+4} + X_{4(q-1)+3} + \frac{1}{r^4} X_{4(q-1)+1}+ \frac{1}{r^2} X_{4(q-1)+2} \label{eq:Utheta_transverse}
+    \sigma_{rr}^{(q)} &= \beta \sin 2\theta (2\mu^{(q)}X_{4(q-1)+3} + 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} - 4\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2})  \\
+    \sigma_{r\theta}^{(q)} &= \beta \cos 2\theta(\frac{6\kappa^{(q)}\mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + 2\mu^{(q)} X_{4(q-1)+3} - 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} + 2\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2}) 
+\end{align}
+%
+The average strain field over phase $q$ yields:
+%
+\begin{align}
+\langle \bs{\varepsilon}^{(q)} \rangle
+&=[0, \, 0, \, 0, \, \frac{\beta_0 \,{\left(3\,X_4 \,\kappa \,{r_a }^2 +3\,X_4 \,\kappa \,{r_b }^2 +4\,X_3 \,\kappa +2\,X_3 \,\mu \right)}}{2\,\kappa +\mu },\,0,\,0
+]^T
+\end{align}
+The average stress field over phase $q$ yields:
+\begin{align}
+\langle \bs{\sigma}^{(q)} \rangle
+&=
+\mu^{(q)}\langle \bs{\varepsilon}^{(q)} \rangle
 \end{align}
 
-For the core, $X_{4(q-1)+1} = X_{4(q-1)+2} = 0$ to ensure bounded fields. The stress components are:
-%
-\begin{align}
-    \sigma_{rr}^{(q)}(r, \theta) &= \beta \Sigma_{rr}^{(q)}(r) \sin 2\theta \\
-    \sigma_{r\theta}^{(q)}(r, \theta) &= \beta \Sigma_{r\theta}^{(q)}(r) \cos 2\theta
-\end{align}
-%
-with:
-%
-\begin{align}
-    \Sigma_{rr}^{(q)}(r) &= 2\mu^{(q)}X_{4(q-1)+3} + 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} - 4\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2} \\[6pt]
-    \Sigma_{r\theta}^{(q)}(r) &= \frac{6\kappa^{(q)}\mu^{(q)}}{2\kappa^{(q)} + \mu^{(q)}} r^2 X_{4(q-1)+4} + 2\mu^{(q)} X_{4(q-1)+3} - 6\mu^{(q)} \frac{X_{4(q-1)+1}}{r^4} + 2\kappa^{(q)} \frac{X_{4(q-1)+2}}{r^2}
-\end{align}
 
-The volume-averaged strain in phase $q$ (over the annulus $r_a < r < r_b$) gives the transverse shear concentration:
+Similarly using Eq~\ref{eq:interface_concentration_def} volume-averaged strain in phase $q$ gives:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\
+    T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\ \nonumber
     H_{44}^{(q)} &= \mu^{(q)} T_{44}^{(q)}
 \end{empheq}
+where the 20 unknowns can be determined via applying the boundary conditions: 
+\begin{enumerate}
+    \item Finite displacement at origin: $X_1 = 0 \quad X_2 = 0$
+    \item Orthogonal equilibrium at  $r = r_1\implies u_r^{(1)}(r_1) = u_r^{(2)}(r_1), \quad u_{\theta}^{(1)}(r_1) = u_{\theta}^{(2)}(r_1)$
+    \item Tangential equilibrium at  $r = r_1\implies \sigma_{rr}^{(1)}(r_1) = \sigma_{rr}^{(2)}(r_1),\quad \sigma_{r\theta}^{(1)}(r_1) = \sigma_{r\theta}^{(2)}(r_1)$
+    \item Orthogonal equilibrium at  $r = r_2\implies u_r^{(2)}(r_2) = u_r^{(3)}(r_2), \quad u_{\theta}^{(2)}(r_2) = u_{\theta}^{(3)}(r_2)$
+    \item Tangential equilibrium  at  $r = r_2 \implies \sigma_{rr}^{(2)}(r_2) = \sigma_{rr}^{(3)}(r_2),\quad \sigma_{r\theta}^{(2)}(r_2) = \sigma_{r\theta}^{(3)}(r_2)$
+    \item Orthogonal equilibrium at  $r = r_3\implies u_r^{(3)}(r_3) = u_r^{(4)}(r_3), \quad u_{\theta}^{(3)}(r_3) = u_{\theta}^{(4)}(r_3)$
+    \item Tangential equilibrium  at  $r = r_3 \implies \sigma_{rr}^{(3)}(r_3) = \sigma_{rr}^{(4)}(r_3),\quad \sigma_{r\theta}^{(3)}(r_3) = \sigma_{r\theta}^{(4)}(r_3)$
+    \item Orthogonal equilibrium at  $r = r_4\implies u_r^{(4)}(r_4) = u_r^{(5)}(r_4), \quad u_{\theta}^{(4)}(r_4) = u_{\theta}^{(5)}(r_4)$
+    \item Tangential equilibrium at  $r = r_4 \implies \sigma_{rr}^{(4)}(r_4) = \sigma_{rr}^{(5)}(r_4),\quad \sigma_{r\theta}^{(4)}(r_4) = \sigma_{r\theta}^{(5)}(r_4)$
+    \item Prescribed displacement: $u_r^{(5)}(r \to \infty) = \beta r$ implies $X_{17} = 1 \quad X_{18} = 1$
+\end{enumerate}
+
+
 
 \subsubsection{BVP 3: Axial Shear Response}
 
@@ -2077,14 +2113,49 @@ For far-field displacement $\bs{u}^{(0)} = [0, 0, \beta r \cos\theta]^T$, the di
     u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(X_{2q-1} + X_{2q} \frac{1}{r^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
     \label{eq:uz_axial}
 \end{equation}
+The stress vector for each phase q becomes
+\begin{align}
+\bs{\sigma}^{(q)} 
+&=[0, \, 0, \, 0, \, 0,\,\beta_0 \,\mu \,\cos \left(\theta \right)\,{\left(X_1 -\frac{X_2 }{r^2 }\right)},\,-\frac{\beta_0 \,\mu \,\sin \left(\theta \right)\,{\left(X_1 \,r^2 +X_2 \right)}}{r^2 }
+]^T
+\end{align}
 
-For the core, $X_{2q} = 0$ to ensure bounded displacement. The concentration tensor components are:
+The average strain field over phase $q$ yields:
+%
+\begin{align}
+\langle \bs{\varepsilon}^{(q)} \rangle
+&= [0,\, 0, \, 0, \, 0, X_{2q-1}\beta, \, 0]^T
+    \label{eq:avg_strain_bulk_fiber}
+\end{align}
+The average stress field over phase $q$ yields:
+\begin{align}
+\langle \bs{\sigma}^{(q)} \rangle
+&= \mu^{(q)}\langle \bs{\varepsilon}^{(q)} \rangle
+\end{align}
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
+\begin{equation}
+    \langle \bs{\varepsilon}^{(q)} \rangle = \mathbb{T}^{(q)} : \bs{\varepsilon}^{(0)}, \quad
+    \langle \bs{\sigma}^{(q)} \rangle = \mathbb{H}^{(q)} : \bs{\varepsilon}^{(0)}
+\end{equation}
+Then the concentration tensor components are:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{55}^{(q)} &= \frac{X_{2q-1}}{2 \cos \theta} \label{eq:T55_fiber}\\[6pt]
-    H_{55}^{(q)} &= \frac{\mu^{(q)} X_{2q-1}}{ \cos \theta} \label{eq:H55_fiber}
+    T_{55}^{(q)} &= X_{2q-1} \label{eq:T55_fiber}\\[6pt]
+    H_{55}^{(q)} &= \mu^{(q)} X_{2q-1} \label{eq:H55_fiber}
 \end{empheq}
-
+with the 10 unknowns which can be determined via applying the boundary conditions: 
+\begin{enumerate}
+    \item Finite displacement at origin: $X_2 = 0$
+    \item Continuity of displacement at  $r = r_1\implies u_z^{(1)} = u_z^{(2)}$
+    \item Continuity of traction at  $r = r_1 \implies \sigma_{rz}^{(1)} = \sigma_{rz}^{(2)}$
+    \item Continuity of displacement at  $r = r_2\implies u_z^{(2)} = u_z^{(3)}$
+    \item Continuity of traction at  $r = r_2 \implies \sigma_{rr}^{(2)} = \sigma_{rr}^{(3)}$
+    \item Continuity of displacement at  $r = r_3\implies u_z^{(3)} = u_z^{(4)}$
+    \item Continuity of traction at  $r = r_3 \implies \sigma_{rz}^{(3)} = \sigma_{rz}^{(4)}$
+    \item Continuity of displacement at  $r = r_4\implies u_z^{(4)} = u_z^{(5)}$
+    \item Continuity of traction at  $r = r_4 \implies \sigma_{rz}^{(4)} = \sigma_{rz}^{(5)}$
+    \item Prescribed displacement: $u_z^{(5)}(r \to \infty) = \beta r$ implies $X_9 = 1$
+\end{enumerate}
 \subsubsection{BVP 4: Overall Axisymmetric Response}
 
 The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, and $H_{33}^{(q)}$ that characterise the axial response. We apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
@@ -2101,21 +2172,32 @@ The first three BVPs determine the in-plane concentration tensor components. To 
     \label{eq:bvp4_farfield}
 \end{equation}
 
-In each phase, the radial displacement takes the same form as BVP~1 (in-plane bulk), since the axial strain couples to the radial direction through the Poisson effect:
+In each phase, the radial displacement takes the same form as BVP~1 (in-plane bulk),
 %
 \begin{equation}
-    u_r^{(q)} = \beta r (X_{2q-1} \,  + \frac{X_{2q}}{r^2}), \quad u_z = \beta z
+    u_r^{(q)} = \beta r (X_{2q-1} \,  + \frac{X_{2q}}{r^2}), \quad u_{\theta} = 0 , \quad u_z = \beta z
     \label{eq:bvp4_displacement}
 \end{equation}
 %
-where $u_z = \beta z$ holds in all phases due to continuity of axial displacement. The linear system for $X_{2q-1}$ and $X_{2q}$ uses the \textit{same} coefficient matrix as BVP~1, but with a different right-hand side arising from the Lam\'{e} parameter mismatch between adjacent phases:
+The average strain field over phase $q$ yields:
 %
+\begin{align}
+\langle \bs{\varepsilon}^{(q)} \rangle
+&= [X_{2q-1}\beta,\, X_{2q-1}\beta, \, \beta, \, 0, 0, \, 0]^T
+    \label{eq:avg_strain_bulk_fiber}
+\end{align}
+The average stress field over phase $q$ yields:
+\begin{align}
+\langle \bs{\sigma}^{(q)} \rangle
+&= [\beta \,{\left(\kappa -\mu +2\,X_1 \,\kappa \right)},\,\beta \,{\left(\kappa -\mu +2\,X_1 \,\kappa \right)},\,\beta \,{\left(\kappa +\mu +2\,X_1 \,\kappa -2\,X_1 \,\mu \right)},0,\,0,\,0]
+\end{align}
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
 \begin{equation}
-    \bs{A} \, \bs{X} = \bs{b}, \quad \text{with} \quad b_{2m+1} = \lambda^{(m+1)} - \lambda^{(m)}, \quad b_{2(N+1)} = 1
-    \label{eq:bvp4_rhs}
+    \langle \bs{\varepsilon}^{(q)} \rangle = \mathbb{T}^{(q)} : \bs{\varepsilon}^{(0)}, \quad
+    \langle \bs{\sigma}^{(q)} \rangle = \mathbb{H}^{(q)} : \bs{\varepsilon}^{(0)}
 \end{equation}
-%
-where $m = 1, 2, \ldots, N$ index the coating interfaces. Then the off-diagonal concentration tensor components are :
+
+The linear system for $X_{2q-1}$ and $X_{2q}$ uses the \textit{same} coefficient matrix as BVP~1, but with a different right-hand side arising from the Lam\'{e} parameter mismatch between adjacent phases. Then the off-diagonal concentration tensor components are :
 %
 \begin{empheq}[box=\fbox]{align}
     T_{13}^{(q)} &=  X_{2q-1} - 2 T_{\kappa}  \label{eq:T13_fiber}\\[6pt]
@@ -2124,7 +2206,12 @@ where $m = 1, 2, \ldots, N$ index the coating interfaces. Then the off-diagonal 
 \end{empheq}
 %
 where $T_{\kappa}^{(q)}$, $H_{31}$ and $H_{\kappa}^{(q)}$ come from BVPs~1.
-
+Now if we substitute all the unknown Tensor components we just found in Eq ~\eqref{eq:T_fiber_structure} and ~\eqref{eq:H_fiber_structure}
+,we get Individual phase concentration tensors. Once the per-phase tensors are known, the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ follow from the volume-weighted averages defined in Equations~\eqref{eq:Teq}--\eqref{eq:Heq}, using the volume fractions from Equations~\eqref{eq:volume_fractions_cylindrical} and~\eqref{eq:volume_fractions_spherical}.
+\begin{align}
+    \mathbb{T}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{T}^{(r)} \label{eq:Teq}\\
+    \mathbb{H}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{H}^{(r)} \label{eq:Heq}
+\end{align}
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
 \label{subsec:particle_bvp}
@@ -2134,16 +2221,44 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 
 \subsubsection{BVP 1: Hydrostatic Response}
 
-For far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
+Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
 %
 \begin{equation}
-    u_r^{(q)} = \beta(X_{2q-1} r + \frac{X_{2q}}{r^2}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0
+    u_r^{(q)} = \beta(X_{2q-1} r + \frac{X_{2q}}{r^2}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0 \quad q=1,2,3,4,5
 \end{equation}
 
-For the particle (core), $X_{2} = 0$. The average strain yields:
+with the 10 unknowns which can be determined from using same boundary conditions as the one we use in In-Plane Response case of our 2D problem. The average strain field vector yields :
 %
+\begin{align}
+\langle \varepsilon^{(q)} \rangle
+&=
+\frac{3}{4\pi\left[r_b^{3}-r_a^{3}\right]}
+\int_{0}^{2\pi}
+\int_{0}^{\pi}
+\int_{r_a}^{r_b}
+\mathbf{Q}_{\varepsilon}^{T}\cdot \varepsilon^{\text{sph}}
+\, r^{2}\sin\theta \, dr\, d\theta\, d\phi ,\\
+&= [X_{2q-1}\beta, \, X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
+\end{align}
+
+The Average stress field vector yields
+
+\begin{align}
+\langle \sigma^{(q)} \rangle
+&=
+\frac{3}{4\pi\left[r_b^{3}-r_a^{3}\right]}
+\int_{0}^{2\pi}
+\int_{0}^{\pi}
+\int_{r_a}^{r_b}
+\mathbf{Q}_{\varepsilon}^{T}\cdot \sigma^{\text{sph}}
+\, r^{2}\sin\theta \, dr\, d\theta\, d\phi \\
+&= 3\kappa^{(q)}\langle \varepsilon^{(q)} \rangle
+\end{align}
+
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
 \begin{equation}
-    \langle \bs{\varepsilon}^{(q)} \rangle = [X_{2q-1}\beta, \, X_{2q-1}\beta, \, X_{2q-1}\beta, \, 0, \, 0, \, 0]^T
+    \langle \bs{\varepsilon}^{(q)} \rangle = \mathbb{T}^{(q)} : \bs{\varepsilon}^{(0)}, \quad
+    \langle \bs{\sigma}^{(q)} \rangle = \mathbb{H}^{(q)} : \bs{\varepsilon}^{(0)}
 \end{equation}
 
 The concentration tensor components are:
@@ -2155,7 +2270,7 @@ The concentration tensor components are:
 
 \subsubsection{BVP 2: Deviatoric Response}
 
-For a deviatoric far-field strain, the displacement field is expressed in spherical coordinates as:
+Assume the RVE subject to a deviatoric far-field displacement field as:
 %
 \begin{equation}
     \bs{u}^{(0)}(r, \theta, \phi) =
@@ -2167,16 +2282,16 @@ For a deviatoric far-field strain, the displacement field is expressed in spheri
     \label{eq:bvp2_sph_farfield}
 \end{equation}
 %
-with the corresponding Cartesian far-field strain tensor having $\varepsilon_{11}^{(0)} = -\varepsilon_{22}^{(0)} = \beta$, $\varepsilon_{12}^{(0)} = \beta$ as the nonzero components.
 
 In each phase, the displacement fields involve four radial modes with exponents $\xi_i$:
 %
 \begin{align}
     u_r^{(q)} &= \beta \, r \sum_{i=1}^{4} A_i^{(q)} X_{4(q-1)+i} r^{\xi_i-1} \sin^2\!\theta \, \cos 2\phi \label{eq:ur_deviatoric}\\
-    u_\theta^{(q)} &= \beta \, r \sum_{i=1}^{4}  X_{4(q-1)+i} r^{\xi_i-1} \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:utheta_deviatoric}
+    u_\theta^{(q)} &= \beta \, r \sum_{i=1}^{4}  X_{4(q-1)+i} r^{\xi_i-1} \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:utheta_deviatoric}\\
+    u_\phi^{(q)} &= -\beta \, r \sum_{i=1}^{4}  X_{4(q-1)+i} r^{\xi_i-1} \sin\theta \,  \sin 2\phi \label{eq:uphi_deviatoric}
 \end{align}
 %
-where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratio $a_i^{(q)}$ depend on the material properties of phase~$q$:
+where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratio $A_i^{(q)}$ depend on the material properties of phase~$q$:
 %
 \begin{equation}
     A_1 = 1, \quad A_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad A_3 = -\frac{3}{2}, \quad A_4 = \frac{3(\kappa + \mu)}{2\mu}
@@ -2185,25 +2300,28 @@ where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratio 
 %
 where $\kappa$ and $\mu$ here refer to the 3D bulk and shear moduli of the respective phase.
 
-The relevant stress components for the traction boundary conditions at radial interfaces are:
+Now for the unknowns that arise from all the layers equals 20 which can be found from the similar Boundary conditions as we used in Transverse Shear response.
+For the core, $X_3 = X_4 = 0$ to ensure bounded displacement at the origin. The far-field condition requires $X_{17} = 1$ and $X_{18} = 1$. At each interphase $r = r_m$, the continuity of both displacement components and both traction components produces four conditions per interface, yielding the same $20 \times 20$ system structure as the CCA transverse shear BVP, but with spherical amplitude ratios.
 %
-\begin{align}
-    \sigma_{rr}^{(q)} &= \beta \, \Sigma_{rr}^{(q)}(r) \, \sin^2\!\theta \, \cos 2\phi \label{eq:sigma_rr_sph}\\
-    \sigma_{r\theta}^{(q)} &= \beta \, \Sigma_{r\theta}^{(q)}(r) \, \sin\theta \, \cos\theta \, \cos 2\phi \label{eq:sigma_rtheta_sph}
-\end{align}
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
+\begin{equation}
+    \langle \bs{\varepsilon}^{(q)} \rangle = \mathbb{T}^{(q)} : \bs{\varepsilon}^{(0)}, \quad
+    \langle \bs{\sigma}^{(q)} \rangle = \mathbb{H}^{(q)} : \bs{\varepsilon}^{(0)}
+\end{equation}
+the shear concentration tensor components are:
 
-For the core, $X_3 = X_4 = 0$ to ensure bounded displacement at the origin. The far-field condition requires $X_{13} = 1$ and $X_{14} = 0$. At each interface $r = r_m$, the continuity of both displacement components and both traction components produces four conditions per interface, yielding the same $8 \times 8$ system structure as the CCA transverse shear BVP, but with spherical amplitude ratios.
-
-After volume averaging over the annular shell $r_a < r < r_b$ with the spherical Jacobian, the shear concentration tensor component is:
-%
 \begin{empheq}[box=\fbox]{align}
     T_{\mu}^{(q)} &= X_{4(q-1)+1} + \frac{63\kappa^{(q)} + 21\mu^{(q)}}{5(15\kappa^{(q)} + 11\mu^{(q)})} \cdot \frac{r_b^5 - r_a^5}{r_b^3 - r_a^3} \cdot X_{4(q-1)+2} \label{eq:Tmu_particle}\\[6pt]
     H_{\mu}^{(q)} &= 2\mu^{(q)} T_{\mu}^{(q)} \label{eq:Hmu_particle}
 \end{empheq}
 %
-The first term is the contribution of the uniform mode ($\xi_1 = 1$), while the second involves the $\xi_2 = 3$ mode weighted by the radii ratio $r_b^5/r_a^5$. The $\xi_3 = -4$ and $\xi_4 = -2$ modes vanish upon volume averaging due to their radial decay.
-
-Once the per-phase tensors are known, the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ follow from the volume-weighted averages defined in Equations~\eqref{eq:Teq}--\eqref{eq:Heq}, using the volume fractions from Equations~\eqref{eq:volume_fractions_cylindrical} and~\eqref{eq:volume_fractions_spherical}.
+The first term is the contribution of the uniform mode ($\xi_1 = 1$), while the second involves the $\xi_2 = 3$ mode weighted by the radii ratio $r_b^5/r_a^5$. The $\xi_3 = -4$ and $\xi_4 = -2$ modes vanish upon volume averaging 
+Now if we substitute all the unknown Tensor components we just found in Eq ~\eqref{eq:T_particle_structure} and ~\eqref{eq:H_particle_structure}
+,we get Individual phase concentration tensors. Once the per-phase tensors are known, the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ follow from the volume-weighted averages defined in Equations~\eqref{eq:Teq}--\eqref{eq:Heq}, using the volume fractions from Equations~\eqref{eq:volume_fractions_cylindrical} and~\eqref{eq:volume_fractions_spherical}.
+\begin{align}
+    \mathbb{T}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{T}^{(r)} \label{eq:Teq}\\
+    \mathbb{H}^{\text{eq}} &= \sum_{r=1}^{N+1} c_r \mathbb{H}^{(r)} \label{eq:Heq}
+\end{align}
 
 % ===================================================================
 \section{Extended General Interface Model with Mori-Tanaka}
@@ -2217,135 +2335,233 @@ Where the interphase model (Section~\ref{sec:multicoated_forward}) uses multiple
 \label{subsec:interface_problem_setup}
 % -------------------------------------------------------------------
 
-We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ embedded directly in the matrix $(\kappa^{(2)}, \mu^{(2)})$ meaning there are no coating layers. At the interface $r = r_1$, two types of condition hold. The \textit{orthogonal equilibrium} condition relates the weighted traction average to the displacement jump:
-%
-\begin{equation}
-    \mean{\bs{t}}_{1-\bar{\alpha}} = \bar{k}\jump{\bs{u}}
-    \label{eq:egim_cohesive}
-\end{equation}
-%
-The \textit{tangential equilibrium} condition relates the traction jump to the surface divergence of the interface stress:
-%
-\begin{equation}
-    \jump{\bs{t}} = -\nabla_s \cdot \bar{\bs{\sigma}}
-    \label{eq:egim_elastic}
-\end{equation}
-%
-where the interface stress $\bar{\bs{\sigma}}$ depends on $(\bar{\lambda}, \bar{\mu})$ through the constitutive law of Section~\ref{subsec:interface_constitutive_relations} and acts on the weighted average displacement $\mean{\bs{u}}_{\bar{\alpha}}$. Solving the resulting BVPs yields the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ as functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ and the constituent properties.
+We consider a single inclusion (fibre or particle) with properties $(\kappa^{(1)}, \mu^{(1)})$ embedded directly in the matrix $(\kappa^{(2)}, \mu^{(2)})$ meaning there are no coating layers. This applies for both cylindrical fibers with coordinates(r, $\theta$, z) and for spherical particles (CSA) with coordinates (r, $\theta$, $\phi$), 
+A uniform far-field strain $\varepsilon^{(0)}$ is applied at infinity. At the interface $r = r_1$, unlike the 3 coated Interphase model, the interface constitutive laws applies which were defined in Section~\ref{subsec:interface_constitutive_relations}. Solving the resulting BVPs yields the equivalent concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ as functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ and the constituent properties.
 
 % -------------------------------------------------------------------
 \subsection{Fibre-Reinforced Composites (CCA)}
 \label{subsec:interface_bvp}
 % -------------------------------------------------------------------
 
-For cylindrical fibres, the transversely isotropic concentration tensor (Section~\ref{subsec:tensor_structure_fiber}) requires four independent BVPs: in-plane bulk, transverse shear, axial shear, and overall axisymmetric loading. Each BVP uses the same displacement ansatz as the corresponding interphase BVP in Section~\ref{subsec:fiber_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
+For cylindrical fibres, the transversely isotropic concentration tensor (Section~\ref{subsec:tensor_structure_fiber}) requires four independent BVPs: in-plane bulk, transverse shear, axial shear, and overall axisymmetric loading. Each BVP uses the same displacement field as the corresponding interphase BVP in Section~\ref{subsec:fiber_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
 
 \subsubsection{BVP 1: In-Plane Bulk Response}
+Consider an RVE subject to a far field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$, then the displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. 
+\begin{equation}
+    u_r^{(q)} = \beta r\left(X_{2q-1} \,  + \frac{X_{2q}}{(r/r_1)^2}\right), \quad u_\theta^{(q)} = u_z^{(q)} = 0 \quad  \text{for q = 1,2}
+    \label{eq:ur_bulk_fiber}
+\end{equation}
+%
+\\ resulting in 4 unkniwns that can be determined by imposing boundary conditions along with interface conditions as follows, \begin{itemize}
 
-The displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. With $X_2 = 0$ (finite at the origin) and $X_3 = 1$ (far-field condition), the EGIM interface conditions at $r = r_1$ are:
+\item finite displacement at $r=0$:
+\begin{equation}
+u_r^{(1)}(r=0) \;\not\to\; \infty 
+\;\Rightarrow\; X_2 = 0 ,
+\tag{47}
+\end{equation}
+
+\item orthogonal equilibrium at $r=r_1$:
+\begin{equation}
+\bar{t}_r
+= \bar{k}_r \jump{u_r}
+\;\Rightarrow\;
+[1-\bar{\alpha}]\,\sigma_{rr}^{(2)}(r_1)
++ \bar{\alpha}\,\sigma_{rr}^{(1)}(r_1)
+=
+\bar{k}_r \left[u_r^{(2)}(r_1)-u_r^{(1)}(r_1)\right],
+\tag{48}
+\end{equation}
+
+\item tangential equilibrium at $r=r_1$:
+\begin{equation}
+\left[\overline{\mathrm{div}}\,\bar{\sigma}\right]_r
++ \jump{t_r} = 0
+\;\Rightarrow\;
+\frac{1}{r_1}\bar{\sigma}_{\theta \theta}
++ \sigma_{rr}^{(2)}(r_1)
+- \sigma_{rr}^{(1)}(r_1)
+= 0 ,
+\tag{49}
+\end{equation}
+
+\item prescribed displacement at $r\to\infty$:
+\begin{equation}
+u_r^{(2)}(r\to\infty)
+= \beta r
+\;\Rightarrow\;
+X_3 = 1 .
+\tag{50}
+\end{equation}
+\label{eq:egim_cca_bulk_el}
+\end{itemize}
 %
+The two conditions in Eqs 48 and 49 yield a $2 \times 2$ linear system for the unknowns $\{X_1, X_4\}$; see~\cite{Firooz2022} for the explicit coefficient matrix.
+from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
 \begin{align}
-    \text{Orthogonal Equilibrium:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_bulk_coh}\\[6pt]
-    \text{Tangential Equilibrium:} \quad & \frac{\bar{\lambda} + 2\bar{\mu}}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_bulk_el}
-\end{align}
-%
-These two conditions yield a $2 \times 2$ linear system for the unknowns $\{X_1, X_4\}$; see~\cite{Firooz2022} for the explicit coefficient matrix. The concentration tensor components are:
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}These equations leads to following concentration tensor components:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{\kappa}^{\text{eq}} &= \frac{1 + X_4}{2} \label{eq:Tkappa_egim}\\[6pt]
-    H_{\kappa}^{\text{eq}} &= \kappa^{(2)} - \mu^{(2)} X_4 \label{eq:Hkappa_egim}\\[6pt]
+    T_{11}^{\text{1}} &= \frac{T_{44}^{(1)} + X_1}{2}\\[6pt]
+    T_{11}^{\text{eq}} &= \frac{T_{44}^{(eq)} + X_4}{2} \label{eq:Tkappa_egim}\\[6pt]
+    H_{11}^{\text{eq}} &= \kappa^{(2)} - \mu^{(2)} X_4 + H_{44}^{(eq)} \label{eq:Hkappa_egim}\\[6pt]
     H_{31}^{\text{eq}} &= \lambda^{(1)} X_1 \label{eq:H31_egim}
 \end{empheq}
 %
-where $\kappa^{(q)} = \lambda^{(q)} + \mu^{(q)}$ is the plane-strain bulk modulus.
+where $\kappa^{(q)} = \lambda^{(q)} + \mu^{(q)}$ is the plane-strain bulk modulus and the unknowns $X_1$ and $X_4$ are the solutions of solving Eqs 48 and 49.
 
 \subsubsection{BVP 2: Transverse Shear Response}
 
-The displacement field takes the same form as Equations~\eqref{eq:Ur_transverse}--\eqref{eq:Utheta_transverse}, with eight unknowns $X_1, \ldots, X_8$ (four per phase). With $X_1 = X_2 = 0$ (finite at the origin) and far-field conditions on the matrix coefficients, the EGIM conditions at $r = r_1$ are:
+For this case, the far field displacement / strain applied to the RVE
+read $\bs{u}^{(0)} = [\beta r \sin 2\theta, \, \beta r \cos 2\theta, \, 0]^T$. Then the displacement field takes the same form as Equations~\eqref{eq:Ur_transverse}--\eqref{eq:Utheta_transverse}, but for only two layers so we have eight unknowns $X_1, \ldots, X_8$ (four per phase) to solve. With $X_3 = X_4 = 0$ (finite at the origin) and far-field conditions on the matrix coefficients says $X_5$ = 1 and $X_6$ = 1, then the 4 unknowns can be found by solving the EGIM conditions at $r = r_1$ are:
 %
 \begin{align}
-    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_cca_ts_coh_r}\\
-    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:egim_cca_ts_coh_t}\\
-    \text{Radial equilibrium:} \quad & \frac{\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{rr}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:egim_cca_ts_el_r}\\
-    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{2\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:egim_cca_ts_el_t}
+    \text{Orthogonal Equilibrium in r dir:} \quad & \bar{\bs{t_r}} = \bar{k_r}\jump{u_r(r_1)} \label{eq:egim_cca_ts_coh_r}\\
+    \text{Orthogonal Equilibrium in } \theta \text{ dir:} \quad & \bar{\bs{t_{\theta}}} = \bar{k_{\theta}}\jump{u_\theta(r_1)} \label{eq:egim_cca_ts_coh_t}\\
+    \text{Tangential Equilibrium in r dir:} \quad & -\frac{\bar{\sigma}_{\theta\theta} }{r_1} + \jump{\sigma_{rr}(r_1)} = 0 \label{eq:egim_cca_ts_el_r}\\
+    \text{Tangential Equilibrium in } \theta \text{ dir:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \jump{\sigma_{r\theta}(r_1)} = 0 \label{eq:egim_cca_ts_el_t}
 \end{align}
 %
-These four conditions, together with the boundary conditions, yield a $4 \times 4$ linear system for the free unknowns; see~\cite{Firooz2022} for the explicit system. The equivalent concentration tensor components are:
+These four conditions, together with the boundary conditions, yield a $4 \times 4$ linear system for the free unknowns; see~\cite{Firooz2022} for the explicit system. from Eq~\ref{eq:interface_concentration_def} we find individual interaction tensors 
+\begin{align}
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}These equations leads to following concentration tensor components:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{44}^{\text{eq}} &= 1 + \frac{\kappa^{(2)} + 2\mu^{(2)}}{2\mu^{(2)}} \, X_8 \label{eq:T44_egim}\\[6pt]
+    T_{44}^{(1)} 
+&= \frac{3\kappa^{(1)}}{4\kappa^{(1)} + 2\mu_{\mathrm{tr}}^{(1)}}\,X_1 + X_2, \\
+T_{44}^{\text{eq}} &= 1 + \frac{\kappa^{(2)} + 2\mu^{(2)}}{2\mu^{(2)}} \, X_8 \label{eq:T44_egim}\\[6pt]
     H_{44}^{\text{eq}} &= \mu^{(2)} - \frac{\kappa^{(2)}}{2} \, X_8 \label{eq:H44_egim}
 \end{empheq}
 
 \subsubsection{BVP 3: Axial Shear Response}
+For this case, we consider an RVE subject to a far field displacement $\bs{u}^{(0)} = [0, 0,\beta r \cos\theta ]^T$, then the displacement field takes the form : 
+\begin{equation}
+    u_z^{(q)} = \beta r \cos\theta\left(X_{2q-1} \,  + \frac{X_{2q}}{(r/r_1)^2}\right), \quad u_\theta^{(q)} = u_r^{(q)} = 0 \quad  \text{for q = 1,2}
+    \label{eq:ur_bulk_fiber}
+\end{equation}
 
-The displacement field takes the same form as Equation~\eqref{eq:uz_axial}. With $X_2 = 0$ and $X_3 = 1$, the EGIM conditions at $r = r_1$ are:
+resulting in 4 unknowns $X_1, X_2, X_3, X_4$ that can be determined via imposing  finite displacement at origin($X_2 = 0$) and prescribed displacement at $r\to\infty$($X_3 = 1$), along with the following interface conditions at $r = r_1$:
 %
 \begin{align}
-    \text{Cohesive:} \quad & \mean{\sigma_{rz}}_{1-\bar{\alpha}} = \bar{k}\jump{u_z} \label{eq:egim_cca_as_coh}\\[6pt]
-    \text{Elastic:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta z}}{\partial \theta} + \jump{\sigma_{rz}} = 0 \label{eq:egim_cca_as_el}
+    \text{orthogonal equilibrium:} \quad & \bar{t}_z = \bar{k}\jump{u_z} \label{eq:egim_cca_as_coh}\\[6pt]
+    \text{Tangential equilinrium:} \quad & \left[\overline{\mathrm{div}}\,\bar{\sigma}\right]_z
++ \jump{t_z} = 0 \label{eq:egim_cca_as_el}
 \end{align}
+
 %
-The resulting $2 \times 2$ system for $\{X_1, X_4\}$ yields:
+from Eq~\ref{eq:interface_concentration_def} 
+\begin{align}
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}These equations leads to following concentration tensor components:
 %
 \begin{empheq}[box=\fbox]{align}
+    T_{55}^{\text{1}} &= X_1 \label{eq:T55_egim}\\[6pt]
     T_{55}^{\text{eq}} &= 1 + X_4 \label{eq:T55_egim}\\[6pt]
-    H_{55}^{\text{eq}} &= \mu^{(2)}(1 - X_4) \label{eq:H55_egim}
+    H_{55}^{\text{eq}} &= \mu^{(2)}_{ax}(1 - X_4) \label{eq:H55_egim}
 \end{empheq}
-
+The unknowns $X_1$ and $X_4$ are solution of $2 \times 2$ system we solved using the equations 3.71 and 3.72
 \subsubsection{BVP 4: Overall Axisymmetric Response}
-
-As in Section~\ref{subsec:fiber_bvp}, we apply an additional uniform axial stretch $u_z = \beta z$ together with the radial displacement from BVP~1. For the EGIM, the radial component satisfies the same interface conditions as BVP~1 with an identical coefficient matrix and right-hand side (since $u_z$ is continuous and does not contribute to the radial interface conditions). Hence the unknowns $X_1$ and $X_4$ are the same as in BVP~1. The coupling components of the concentration tensor are then:
+for this case, we consider an RVE subject to a far field displacement $\bs{u}^{(0)} = [\beta r, 0, \beta z]^T$, then the displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. 
+\begin{equation}
+    u_r^{(q)} = \beta r\left(X_{2q-1} \,  + \frac{X_{2q}}{(r/r_1)^2}\right), \quad u_\theta^{(q)} = 0 \quad u_z^{(q)} = \beta z \quad  \text{for q = 1,2}
+    \label{eq:ur_bulk_fiber}
+\end{equation}
+since $u_z$ is continuous and does not contribute to the radial interface conditions, the unknowns $X_1$ and $X_4$ are the same as in BVP~1 . from Eq~\ref{eq:interface_concentration_def} 
+\begin{align}
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}These equations leads to following concentration tensor components:
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{13}^{\text{eq}} &= 1 + X_4 + T_{44}^{\text{eq}} - 2T_{11}^{(1)} \label{eq:T13_egim}\\[6pt]
-    H_{13}^{\text{eq}} &= \lambda^{(2)} \label{eq:H13_egim}\\[6pt]
-    H_{33}^{\text{eq}} &= \kappa^{(1)} + \mu^{(1)} + \frac{4\bar{\mu}}{r_1} - 2H_{31}^{\text{eq}} \label{eq:H33_egim}
+    T_{13}^{\text{(1)}} &=  X_4 + T_{44}^{\text{(1)}} - 2T_{11}^{(1)} \label{eq:T13_egim}\\[6pt]
+    T_{13}^{\text{(eq)}} &= X_4 + T_{44}^{\text{(eq)}} - 2T_{11}^{(1)} \label{eq:T13_egim}\\[6pt]
+    H_{13}^{\text{(eq)}} &= 2\kappa^{(2)} - 2\mu^{(2)}_{tr}X_4 + \lambda^{(2)} + 2H_{44}^{(eq)} - 2H_{11}^{(eq)} \label{eq:H13_egim}\\[6pt]
+    H_{33}^{\text{(eq)}} &= \kappa^{(1)} + \mu^{(1)}_{tr} + 2\lambda^{(1)}X_1 + \frac{4\bar{\mu}_{tr}}{r_1} - 2H_{31}^{\text{(eq)}} \label{eq:H33_egim}
 \end{empheq}
 %
-where $X_1$, $X_4$ are from BVP~1, $T_{44}^{\text{eq}}$ is from BVP~2, $H_{31}^{\text{eq}}$ is from BVP~1, and $T_{11}^{(1)} = \tfrac{1}{2}(X_1 + T_{44}^{(1)})$ combines the inclusion unknowns from BVPs~1 and~2 (see Equation~\eqref{eq:T_voigt_assembly} below for the relation between $T_{11}$ and $T_{\kappa}$, $T_{44}$). The remaining Voigt entry $T_{33}^{\text{eq}} = 1$ for all configurations.
+where $X_1$, $X_4$ are from BVP~1, $T_{44}^{\text{eq}}$ is from BVP~2, $H_{31}^{\text{eq}}$ is from BVP~1, and $T_{11}^{(1)} = \tfrac{1}{2}(X_1 + T_{44}^{(1)})$ combines the inclusion unknowns from BVPs~1 and~2 (see Equation~\eqref{eq:T_voigt_assembly} below for the relation between $T_{11}$ and $T_{\kappa}$, $T_{44}$). 
+Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ and $H^{(eq)}$, we use them to form the Strain and Stress Interaction Tensors of Equivalent inhomogeneity which will later be used in Homogenization.
 
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
 \label{subsec:interface_bvp_csa}
 % -------------------------------------------------------------------
 
-For spherical particles, the isotropic concentration tensor (Section~\ref{subsec:tensor_structure_particle}) requires two BVPs: hydrostatic and deviatoric. The EGIM conditions follow the same cohesive-elastic structure as for CCA, but the surface divergence now acts on a spherical surface, which changes the elastic equilibrium terms.
+For spherical particles, the isotropic concentration tensor (Section~\ref{subsec:tensor_structure_particle}) requires two BVPs: hydrostatic and deviatoric. Each BVP uses the same displacement field as the corresponding interphase BVP in Section~\ref{subsec:particle_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
 
 \subsubsection{BVP 1: Hydrostatic Response}
+Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
+%
+\begin{equation}
+    u_r^{(q)} = \beta r(X_{2q-1}  + \frac{X_{2q}}{(r/r_1)^3}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0 \quad q=1,2
+\end{equation}
 
-The displacement field takes the same form as in Section~\ref{subsec:particle_bvp}, with $X_2 = 0$ (finite at the origin) and $X_3 = 1$ (far-field). The EGIM conditions at $r = r_1$ are:
-%
+with the 4 unknowns which can be determined from using same boundary conditions as the one we use in In-Plane Response case of our 2D EGIM model.
+from Eq~\ref{eq:interface_concentration_def} 
 \begin{align}
-    \text{Cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_csa_hydro_coh}\\[6pt]
-    \text{Elastic:} \quad & \frac{2(\bar{\lambda} + \bar{\mu})}{r_1}\mean{u_r}_{\bar{\alpha}} + \jump{\sigma_{rr}} = 0 \label{eq:egim_csa_hydro_el}
-\end{align}
-%
-These equilibrium and boundary conditions gives $2 \times 2$ system for $\{X_1, X_4\}$ which yields:
-%
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}which yields
 \begin{empheq}[box=\fbox]{align}
-    T_{\kappa}^{\text{eq}} &= 1 + X_4 \label{eq:Tkappa_egim_csa}\\[6pt]
-    H_{\kappa}^{\text{eq}} &= 3\kappa^{(2)} - 4\mu^{(2)} X_4 \label{eq:Hkappa_egim_csa}
+    3T_{11}^{(1)} - 2T_{44}^{(1)} &= X_1, \\
+    3T_{11}^{(\mathrm{eq})} - 2T_{44}^{(\mathrm{eq})} &= [1 + X_4], \\
+3H_{11}^{(\mathrm{eq})} - 4H_{44}^{(\mathrm{eq})} &= [3\kappa^{(2)} - 4\mu^{(2)}]\,X_4 .
 \end{empheq}
 %
-where $\kappa^{(q)} = \lambda^{(q)} + \tfrac{2}{3}\mu^{(q)}$ is the three-dimensional bulk modulus.
+where $\kappa^{(q)} = \lambda^{(q)} + \tfrac{2}{3}\mu^{(q)}$ is the three-dimensional bulk modulus and the Unknowns $X_1$ and $X_4$ are solved using the boundary conditions.
 
 \subsubsection{BVP 2: Deviatoric Response}
+Assume the RVE is subject to a deviatoric far field displacement \begin{equation}
+    \bs{u}^{(0)}(r, \theta, \phi) =
+    \begin{bmatrix}
+        \beta \, r \, \sin^2\!\theta \, \cos 2\phi \\
+        \beta \, r \, \sin\theta \, \cos\theta \, \cos 2\phi \\
+        -\beta \, r \, \sin\theta \, \sin 2\phi
+    \end{bmatrix}
+    \label{eq:bvp2_sph_farfield}
+\end{equation}
+The displacement field takes the same form as Equations~\eqref{eq:ur_deviatoric}--\eqref{eq:utheta_deviatoric}, with eight unknowns. With finite displacement at origin($X_3 = X_4 = 0$) and far-field conditions on the matrix ($X_5 = 1$ and $X_6 = 1$), we apply the same EGIM conditions as we did in Transverse shear response to solve for the 4 unknowns left
 
-The displacement field takes the same form as Equations~\eqref{eq:ur_deviatoric}--\eqref{eq:utheta_deviatoric}, with eight unknowns. With $X_3 = X_4 = 0$ (finite at the origin) and far-field conditions on the matrix coefficients, the EGIM conditions at $r = r_1$ are:
-%
+
+wfrom Eq~\ref{eq:interface_concentration_def} 
 \begin{align}
-    \text{Radial cohesive:} \quad & \mean{\sigma_{rr}}_{1-\bar{\alpha}} = \bar{k}\jump{u_r} \label{eq:egim_csa_dev_coh_r}\\
-    \text{Tangential cohesive:} \quad & \mean{\sigma_{r\theta}}_{1-\bar{\alpha}} = \bar{k}\jump{u_\theta} \label{eq:egim_csa_dev_coh_t}\\
-    \text{Radial equilibrium:} \quad & \frac{2\bar{\sigma}_{\theta\theta} - \bar{\sigma}_{\phi\phi}}{r_1} + \jump{\sigma_{rr}} = 0 \label{eq:egim_csa_dev_el_r}\\
-    \text{Tangential equilibrium:} \quad & \frac{1}{r_1}\frac{\partial \bar{\sigma}_{\theta\theta}}{\partial \theta} + \frac{3\bar{\sigma}_{r\theta}}{r_1} + \jump{\sigma_{r\theta}} = 0 \label{eq:egim_csa_dev_el_t}
-\end{align}
-%
-where the interface stresses are computed from the surface strains of the weighted average displacement. The resulting $4 \times 4$ system~\cite{Firooz2022} yields:
+    \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
+    \bs{\varepsilon}^{(eq)}  = \mathbb{T}^{(eq)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\sigma}^{(eq)}  = \mathbb{H}^{(eq)} : \bs{\varepsilon}^{(0)}
+\end{align}which yields
 %
 \begin{empheq}[box=\fbox]{align}
-    T_{\mu}^{\text{eq}} &= 1 + \frac{6}{5}\!\left(2 + \frac{\kappa^{(2)}}{\mu^{(2)}}\right) X_8 \label{eq:Tmu_egim_csa}\\[6pt]
-    H_{\mu}^{\text{eq}} &= 2\mu^{(2)} - \frac{2}{5}\!\left(9\kappa^{(2)} + 8\mu^{(2)}\right) X_8 \label{eq:Hmu_egim_csa}
+    2T_{44}^{(1)}
+&= \frac{1}{5}\left[
+5X_1 - 7
+\left(1 + 3\frac{\kappa^{(1)}}{\mu^{(1)}}\right) X_2
+\right], \\[6pt]
+2T_{44}^{(\mathrm{eq})}
+&= \frac{1}{5}\left[
+5 + 6
+\left(2 + \frac{\kappa^{(2)}}{\mu^{(2)}}\right) X_8
+\right], \\[6pt]
+2H_{44}^{(\mathrm{eq})}
+&= \frac{1}{5}\left[
+10\mu^{(2)}
+- 2\left(9\kappa^{(2)} + 8\mu^{(2)}\right) X_8
+\right]\label{eq:Hmu_egim_csa}
 \end{empheq}
 
 % -------------------------------------------------------------------
@@ -2353,18 +2569,8 @@ where the interface stresses are computed from the surface strains of the weight
 \label{subsec:tensor_assembly}
 % -------------------------------------------------------------------
 
-The BVP solutions populate the full concentration tensors whose Voigt structure was defined in Section~\ref{subsec:tensor_structure_fiber} (CCA) and Section~\ref{subsec:tensor_structure_particle} (CSA). For the CCA case, the Voigt diagonal entry is related to the Walpole bulk and shear components by:
-%
-\begin{equation}
-    T_{11}^{\text{eq}} = T_{\kappa}^{\text{eq}} + \frac{T_{44}^{\text{eq}}}{2}, \qquad
-    T_{12}^{\text{eq}} = T_{11}^{\text{eq}} - T_{44}^{\text{eq}}, \qquad
-    T_{33}^{\text{eq}} = 1
-    \label{eq:T_voigt_assembly}
-\end{equation}
-%
-with $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and $T_{13}^{\text{eq}}$ coming directly from BVPs~2, 3, and~4. The stress concentration tensor $\mathbb{H}^{\text{eq}}$ follows the same structure with its own independent components from each BVP. For CSA, the isotropic tensor is determined entirely by $T_{\kappa}^{\text{eq}}$ and $T_{\mu}^{\text{eq}}$ from BVPs~1 and~2.
-
-The equivalent stiffness of the inclusion-with-interface system is:
+The BVP solutions populate the full concentration tensors whose Voigt structure was defined in Section~\ref{subsec:tensor_structure_fiber} (CCA) and Section~\ref{subsec:tensor_structure_particle} (CSA). 
+The equivalent stiffness of the equivalent inhomogeneity is:
 %
 \begin{empheq}[box=\fbox]{equation}
     \mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot \left(\mathbb{T}^{\text{eq}}\right)^{-1}
@@ -2378,14 +2584,14 @@ This $\mathbb{C}^{\text{eq}}$ represents the stiffness of a homogeneous inclusio
     \label{eq:MT_interface_ch3}
 \end{equation}
 %
-which yields the scalar effective moduli listed in Equations~\eqref{eq:kappa_eff_interface}--\eqref{eq:muax_eff_interface} for CCA and Equations~\eqref{eq:kappa_eff_interface_csa}--\eqref{eq:mu_eff_interface_csa} for CSA.
+which yields the scalar effective moduli 
 
 % ===================================================================
 \section{Neural Network Architectures}
 \label{sec:neural_network}
 % ===================================================================
 
-This section describes the neural network architecture used for the central problem of the present work: given the effective properties produced by the three-layered interphase model, find the EGIM interface parameters that reproduce them. We train an inverse network that takes effective moduli and material properties as input and predicts the four unknown interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. A physics-informed loss ensures that the predicted parameters, when passed through the EGIM forward model, reconstruct the target properties.
+This section describes the neural network architecture used for the central problem of the present work: given the effective properties produced by the three-layered interphase model, find the EGIM interface parameters that reproduce them. We train an inverse network that takes effective moduli and material properties as input and predicts the four unknown interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. A physics-informed loss ensures that the predicted parameters, when passed through the EGIM model, reconstruct the target properties.
 
 % -------------------------------------------------------------------
 \subsection{Inverse Parameter Identification Network}
@@ -2395,7 +2601,7 @@ This section describes the neural network architecture used for the central prob
 The inverse network addresses the core question: what EGIM parameters produce effective properties matching those of the three-layered interphase model? For a given composite configuration, the interphase BVP solver yields target properties (e.g.\ $K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ for CCA). The network must find interface parameters that, when substituted into the EGIM forward model, reproduce these targets as closely as possible.
 
 \paragraph{Input--output specification.}
-For CCA composites, the network takes 8~inputs: the three target effective moduli ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$) together with the elastic moduli of inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$) and the volume fraction~$f$. The network outputs four EGIM parameters: normal stiffness~$\bar{k}$, surface Lam\'{e} parameter~$\bar{\lambda}$, surface shear modulus~$\bar{\mu}$, and the Gurtin--Murdoch parameter~$\bar{\alpha}$.
+For CCA composites, the network takes 8~inputs: the three target effective moduli ($K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$) together with the elastic moduli of inclusion and matrix ($\kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}$) and the volume fraction~$f$. The network outputs four EGIM parameters: normal stiffness~$\bar{k}$, surface Lam\'{e} parameter~$\bar{\lambda}$, surface shear modulus~$\bar{\mu}$, and the distance parameter~$\bar{\alpha}$.
 
 For CSA composites, the input reduces to 7~features (two isotropic target moduli $K_{\text{eff}}$, $G_{\text{eff}}$ plus material properties and volume fraction), while the output dimension remains four.
 
