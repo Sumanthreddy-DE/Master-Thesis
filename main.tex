@@ -3093,36 +3093,31 @@ The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_los
 A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
 
 \paragraph{Validation via Worked Examples.}
-To validate the trained PINN beyond the training distribution, we construct six test cases by combining two material scenarios with three interphase gradient types. The material properties are chosen well within the training range ($\kappa_{\text{inc}} \in [0.5, 50]$, $\kappa_{\text{mat}} \in [10, 30]$) to isolate model performance from boundary effects:
-\begin{itemize}
-  \item \textbf{Scenario~A} (soft particle): $\kappa^{(1)} = 5$, $\mu^{(1)} = 3$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 0.25$).
-  \item \textbf{Scenario~B} (stiff particle): $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$).
-\end{itemize}
-In each scenario, three interphase gradients are tested: a weak gradient with coating properties close to the matrix ($w = 0.10, 0.05, 0.02$), a moderate gradient ($w = 0.75, 0.50, 0.25$), and a strong gradient with coatings close to the particle ($w = 0.95, 0.85, 0.75$). The volume fraction is $f = 0.3$ and the interphase layer thickness ratios are $\phi = (0.2, 0.3, 0.4)$ throughout.
+To validate the trained PINN, we construct five test cases using a soft particle in a stiff matrix: $\kappa^{(1)} = 5$, $\mu^{(1)} = 3$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 0.25$), with $f = 0.3$ and interphase layer thickness ratios $\phi = (0.2, 0.3, 0.4)$. The first three cases use interpolated coating properties that fall between particle and matrix: a weak gradient ($w = 0.10, 0.05, 0.02$), a moderate gradient ($w = 0.75, 0.50, 0.25$), and a strong gradient ($w = 0.95, 0.85, 0.75$). The last two cases test out-of-distribution coatings with stiffnesses far beyond both constituents ($\kappa = 100$), which the PINN has never encountered during training.
 
-Table~\ref{tab:csa_worked_examples} presents the results. The PINN passes five of the six cases, with mean reconstruction errors of~$1.37\,\%$ for~$K_{\text{eff}}$ and~$2.90\,\%$ for~$G_{\text{eff}}$ across the passing cases. The single failure (Case~A3) occurs for a soft particle with a strong interphase gradient---a configuration where the coating properties sit very close to the particle, creating a sharp stiffness jump at the coating--matrix boundary that the zero-thickness Extended Interface model struggles to represent.
+Table~\ref{tab:csa_worked_examples} presents the results. For interpolated coatings (Cases~1--3), the PINN passes two of three cases, failing only when the coating properties sit very close to the particle (Case~3). This creates a sharp stiffness jump at the coating--matrix boundary that the zero-thickness Extended Interface model struggles to represent. The out-of-distribution cases (Cases~4--5) fail with large errors, particularly for $G_{\text{eff}}$, confirming that the PINN cannot generalise to interphase stiffness profiles outside its training range. The $G_{\text{eff}}$ reconstruction is consistently more challenging than $K_{\text{eff}}$ across all cases, reflecting the greater structural complexity of the deviatoric BVP compared to the hydrostatic one.
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: six worked examples combining two material scenarios (Scenario~A: soft particle with $\text{SR}=0.25$; Scenario~B: stiff particle with $\text{SR}=2.0$) with three interphase gradient types. The stiffness profile column shows $\kappa$ values from particle through three coating layers to matrix. A case passes if both reconstruction errors remain below~$5\,\%$.}
+\caption{CSA inverse PINN: five worked examples with a soft particle ($\kappa^{(1)}=5$, $\kappa^{(2)}=20$, $\text{SR}=0.25$). Cases~1--3 use interpolated coatings between particle and matrix; Cases~4--5 use out-of-distribution coatings with stiffnesses far beyond both constituents. The stiffness profile shows $\kappa$ from particle through three coating layers to matrix. A case passes if both errors remain below~$5\,\%$.}
 \label{tab:csa_worked_examples}
 {\footnotesize
 \begin{tabular}{l c c c c c c c}
 \toprule
 Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_{\text{pred}}$ & $K_{\text{err}}$ [\%] & $G_{\text{tgt}}$ & $G_{\text{pred}}$ & $G_{\text{err}}$ [\%] \\
 \midrule
-A1 & $5 \to 18.5,\; 19.3,\; 19.7 \to 20$  & 19.651 & 19.335 & 1.61 & 11.957 & 11.915 & 0.35 \\
-A2 & $5 \to 8.75,\; 12.5,\; 16.3 \to 20$  & 17.895 & 17.881 & 0.08 & 11.919 & 11.354 & 4.74 \\
-A3 & $5 \to 5.75,\; 7.25,\; 8.75 \to 20$  & 15.234 & 15.735 & 3.29 & 11.286 & 10.080 & 10.68 \\
-B1 & $40 \to 22.0,\; 21.0,\; 20.4 \to 20$ & 20.304 & 20.371 & 0.33 & 12.049 & 12.109 & 0.50 \\
-B2 & $40 \to 35.0,\; 30.0,\; 25.0 \to 20$ & 21.951 & 21.846 & 0.48 & 12.314 & 12.293 & 0.17 \\
-B3 & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.098 & 2.40 & 12.991 & 12.868 & 0.95 \\
+1 & $5 \to 18.5,\; 19.3,\; 19.7 \to 20$  & 19.651 & 19.335 & 1.61 & 11.957 & 11.915 & 0.35 \\
+2 & $5 \to 8.75,\; 12.5,\; 16.3 \to 20$  & 17.895 & 17.881 & 0.08 & 11.919 & 11.354 & 4.74 \\
+3 & $5 \to 5.75,\; 7.25,\; 8.75 \to 20$  & 15.234 & 15.735 & 3.29 & 11.286 & 10.080 & 10.68 \\
+\midrule
+4 & $5 \to 100,\; 10,\; 1 \to 20$        & 11.687 & 12.559 & 7.47 & 12.286 & 8.177 & 33.44 \\
+5 & $5 \to 1,\; 10,\; 100 \to 20$        & 25.085 & 31.028 & 23.69 & 21.751 & 19.398 & 10.81 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-Two patterns emerge from these results. First, the stiff-particle scenario~(B) is easier than the soft-particle scenario~(A): all three gradient types pass for $\text{SR} = 2.0$, whereas the strong-gradient case fails for $\text{SR} = 0.25$. Second, the $G_{\text{eff}}$ reconstruction is consistently more challenging than $K_{\text{eff}}$, reflecting the greater structural complexity of the deviatoric BVP compared to the hydrostatic one. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a self-consistency check that purely data-driven approaches lack.
+The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a self-consistency check that purely data-driven approaches lack. However, this self-consistency holds only within the training distribution; the out-of-distribution cases show that the PINN has not learned to invert interphase profiles with coating stiffnesses outside the interpolation range.
 
 % -------------------------------------------------------------------
 \subsection{CSA Numerical Examples}
