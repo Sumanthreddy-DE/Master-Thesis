@@ -3104,20 +3104,22 @@ Table~\ref{tab:csa_worked_examples} presents the results. The PINN passes five o
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: six worked examples combining two material scenarios (Scenario~A: soft particle with $\text{SR}=0.25$; Scenario~B: stiff particle with $\text{SR}=2.0$) with three interphase gradient types. Coating~$\kappa$ values are listed from the layer closest to the particle to the layer closest to the matrix. A case passes if both reconstruction errors remain below~$5\,\%$.}
+\caption{CSA inverse PINN: six worked examples combining two material scenarios (Scenario~A: soft particle with $\text{SR}=0.25$; Scenario~B: stiff particle with $\text{SR}=2.0$) with three interphase gradient types. The stiffness profile column shows $\kappa$ values from particle through three coating layers to matrix. A case passes if both reconstruction errors remain below~$5\,\%$.}
 \label{tab:csa_worked_examples}
-\begin{tabular}{l l c c c c c c}
+{\small
+\begin{tabular}{l c c c c c c c}
 \toprule
-Case & Scenario & $\kappa_{\text{c}_1}, \kappa_{\text{c}_2}, \kappa_{\text{c}_3}$ & $K_{\text{target}}$ & $G_{\text{target}}$ & $K_{\text{err}}$ [\%] & $G_{\text{err}}$ [\%] \\
+Case & Stiffness profile ($\kappa_{\text{p}} \to \kappa_{\text{c}_1}, \kappa_{\text{c}_2}, \kappa_{\text{c}_3} \to \kappa_{\text{m}}$) & $K_{\text{target}}$ & $K_{\text{pred}}$ & $K_{\text{err}}$ [\%] & $G_{\text{target}}$ & $G_{\text{pred}}$ & $G_{\text{err}}$ [\%] \\
 \midrule
-A1 & Soft  & 18.5,\; 19.3,\; 19.7  & 19.651 & 11.957 & 1.61 & 0.35 \\
-A2 & Soft  & 8.75,\; 12.5,\; 16.3  & 17.895 & 11.919 & 0.08 & 4.74 \\
-A3 & Soft  & 5.75,\; 7.25,\; 8.75  & 15.234 & 11.286 & 3.29 & 10.68 \\
-B1 & Stiff & 22.0,\; 21.0,\; 20.4  & 20.304 & 12.049 & 0.33 & 0.50 \\
-B2 & Stiff & 35.0,\; 30.0,\; 25.0  & 21.951 & 12.314 & 0.48 & 0.17 \\
-B3 & Stiff & 39.0,\; 37.0,\; 35.0  & 23.667 & 12.991 & 2.40 & 0.95 \\
+A1 & $5 \to 18.5,\; 19.3,\; 19.7 \to 20$  & 19.651 & 19.335 & 1.61 & 11.957 & 11.915 & 0.35 \\
+A2 & $5 \to 8.75,\; 12.5,\; 16.3 \to 20$  & 17.895 & 17.881 & 0.08 & 11.919 & 11.354 & 4.74 \\
+A3 & $5 \to 5.75,\; 7.25,\; 8.75 \to 20$  & 15.234 & 15.735 & 3.29 & 11.286 & 10.080 & 10.68 \\
+B1 & $40 \to 22.0,\; 21.0,\; 20.4 \to 20$ & 20.304 & 20.371 & 0.33 & 12.049 & 12.109 & 0.50 \\
+B2 & $40 \to 35.0,\; 30.0,\; 25.0 \to 20$ & 21.951 & 21.846 & 0.48 & 12.314 & 12.293 & 0.17 \\
+B3 & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.098 & 2.40 & 12.991 & 12.868 & 0.95 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 Two patterns emerge from these results. First, the stiff-particle scenario~(B) is easier than the soft-particle scenario~(A): all three gradient types pass for $\text{SR} = 2.0$, whereas the strong-gradient case fails for $\text{SR} = 0.25$. Second, the $G_{\text{eff}}$ reconstruction is consistently more challenging than $K_{\text{eff}}$, reflecting the greater structural complexity of the deviatoric BVP compared to the hydrostatic one. The physics loss ensures that the predicted interface parameters, when fed back through the forward model, reproduce the target effective properties---a self-consistency check that purely data-driven approaches lack.
