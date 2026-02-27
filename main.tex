@@ -2621,6 +2621,76 @@ since $u_z$ is continuous and does not contribute to the radial interface condit
 where $X_1$, $X_4$ are from BVP~1, $T_{44}^{\text{eq}}$ is from BVP~2, $H_{31}^{\text{eq}}$ is from BVP~1, and $T_{11}^{(1)} = \tfrac{1}{2}(X_1 + T_{44}^{(1)})$ combines the inclusion unknowns from BVPs~1 and~2 (see Equation~\eqref{eq:T_voigt_assembly} below for the relation between $T_{11}$ and $T_{\kappa}$, $T_{44}$). 
 Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ and $H^{(eq)}$, we use them to form the Strain and Stress Interaction Tensors of Equivalent inhomogeneity which will later be used in Homogenization.
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm and 0.4cm,
+    block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    bvpblock/.style={rectangle, draw, fill=orange!10, text width=9em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    resultblock/.style={rectangle, draw, fill=green!10, text width=12em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    inputblock/.style={rectangle, draw, fill=red!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Inputs
+\node[block, text width=14em] (mat) {
+    \textbf{Material input:} $\kappa^{(1)}, \mu^{(1)}$ (fibre), $\kappa^{(2)}, \mu^{(2)}$ (matrix), radius $r_1$, volume fraction $f$
+};
+\node[inputblock, text width=14em, right=0.8cm of mat] (params) {
+    \textbf{From inverse PINN:}\\ $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$
+};
+
+% Merge point
+\node[block, text width=20em, below=1.0cm of $(mat)!0.5!(params)$] (setup) {
+    2-phase composite (fibre + matrix) with EGIM jump conditions at $r = r_1$
+};
+
+% BVPs side by side
+\node[bvpblock, below left=1.0cm and 2.2cm of setup] (bvp1) {\textbf{BVP 1}\\ In-plane bulk\\ $\rightarrow T_{11}, H_{11}, H_{31}$};
+\node[bvpblock, right=0.3cm of bvp1] (bvp2) {\textbf{BVP 2}\\ Transverse shear\\ $\rightarrow T_{44}, H_{44}$};
+\node[bvpblock, right=0.3cm of bvp2] (bvp3) {\textbf{BVP 3}\\ Axial shear\\ $\rightarrow T_{55}, H_{55}$};
+\node[bvpblock, right=0.3cm of bvp3] (bvp4) {\textbf{BVP 4}\\ Axisymmetric\\ $\rightarrow T_{13}, H_{13}, H_{33}$};
+
+% Solve step
+\node[block, text width=22em, below=1.0cm of $(bvp2)!0.5!(bvp3)$] (solve) {
+    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply EGIM cohesive \& elastic jump conditions at $r = r_1$ $\rightarrow$ solve linear system $\rightarrow$ extract $\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$
+};
+
+% Equivalent stiffness
+\node[block, text width=18em, below=0.7cm of solve] (ceq) {
+    Equivalent inhomogeneity stiffness:\\ $\mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot (\mathbb{T}^{\text{eq}})^{-1}$
+};
+
+% Mori-Tanaka
+\node[resultblock, text width=18em, below=0.7cm of ceq] (mt) {
+    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+};
+
+% Output
+\node[resultblock, below=0.7cm of mt] (output) {
+    \textbf{Output:} $K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}, E_{\text{ax}}, \nu_{\text{ax}}$
+};
+
+% Arrows
+\draw[arrow] (mat) -- (setup);
+\draw[arrow] (params) -- (setup);
+\draw[arrow] (setup) -| (bvp1);
+\draw[arrow] (setup) -- (bvp2);
+\draw[arrow] (setup) -- (bvp3);
+\draw[arrow] (setup) -| (bvp4);
+\draw[arrow] (bvp1) |- (solve);
+\draw[arrow] (bvp2) -- (solve);
+\draw[arrow] (bvp3) -- (solve);
+\draw[arrow] (bvp4) |- (solve);
+\draw[arrow] (solve) -- (ceq);
+\draw[arrow] (ceq) -- (mt);
+\draw[arrow] (mt) -- (output);
+
+\end{tikzpicture}
+\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the fibre--matrix boundary.}
+\label{fig:flowchart_interface_cca}
+\end{figure}
+
 % -------------------------------------------------------------------
 \subsection{Particle-Reinforced Composites (CSA)}
 \label{subsec:interface_bvp_csa}
@@ -2689,6 +2759,70 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 - 2\left(9\kappa^{(2)} + 8\mu^{(2)}\right) X_8
 \right]\label{eq:Hmu_egim_csa}
 \end{empheq}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm and 0.6cm,
+    block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    bvpblock/.style={rectangle, draw, fill=orange!10, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    resultblock/.style={rectangle, draw, fill=green!10, text width=12em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    inputblock/.style={rectangle, draw, fill=red!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Inputs
+\node[block, text width=14em] (mat) {
+    \textbf{Material input:} $\kappa^{(1)}, \mu^{(1)}$ (particle), $\kappa^{(2)}, \mu^{(2)}$ (matrix), radius $r_1$, volume fraction $f$
+};
+\node[inputblock, text width=14em, right=0.8cm of mat] (params) {
+    \textbf{From inverse PINN:}\\ $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$
+};
+
+% Merge point
+\node[block, text width=20em, below=1.0cm of $(mat)!0.5!(params)$] (setup) {
+    2-phase composite (particle + matrix) with EGIM jump conditions at $r = r_1$
+};
+
+% BVPs side by side
+\node[bvpblock, below left=1.0cm and 1.5cm of setup] (bvp1) {\textbf{BVP 1}\\ Hydrostatic\\ $\rightarrow T_{11}, H_{11}$};
+\node[bvpblock, below right=1.0cm and 1.5cm of setup] (bvp2) {\textbf{BVP 2}\\ Deviatoric\\ $\rightarrow T_{44}, H_{44}$};
+
+% Solve step
+\node[block, text width=22em, below=1.0cm of $(bvp1)!0.5!(bvp2)$] (solve) {
+    Each BVP: displacement ans\"{a}tze $\rightarrow$ apply EGIM cohesive \& elastic jump conditions at $r = r_1$ $\rightarrow$ solve linear system $\rightarrow$ extract $\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$
+};
+
+% Equivalent stiffness
+\node[block, text width=16em, below=0.7cm of solve] (ceq) {
+    Equivalent inhomogeneity stiffness:\\ $\mathbb{C}^{\text{eq}} = \mathbb{H}^{\text{eq}} \cdot (\mathbb{T}^{\text{eq}})^{-1}$
+};
+
+% Mori-Tanaka
+\node[resultblock, text width=16em, below=0.7cm of ceq] (mt) {
+    \textbf{Mori-Tanaka homogenisation}\\ ${}^{\mathrm{M}}\mathbb{C} = [(1{-}f)\mathbb{C}^{(2)} + f\mathbb{H}^{\text{eq}}] : [(1{-}f)\mathbb{I} + f\mathbb{T}^{\text{eq}}]^{-1}$
+};
+
+% Output
+\node[resultblock, below=0.7cm of mt] (output) {
+    \textbf{Output:} $K_{\text{eff}}, G_{\text{eff}}$
+};
+
+% Arrows
+\draw[arrow] (mat) -- (setup);
+\draw[arrow] (params) -- (setup);
+\draw[arrow] (setup) -| (bvp1);
+\draw[arrow] (setup) -| (bvp2);
+\draw[arrow] (bvp1) |- (solve);
+\draw[arrow] (bvp2) |- (solve);
+\draw[arrow] (solve) -- (ceq);
+\draw[arrow] (ceq) -- (mt);
+\draw[arrow] (mt) -- (output);
+
+\end{tikzpicture}
+\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the particle--matrix boundary.}
+\label{fig:flowchart_interface_csa}
+\end{figure}
 
 % -------------------------------------------------------------------
 \subsection{Tensor Assembly and Effective Properties}
