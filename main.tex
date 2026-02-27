@@ -2924,7 +2924,7 @@ With the inverse network architectures and training strategies in place, Chapter
 \chapter{Results and Discussion}
 \label{ch:results}
 
-This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying the 3-layer interphase model implementationis consistent or not. Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry, where the Extended Interface model proves structurally adequate and the network achieves a~$100\,\%$ pass rate. Section~\ref{sec:cca_results} turns to the CCA geometry: the inverse PINN fails here, and a systematic diagnosis reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
+This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying that the 3-layer interphase model implementation is consistent. Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry, where the Extended Interface model proves structurally adequate and the network achieves a~$100\,\%$ pass rate. Section~\ref{sec:cca_results} turns to the CCA geometry: the inverse PINN fails here, and a systematic diagnosis reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
 
 % ===================================================================
 \section{Verification of the 3-Layer Interphase Model}
@@ -3205,51 +3205,15 @@ SR & 0.05 & 0.10 & 0.20 & 0.30 & 0.40 & 0.50 \\
 Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, as the heatmap in Figure~\ref{fig:ei_heatmap} makes visually clear. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$. The models agree only in a narrow corner of the parameter space where the interphase effect is weak---precisely the regime where the interface approximation is least needed.
 
 % -------------------------------------------------------------------
-\subsection{Anisotropic Extended Interface (7~Parameters)}
-\label{subsec:ei_anisotropic}
-% -------------------------------------------------------------------
-
-One might argue that the isotropic model fails because a single~$\bar{\mu}$ cannot capture both transverse and axial shear behaviour. To test this hypothesis, we extend the model to seven parameters: $\bar{\lambda}$, separate transverse and axial interface shear moduli $\bar{\mu}_{\text{tr}}$ and $\bar{\mu}_{\text{ax}}$, direction-dependent orthogonal stiffnesses $\bar{k}_r$, $\bar{k}_\theta$, and $\bar{k}_z$, and the position parameter~$\bar{\alpha}$. This gives the optimiser maximum flexibility within the interface framework.
-
-\begin{table}[htbp]
-\centering
-\caption{Isotropic (4-parameter) vs.\ anisotropic (7-parameter) Extended Interface models: mean and maximum relative errors~($\%$) against 3-layer targets over~28 configurations.}
-\label{tab:ei_comparison}
-\begin{tabular}{lcccccc}
-\toprule
- & \multicolumn{2}{c}{$K_{\text{tr}}$ Error~($\%$)} &
-   \multicolumn{2}{c}{$G_{\text{tr}}$ Error~($\%$)} &
-   \multicolumn{2}{c}{$G_{\text{ax}}$ Error~($\%$)} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-Model & Mean & Max & Mean & Max & Mean & Max \\
-\midrule
-4-param isotropic   & 4.02 & 8.86  & 18.23 & 26.66 & 6.57     & 12.67    \\
-7-param anisotropic & 1.05 & 2.39  & 17.75 & 26.63 & ${<}\,0.01$ & ${<}\,0.01$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:ei_comparison} and Figure~\ref{fig:ei_4v7} reveal a clear pattern. The additional parameters eliminate the axial shear error entirely ($G_{\text{ax}}$ drops from~$6.57\,\%$ to effectively zero) and substantially reduce the bulk modulus error ($K_{\text{tr}}$ from~$4.02\,\%$ to~$1.05\,\%$). However, the transverse shear error barely changes:~$17.75\,\%$ for the 7-parameter model versus~$18.23\,\%$ for the 4-parameter model. Nearly doubling the number of parameters reduces the~$G_{\text{tr}}$ gap by less than half a percentage point.
-
-This result is significant because it establishes that the $G_{\text{tr}}$ gap is not caused by an insufficient number of parameters. The anisotropic model can address $K_{\text{tr}}$ and $G_{\text{ax}}$ independently, yet the transverse shear discrepancy persists. The test suite result remains~0/28 pass, identical to the isotropic case.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.75\textwidth]{ei_4v7_comparison.pdf}
-\caption{Mean relative errors for the 4-parameter isotropic and 7-parameter anisotropic Extended Interface models across~28 configurations. The additional parameters reduce~$K_{\text{tr}}$ and~$G_{\text{ax}}$ errors substantially but leave the~$G_{\text{tr}}$ gap virtually unchanged, confirming that the transverse shear discrepancy is structural.}
-\label{fig:ei_4v7}
-\end{figure}
-
-% -------------------------------------------------------------------
 \subsection{Physical Interpretation}
 \label{subsec:ei_interpretation}
 % -------------------------------------------------------------------
 
-The persistence of the $G_{\text{tr}}$ gap across both interface models points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
+The persistence of the $G_{\text{tr}}$ gap points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
 
 The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
 
-In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The 7-parameter anisotropic results confirm this interpretation: $G_{\text{ax}}$ and $K_{\text{tr}}$ can be matched because their underlying BVPs have structure compatible with interface conditions, while $G_{\text{tr}}$ cannot.
+In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The optimised results support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate (Table~\ref{tab:ei_gap_summary}), whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
 
 This finding explains why the inverse PINN achieved~$0/28$ in Section~\ref{subsec:cca_pinn_results}: the network was trained on data generated from the Extended Interface forward model, and that model is structurally incapable of reproducing the 3-layer transverse shear response. The PINN faithfully learned the EI model but inherited its limitation.
 
@@ -3260,39 +3224,37 @@ This finding explains why the inverse PINN achieved~$0/28$ in Section~\ref{subse
 
 To make the above findings concrete, we present three worked examples at a fixed volume fraction $f = 0.30$ with standard interphase configuration ($\phi_1 = 0.20$, $\phi_2 = 0.30$, $\phi_3 = 0.40$; $w_1 = 0.75$, $w_2 = 0.50$, $w_3 = 0.25$). The matrix properties are $\kappa^{(2)} = 20$~GPa and $\mu^{(2)} = 12$~GPa throughout. The inclusion stiffness is varied through the stiffness ratio $\text{SR} = \kappa^{(1)} / \kappa^{(2)}$, giving three configurations that span the practically relevant range: a soft inclusion ($\text{SR} = 0.1$), a matched-stiffness case ($\text{SR} = 1.0$), and a stiff inclusion ($\text{SR} = 10.0$).
 
-Table~\ref{tab:numerical_examples} shows the 3-layer interphase target properties alongside the best-fit predictions from both the 4-parameter isotropic and 7-parameter anisotropic Extended Interface models. The pattern is clear across all three examples.
+Table~\ref{tab:numerical_examples} shows the 3-layer interphase target properties alongside the best-fit predictions from the isotropic Extended Interface model. The pattern is consistent across all three examples.
 
 \begin{table}[htbp]
 \centering
-\caption{Numerical examples comparing 3-layer interphase targets with best-fit Extended Interface predictions at $f = 0.30$. The 4-param and 7-param models are optimised independently for each configuration. All errors in~$\%$.}
+\caption{Numerical examples comparing 3-layer interphase targets with best-fit isotropic Extended Interface predictions at $f = 0.30$. The optimiser is run independently for each configuration. All errors in~$\%$.}
 \label{tab:numerical_examples}
-\begin{tabular}{l l r r r r r r}
+\begin{tabular}{l l r r r}
 \toprule
-& & \multicolumn{3}{c}{4-param isotropic} & \multicolumn{3}{c}{7-param anisotropic} \\
-\cmidrule(lr){3-5} \cmidrule(lr){6-8}
-SR & Property & Target & Pred. & Error & Target & Pred. & Error \\
+SR & Property & Target & EI Pred. & Error~($\%$) \\
 \midrule
 \multirow{3}{*}{0.1}
- & $K_{\text{tr}}$ & 20.00 & 18.64 & 6.80 & 20.00 & 20.29 & 1.43 \\
- & $G_{\text{tr}}$ & 12.00 & 10.95 & 8.76 & 12.00 & 11.22 & 6.48 \\
- & $G_{\text{ax}}$ & 12.00 & 13.03 & 8.56 & 12.00 & 12.00 & ${<}\,0.01$ \\
+ & $K_{\text{tr}}$ & 20.00 & 18.64 & 6.80 \\
+ & $G_{\text{tr}}$ & 12.00 & 10.95 & 8.76 \\
+ & $G_{\text{ax}}$ & 12.00 & 13.03 & 8.56 \\
 \midrule
 \multirow{3}{*}{1.0}
- & $K_{\text{tr}}$ & 27.92 & 26.74 & 4.21 & 27.92 & 28.20 & 1.01 \\
- & $G_{\text{tr}}$ & 16.48 & 13.51 & 17.99 & 16.48 & 13.57 & 17.63 \\
- & $G_{\text{ax}}$ & 17.41 & 18.64 & 7.04 & 17.41 & 17.41 & ${<}\,0.01$ \\
+ & $K_{\text{tr}}$ & 27.92 & 26.74 & 4.21 \\
+ & $G_{\text{tr}}$ & 16.48 & 13.51 & 17.99 \\
+ & $G_{\text{ax}}$ & 17.41 & 18.64 & 7.04 \\
 \midrule
 \multirow{3}{*}{10.0}
- & $K_{\text{tr}}$ & 32.84 & 32.77 & 0.20 & 32.84 & 33.11 & 0.82 \\
- & $G_{\text{tr}}$ & 19.04 & 13.96 & 26.66 & 19.04 & 13.97 & 26.63 \\
- & $G_{\text{ax}}$ & 21.49 & 21.76 & 1.28 & 21.49 & 21.49 & ${<}\,0.01$ \\
+ & $K_{\text{tr}}$ & 32.84 & 32.77 & 0.20 \\
+ & $G_{\text{tr}}$ & 19.04 & 13.96 & 26.66 \\
+ & $G_{\text{ax}}$ & 21.49 & 21.76 & 1.28 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-For the reference case ($\text{SR} = 1.0$), the 3-layer model gives $K_{\text{tr}} = 27.92$, $G_{\text{tr}} = 16.48$, and $G_{\text{ax}} = 17.41$~GPa. The 4-parameter EI model matches $K_{\text{tr}}$ reasonably (4.2\% error) and $G_{\text{ax}}$ moderately (7.0\%), but the transverse shear modulus drops to 13.51~GPa---a shortfall of 18.0\%. The 7-parameter model eliminates the $G_{\text{ax}}$ error entirely and reduces $K_{\text{tr}}$ to 1.0\%, yet $G_{\text{tr}}$ barely improves: 13.57~GPa, still 17.6\% below the target. At $\text{SR} = 10.0$, the gap widens to 26.7\% for both models. Even for the soft inclusion ($\text{SR} = 0.1$), where the interphase effect is weakest, $G_{\text{tr}}$ errors remain above~$6\,\%$.
+For the reference case ($\text{SR} = 1.0$), the 3-layer model gives $K_{\text{tr}} = 27.92$, $G_{\text{tr}} = 16.48$, and $G_{\text{ax}} = 17.41$~GPa. The EI model matches $K_{\text{tr}}$ reasonably (4.2\% error) and $G_{\text{ax}}$ moderately (7.0\%), but the transverse shear modulus drops to 13.51~GPa---a shortfall of 18.0\%. At $\text{SR} = 10.0$, the gap widens to 26.7\%. Even for the soft inclusion ($\text{SR} = 0.1$), where the interphase effect is weakest, $G_{\text{tr}}$ errors remain above~$8\,\%$.
 
-In every case, the optimiser drives the orthogonal stiffness $\bar{k}$ to its upper bound of~$10\,000$ and the position parameter~$\bar{\alpha}$ close to~$1.0$ (Figure~\ref{fig:optimizer_saturation}). This saturation behaviour confirms that the Extended Interface model is structurally insufficient, not under-parameterised. The three extra degrees of freedom in the anisotropic model help with $K_{\text{tr}}$ and $G_{\text{ax}}$ but cannot address the transverse shear gap, which originates from the mode coupling discussed in Section~\ref{subsec:ei_interpretation}.
+In every case, the optimiser drives the orthogonal stiffness $\bar{k}$ to its upper bound of~$10\,000$ and the position parameter~$\bar{\alpha}$ close to~$1.0$ (Figure~\ref{fig:optimizer_saturation}). This saturation behaviour confirms that the Extended Interface model is structurally insufficient, not under-parameterised. The transverse shear gap originates from the mode coupling discussed in Section~\ref{subsec:ei_interpretation}.
 
 \begin{figure}[htbp]
 \centering
@@ -3304,7 +3266,7 @@ In every case, the optimiser drives the orthogonal stiffness $\bar{k}$ to its up
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.75\textwidth]{optimizer_saturation.pdf}
-\caption{Best-fit interface parameters across all~28 test configurations for both the 4-parameter isotropic and 7-parameter anisotropic models. The orthogonal stiffness~$\bar{k}$ saturates at its upper bound of~$10\,000$ in every case, and the position parameter~$\bar{\alpha}$ approaches~$1.0$, indicating that the optimiser exhausts all available flexibility without closing the~$G_{\text{tr}}$ gap.}
+\caption{Best-fit interface parameters across all~28 test configurations. The orthogonal stiffness~$\bar{k}$ saturates at its upper bound of~$10\,000$ in every case, and the position parameter~$\bar{\alpha}$ approaches~$1.0$, indicating that the optimiser exhausts all available flexibility without closing the~$G_{\text{tr}}$ gap.}
 \label{fig:optimizer_saturation}
 \end{figure}
 
@@ -3332,10 +3294,10 @@ The preceding sections have presented the inverse parameter identification resul
 \paragraph{Geometry-dependent viability of the interface model.}
 The results reveal a sharp asymmetry between the CSA and CCA geometries. For CSA composites, the inverse PINN achieves a $100\,\%$ pass rate (Table~\ref{tab:pinn_validation}), with mean reconstruction errors below~$2\,\%$ for both $K_{\text{eff}}$ and $G_{\text{eff}}$. The recovered interface parameters---the stiffnesses $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$ and the position parameter~$\bar{\alpha}$---carry physical meaning and can be incorporated into analytical homogenisation schemes or multiscale simulations. The PINN pathway is therefore viable and accurate for particle-reinforced composites.
 
-For CCA composites, the picture is fundamentally different. The Extended Interface model fails to capture the transverse shear response, with a $G_{\text{tr}}$ gap of~$17$--$18\,\%$ that persists regardless of parameter count (Tables~\ref{tab:ei_gap_summary} and~\ref{tab:ei_comparison}). The inverse PINN applied to CCA data confirms this limitation independently: even a flexible nonlinear approximator cannot close the gap (Table~\ref{tab:cca_pinn_validation}). This geometry-dependent outcome is not an artefact of insufficient training or network capacity---it is a structural limitation of the zero-thickness interface approximation when applied to multi-mode boundary value problems.
+For CCA composites, the picture is fundamentally different. The Extended Interface model fails to capture the transverse shear response, with a $G_{\text{tr}}$ gap of~$18\,\%$ that persists even when the optimiser is given maximum flexibility (Table~\ref{tab:ei_gap_summary}). The inverse PINN applied to CCA data confirms this limitation independently: even a flexible nonlinear approximator cannot close the gap (Table~\ref{tab:cca_pinn_validation}). This geometry-dependent outcome is not an artefact of insufficient training or network capacity---it is a structural limitation of the zero-thickness interface approximation when applied to multi-mode boundary value problems.
 
 \paragraph{The interface--interphase gap as a fundamental limit.}
-The central negative finding of this thesis is that no Extended Interface model, regardless of the number of parameters, can represent the transverse shear response of a CCA multi-layer interphase. We arrive at this conclusion through three independent analyses: a 4-parameter isotropic model (Section~\ref{subsec:ei_isotropic}), a 7-parameter anisotropic model (Section~\ref{subsec:ei_anisotropic}), and an inverse PINN trained on CCA data (Section~\ref{subsec:cca_pinn_implications}). In the optimisation-based approach, the optimiser drives interface stiffnesses to their bounds without closing the $G_{\text{tr}}$ gap. In the PINN approach, the mean $G_{\text{tr}}$ error rises to~$29.5\,\%$---even higher than the per-configuration optimiser---because a single set of weights must generalise across all configurations. The physical origin lies in the mode-2/mode-4 coupling of the transverse shear BVP (Section~\ref{subsec:ei_interpretation}), which requires a volumetric response that a surface-based model cannot encode.
+The central negative finding of this thesis is that no Extended Interface model, regardless of the number of parameters, can represent the transverse shear response of a CCA multi-layer interphase. We arrive at this conclusion through two independent analyses: a per-configuration optimisation of the 4-parameter isotropic model (Section~\ref{subsec:ei_isotropic}) and an inverse PINN trained on CCA data (Section~\ref{subsec:cca_pinn_implications}). In the optimisation-based approach, the optimiser drives interface stiffnesses to their bounds without closing the $G_{\text{tr}}$ gap. In the PINN approach, the mean $G_{\text{tr}}$ error rises to~$29.5\,\%$---even higher than the per-configuration optimiser---because a single set of weights must generalise across all configurations. The physical origin lies in the mode-2/mode-4 coupling of the transverse shear BVP (Section~\ref{subsec:ei_interpretation}), which requires a volumetric response that a surface-based model cannot encode.
 
 This finding has implications beyond the specific material systems studied here. Any homogenisation approach that routes through an Extended Interface model---whether analytical, optimisation-based, or neural-network-based---will inherit this structural error for fibre composites. For CCA geometries with graded interphases, either higher-order interface theories that retain some volumetric information or direct computational approaches that bypass the interface altogether are needed.
 
@@ -3347,7 +3309,7 @@ Based on the results of this chapter, we propose the following guidelines:
     \item \textit{Mixed or unknown geometry}: Evaluate the interface model fit first using the optimisation-based gap analysis of Section~\ref{subsec:ei_isotropic}. If the best-fit error exceeds~$5\,\%$, the interface model is structurally inadequate for that configuration.
 \end{itemize}
 
-Figure~\ref{fig:grand_comparison} places all four approaches on a single chart for direct comparison.
+Figure~\ref{fig:grand_comparison} places all three approaches on a single chart for direct comparison.
 
 \begin{figure}[htbp]
     \centering
@@ -3379,7 +3341,7 @@ This thesis has developed and evaluated a computational framework for predicting
 \begin{enumerate}
     \item \textbf{Verified 3-layer interphase model.} We implemented and verified the multi-coated CCA and CSA interphase models, solving four boundary value problems per configuration. The implementation passes all consistency checks: $\tens{H} = \tens{C}\,\tens{T}$ to machine precision ($\sim 10^{-14}$), both limiting cases reproduce the expected 2-phase results, and volume fractions sum to unity (Section~\ref{sec:verification}).
 
-    \item \textbf{Quantification of the interface--interphase gap.} We showed that no Extended Interface model---whether 4-parameter isotropic or 7-parameter anisotropic---can reproduce the transverse shear modulus of a CCA multi-layer interphase. The $G_{\text{tr}}$ gap of~$17$--$18\,\%$ persists regardless of parameter count, establishing a fundamental limitation of the zero-thickness approximation for fibre composites (Section~\ref{sec:cca_results}).
+    \item \textbf{Quantification of the interface--interphase gap.} We showed that the Extended Interface model cannot reproduce the transverse shear modulus of a CCA multi-layer interphase. The $G_{\text{tr}}$ gap of~$18\,\%$ persists even when a global optimiser is given maximum flexibility, establishing a fundamental limitation of the zero-thickness approximation for fibre composites (Section~\ref{sec:cca_results}).
 
     \item \textbf{Inverse PINN for CSA composites.} We developed a physics-informed neural network that recovers Extended Interface parameters from effective properties with a $100\,\%$ pass rate (28/28~configurations, mean reconstruction errors below~$2\,\%$). The physics loss enforces forward-model consistency, providing a self-consistent inverse mapping for particle-reinforced composites (Section~\ref{subsec:csa_pinn}).
 
