@@ -760,33 +760,93 @@ We apply the framework to two composite geometries. For particle-reinforced comp
 \chapter*{Notations}
 \addcontentsline{toc}{chapter}{Notations}
 
+\textbf{Continuum Mechanics:}
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
-\textbf{Symbol} & \textbf{Description} \\[0.5em]
-\hline \\[-0.5em]
 $\bs{u}$ & Displacement vector \\[0.3em]
 $\bs{\sigma}$ & Cauchy stress tensor \\[0.3em]
 $\bs{\varepsilon}$ & Infinitesimal strain tensor \\[0.3em]
+$\bs{t}$ & Surface traction vector \\[0.3em]
+$\bs{n}$, $\bar{\bs{n}}$ & Outward unit normal \\[0.3em]
 $\mathbb{C}$ & Fourth-order stiffness tensor \\[0.3em]
+$\lambda, \mu$ & Lam\'{e} parameters \\[0.3em]
+$\kappa$ & Bulk modulus (plane-strain: $\lambda{+}\mu$; \; 3D: $\lambda{+}\tfrac{2}{3}\mu$) \\[0.3em]
+$E, \nu$ & Young's modulus, Poisson's ratio \\[0.3em]
+$\bs{I}$ & Second-order identity tensor \\[0.3em]
+$\mathbb{I}$ & Fourth-order identity tensor \\[0.3em]
+\end{tabular}
+
+\vspace{0.6cm}
+
+\textbf{Geometry and Phases:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
+$\mathcal{V}$ & RVE volume \\[0.3em]
+$\mathcal{B}$ & Bulk domain \\[0.3em]
+$\mathcal{I}$ & Interface surface \\[0.3em]
+$N$ & Number of coating layers \\[0.3em]
+$r_m$ & Outer radius of phase $m$ \\[0.3em]
+$f$ & Inclusion volume fraction \\[0.3em]
+$c_m$ & Sub-phase volume fraction within equivalent inhomogeneity \\[0.3em]
+$\phi_m$ & Volume fraction ratio \\[0.3em]
+\end{tabular}
+
+\vspace{0.6cm}
+
+\textbf{Concentration Tensors and Transformations:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
+$\mathbb{T}^{(q)}$ & Strain concentration tensor of phase $q$ \\[0.3em]
+$\mathbb{H}^{(q)}$ & Stress-strain concentration tensor of phase $q$ \\[0.3em]
+$\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$ & Equivalent concentration tensors \\[0.3em]
+$T_\kappa, T_{44}, T_{55}$ & Independent scalar components of $\mathbb{T}$ (CCA) \\[0.3em]
+$T_\mu$ & Independent shear component of $\mathbb{T}$ (CSA) \\[0.3em]
+$\bs{R}$ & Rotation matrix \\[0.3em]
+$\bs{Q}_\varepsilon$, $\bs{Q}_\sigma$ & Voigt transformation matrices for strain and stress \\[0.3em]
+\end{tabular}
+
+\vspace{0.6cm}
+
+\textbf{Interface / EGIM:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $\jump{\cdot}$ & Jump operator across interface \\[0.3em]
 $\{\!\{ \cdot \}\!\}$ & Average operator across interface \\[0.3em]
 $\bar{k}$ & Interface orthogonal stiffness \\[0.3em]
+$\bar{\lambda}$ & Interface Lam\'{e} parameter \\[0.3em]
 $\bar{\mu}$ & Interface shear modulus \\[0.3em]
-$\bar{\lambda}$ & Interface Lamé parameter \\[0.3em]
 $\bar{\alpha}$ & Interface position parameter \\[0.3em]
-$\mathbb{T}^{\text{eq}}$ & Equivalent strain concentration tensor \\[0.3em]
-$\mathbb{H}^{\text{eq}}$ & Equivalent stress-strain concentration tensor \\[0.3em]
-$f$ & Inclusion volume fraction \\[0.3em]
-$\lambda, \mu$ & Lamé parameters \\[0.3em]
-$\kappa$ & Bulk modulus \\[0.3em]
-$E, \nu$ & Young's modulus, Poisson's ratio \\[0.3em]
+$\hat{\bs{\varepsilon}}$, $\hat{\bs{\sigma}}$ & Interface contributions to macroscopic fields \\[0.3em]
 \end{tabular}
 
-\vspace{1cm}
+\vspace{0.6cm}
+
+\textbf{Homogenization and Effective Properties:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
+$\bs{\varepsilon}^{(0)}$ & Applied far-field strain \\[0.3em]
+$X_i$ & BVP amplitude coefficients \\[0.3em]
+${}^{\mathrm{M}}\hspace{-1pt}\mathbb{C}$ & Macroscopic effective stiffness tensor \\[0.3em]
+$K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$ & Effective CCA moduli (transverse bulk, transverse shear, axial shear) \\[0.3em]
+$K_{\text{eff}}, G_{\text{eff}}$ & Effective CSA moduli (bulk, shear) \\[0.3em]
+\end{tabular}
+
+\smallskip
+\noindent
+The engineering notation relates to the macroscopic Lam\'{e} notation as $K_{\text{tr}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\kappa$, $G_{\text{tr}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}}$, $G_{\text{ax}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}}$ for CCA and $K_{\text{eff}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\kappa$, $G_{\text{eff}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu$ for CSA.
+
+\vspace{0.6cm}
+
+\textbf{Neural Network:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
+$\bs{W}^{(\ell)}, \bs{b}^{(\ell)}$ & Weight matrix and bias vector of layer $\ell$ \\[0.3em]
+$\bs{\theta}$ & Trainable network parameters \\[0.3em]
+$\mathcal{L}$ & Loss function \\[0.3em]
+\end{tabular}
+
+\vspace{0.6cm}
 
 \textbf{Superscripts/Subscripts:}
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
-$(1)$ & Fiber/inclusion phase \\[0.3em]
-$(2)$ & Matrix phase \\[0.3em]
+$(1)$ & Inclusion/core phase \\[0.3em]
+$(0)$ & Matrix phase (interphase model); also denotes far-field condition \\[0.3em]
+$(2)$ & Matrix phase (EGIM); first coating layer (interphase model) \\[0.3em]
+$(q)$ & General phase index \\[0.3em]
 $\text{eq}$ & Equivalent inhomogeneity \\[0.3em]
 ${}^{\mathrm{M}}$ & Macroscopic quantity \\[0.3em]
 $\bar{(\cdot)}$ & Interface quantity \\[0.3em]
@@ -1087,7 +1147,7 @@ This is satisfied by linear displacement (Dirichlet) boundary conditions, unifor
 \label{subsec:eshelby_problem}
 % -------------------------------------------------------------------
 
-The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{C}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the  strain concentration tensor $\mathbb{T}$ satisfies:
+The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{C}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{C}^{(0)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the  strain concentration tensor $\mathbb{T}$ satisfies:
 %
 \begin{equation}
     \bs{\varepsilon}^{(1)} = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
@@ -1104,7 +1164,7 @@ For composites with imperfect interfaces, the classical Eshelby formula~\eqref{e
 \label{sec:interphase_model}
 % ===================================================================
 
-In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{L}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{L}^{(2)}, \mathbb{L}^{(3)}, \ldots, \mathbb{L}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{L}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{C}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{C}^{(2)}, \mathbb{C}^{(3)}, \ldots, \mathbb{C}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{C}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
 
 % -------------------------------------------------------------------
 \subsection{Average Fields and Volume Fractions}
@@ -1420,7 +1480,7 @@ The tensor $\mathbb{C}^{\text{eq}}$ represents the stiffness of a single homogen
     \label{eq:MT_interphase}
 \end{equation}
 %
-where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)}$ is the matrix stiffness. Because the tensor structure is block-diagonal, this $6 \times 6$ formula reduces to scalar expressions for each independent modulus.
+where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)}$ denotes the matrix stiffness. In the Mori-Tanaka formula we follow the standard two-phase convention (inclusion = phase~$1$, matrix = phase~$2$); this is distinct from the multi-layered numbering ($0$ = matrix, $1$ = core, $2, \ldots, N{+}1$ = coatings) used in the BVP setup above. Because the tensor structure is block-diagonal, the $6 \times 6$ formula reduces to scalar expressions for each independent modulus.
 
 For \textbf{fibre-reinforced composites} (2D, CCA), three independent effective moduli are obtained:
 %
@@ -2908,7 +2968,7 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \caption{Generalized Inverse parameter identification pipeline}
 \label{alg:inverse_cca}
 \begin{algorithmic}[1]
-\Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (fibre), $\kappa^{(0)}, \mu^{(0)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
+\Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (fibre), $\kappa^{(2)}, \mu^{(2)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
 \Ensure Interface parameters $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ such that EGIM reproduces the interphase effective properties
 \Statex
 \State \textbf{--- Solve 3-layer interphase model ---}
@@ -2919,7 +2979,7 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \State Effective moduli: $K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}$
 \Statex
 \State \textbf{--- Inverse prediction using neural network ---}
-\State Assemble input vector: $\bs{x} = [K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(0)}, \mu^{(0)}, f]$
+\State Assemble input vector: $\bs{x} = [K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(2)}, \mu^{(2)}, f]$
 \State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$
 \Statex
 \State \textbf{--- Verification using EGIM forward model ---}
