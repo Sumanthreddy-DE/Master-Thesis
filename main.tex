@@ -2847,25 +2847,27 @@ with $w_K = 1.5$ and $w_G = 1.0$. The adaptive weights are capped at 150 for $w_
 Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complete inverse parameter identification pipeline for the CCA and CSA geometries, respectively.
 
 \begin{algorithm}[htbp]
-\caption{Inverse parameter identification pipeline for fibre-reinforced composites (CCA)}
+\caption{Generalized Inverse parameter identification pipeline}
 \label{alg:inverse_cca}
 \begin{algorithmic}[1]
 \Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (fibre), $\kappa^{(0)}, \mu^{(0)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
 \Ensure Interface parameters $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ such that EGIM reproduces the interphase effective properties
 \Statex
-\State \textbf{--- Forward solve (3-layer interphase model) ---}
-\State Solve 4 BVPs (in-plane bulk, transverse shear, axial shear, axisymmetric) for the 5-phase composite (fibre + 3 coatings + matrix) \Comment{Fig.~\ref{fig:flowchart_interphase_cca}}
-\State Extract per-phase concentration tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ from volume-averaged fields
+\State \textbf{--- Solve 3-layer interphase model ---}
+\State Solve 4 BVPs for CCA and only two BVPs for CSA
+\State Extract $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ for all q = 1,2,3,4
 \State Compute equivalent tensors: $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
-\State Homogenise via Mori-Tanaka $\rightarrow$ target effective moduli: $K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}$
+\State Homogenise via Mori-Tanaka 
+\State Effective moduli: $K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}$
 \Statex
-\State \textbf{--- Inverse prediction (neural network) ---}
+\State \textbf{--- Inverse prediction using neural network ---}
 \State Assemble input vector: $\bs{x} = [K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(0)}, \mu^{(0)}, f]$
-\State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$
+\State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$
 \Statex
-\State \textbf{--- Verification (EGIM forward model) ---}
-\State Solve 4 EGIM BVPs using predicted $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ with same fibre/matrix properties
-\State Homogenise via Mori-Tanaka $\rightarrow$ predicted effective moduli: $K_{\text{tr}}^{\text{pred}}, G_{\text{tr}}^{\text{pred}}, G_{\text{ax}}^{\text{pred}}$
+\State \textbf{--- Verification using EGIM forward model ---}
+\State Solve EGIM BVPs using predicted $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ with same fibre/matrix properties
+\State Homogenise via Mori-Tanaka 
+\State Predicted effective moduli: $K_{\text{tr}}^{\text{pred}}, G_{\text{tr}}^{\text{pred}}, G_{\text{ax}}^{\text{pred}}$
 \State Compute relative errors: $e_i = |C_i^{\text{pred}} - C_i^{\text{target}}| / |C_i^{\text{target}}|$ for each modulus
 \If{all $e_i < $ tolerance}
     \State \Return $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ \Comment{successful identification}
@@ -2875,34 +2877,6 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[htbp]
-\caption{Inverse parameter identification pipeline for particle-reinforced composites (CSA)}
-\label{alg:inverse_csa}
-\begin{algorithmic}[1]
-\Require Material properties: $\kappa^{(1)}, \mu^{(1)}$ (particle), $\kappa^{(0)}, \mu^{(0)}$ (matrix); interphase coating properties; radii $r_1, \ldots, r_4$; volume fraction~$f$
-\Ensure Interface parameters $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ such that EGIM reproduces the interphase effective properties
-\Statex
-\State \textbf{--- Forward solve (3-layer interphase model) ---}
-\State Solve 2 BVPs (hydrostatic, deviatoric) for the 5-phase composite (particle + 3 coatings + matrix) \Comment{Fig.~\ref{fig:flowchart_interphase_csa}}
-\State Extract per-phase concentration tensors $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ from volume-averaged fields
-\State Compute equivalent tensors: $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
-\State Homogenise via Mori-Tanaka $\rightarrow$ target effective moduli: $K_{\text{eff}}^{\text{target}}, G_{\text{eff}}^{\text{target}}$
-\Statex
-\State \textbf{--- Inverse prediction (neural network) ---}
-\State Assemble input vector: $\bs{x} = [K_{\text{eff}}^{\text{target}}, G_{\text{eff}}^{\text{target}}, \kappa^{(1)}, \mu^{(1)}, \kappa^{(0)}, \mu^{(0)}, f]$
-\State Pass $\bs{x}$ through the trained inverse PINN $\rightarrow$ predict $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$
-\Statex
-\State \textbf{--- Verification (EGIM forward model) ---}
-\State Solve 2 EGIM BVPs (hydrostatic, deviatoric) using predicted $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ with same particle/matrix properties
-\State Homogenise via Mori-Tanaka $\rightarrow$ predicted effective moduli: $K_{\text{eff}}^{\text{pred}}, G_{\text{eff}}^{\text{pred}}$
-\State Compute relative errors: $e_i = |C_i^{\text{pred}} - C_i^{\text{target}}| / |C_i^{\text{target}}|$ for each modulus
-\If{all $e_i < $ tolerance}
-    \State \Return $\hat{\bar{k}}, \hat{\bar{\lambda}}, \hat{\bar{\mu}}, \hat{\bar{\alpha}}$ \Comment{successful identification}
-\Else
-    \State Flag representational gap \Comment{EGIM cannot reproduce interphase behaviour}
-\EndIf
-\end{algorithmic}
-\end{algorithm}
 
 With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the CSA inverse PINN achieves a~$100\,\%$ pass rate, while the CCA case reveals a fundamental representational limit of the Extended Interface model that no parameter identification method can overcome.
 
@@ -3018,7 +2992,7 @@ The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_los
 A practical observation emerged during training: an earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$ on the 28-configuration in-distribution validation suite. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
 
 \paragraph{Validation via Worked Examples.}
-To validate the trained PINN, we construct five test cases using a soft particle in a stiff matrix: $\kappa^{(1)} = 5$, $\mu^{(1)} = 3$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 0.25$), with $f = 0.3$ and interphase layer thickness ratios $\phi = (0.2, 0.3, 0.4)$. The first three cases use interpolated coating properties that fall between particle and matrix: a weak gradient ($w = 0.10, 0.05, 0.02$), a moderate gradient ($w = 0.75, 0.50, 0.25$), and a strong gradient ($w = 0.95, 0.85, 0.75$). The last two cases test out-of-distribution coatings with stiffnesses far beyond both constituents ($\kappa = 100$), which the PINN has never encountered during training.
+To validate the trained PINN, we construct five test cases using a soft particle in a stiff matrix: $\kappa^{(1)} = 5$, $\mu^{(1)} = 3$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 0.25$), with $f = 0.3$ and interphase layer thickness ratios $\phi = (0.2, 0.3, 0.4)$. The first three cases use interpolated coating properties that fall between particle and matrix: a weak gradient ($w = 0.10, 0.05, 0.02$), a moderate gradient ($w = 0.75, 0.50, 0.25$), and a strong gradient ($w = 0.95, 0.85, 0.75$). The last two cases test coatings with stiffnesses far beyond both constituents ($\kappa = 100$), which the PINN has never encountered during training.
 
 Table~\ref{tab:csa_worked_examples} presents the results. For interpolated coatings (Cases~1--3), the PINN passes two of three cases, failing only when the coating properties sit very close to the particle (Case~3). This creates a sharp stiffness jump at the coating--matrix boundary that the zero-thickness Extended Interface model struggles to represent. The out-of-bound cases (Cases~4--5) fail with large errors, particularly for $G_{\text{eff}}$, confirming that the PINN cannot generalise to interphase stiffness profiles outside its training range. The $G_{\text{eff}}$ reconstruction is consistently more challenging than $K_{\text{eff}}$ across all cases, reflecting the greater structural complexity of the deviatoric BVP compared to the hydrostatic one.
 
@@ -3062,7 +3036,7 @@ C & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.
 }
 \end{table}
 
-Taken together, the two tables paint a clear picture. Interpolated coating profiles---for both soft and stiff particles---are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles only when the interphase stiffness profile falls outside the training distribution, as in Cases~4 and~5 of Table~\ref{tab:csa_worked_examples}, where coating layers have stiffnesses far beyond both constituents. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
+Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles only when the interphase stiffness profile falls outside the training distribution, as in Cases~4 and~5 of Table~\ref{tab:csa_worked_examples}, where coating layers have stiffnesses far beyond both constituents. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
 
 % -------------------------------------------------------------------
 \subsection{CSA Numerical Examples}
@@ -3085,7 +3059,7 @@ To further illustrate how the three modelling approaches compare across a contin
 \label{fig:csa_vs_sr}
 \end{figure}
 
-In both sweeps, the optimised Extended Interface model (dashed red) overlaps the 3-layer interphase target across the full parameter range, confirming that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. Note that these sweeps use a different material configuration ($\kappa^{(1)} = 30$, $\kappa^{(2)} = 20$, $\text{SR} = 1.5$) than the worked examples in Table~\ref{tab:csa_worked_examples}, which accounts for the different error magnitudes. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
+In both sweeps, the optimised Extended Interface model (dashed red) overlaps the 3-layer interphase target across the full parameter range, confirming that the spherical BVPs which involve only single-mode radial displacement patterns are well represented by the jump and average conditions of the Extended Interface model. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. Note that these sweeps use a different material configuration ($\kappa^{(1)} = 30$, $\kappa^{(2)} = 20$, $\text{SR} = 1.5$) than the worked examples in Table~\ref{tab:csa_worked_examples}, which accounts for the different error magnitudes. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
 
 % ===================================================================
 \section{CCA: Inverse Parameter Identification and Representational Limits}
@@ -3143,11 +3117,11 @@ Case & Property & 3-Layer Target & PINN Err.~(\%) & Optim.\ Err.~(\%) \\
 }
 \end{table}
 
-Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passes any of the five cases. The optimiser achieves lower errors on average---it fits each configuration independently rather than generalising with a single set of weights---but even its best-fit solutions leave $G_{\text{tr}}$ errors above~$6\,\%$ in four of five cases. Case~4 (non-monotonic, high$\to$low coating stiffness) is the sole exception: both approaches capture $G_{\text{tr}}$ within~$2\,\%$, because this profile creates a compliant outer layer that weakens the mode coupling responsible for the gap (Section~\ref{subsec:ei_interpretation}). However, $G_{\text{ax}}$ errors remain above~$5\,\%$ even here, so the case still fails overall.
+Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passes any of the five cases. The optimiser achieves lower errors on average it fits each configuration independently rather than generalising with a single set of weights but even its best-fit solutions leave $G_{\text{tr}}$ errors above~$6\,\%$ in four of five cases. Case~4 (non-monotonic, high$\to$low coating stiffness) is the sole exception: both approaches capture $G_{\text{tr}}$ within~$2\,\%$. However, $G_{\text{ax}}$ errors remain above~$5\,\%$ even here, so the case still fails overall.
 
-In four of the five cases, the optimiser saturates~$\bar{k}$ at its upper bound of~$10\,000$ and~$\bar{\alpha}$ at~$1.0$; the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation---observed independently in two different solvers---indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
+In four of the five cases, the optimiser saturates~$\bar{k}$ at its upper bound of~$10\,000$ and~$\bar{\alpha}$ at~$1.0$; the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation observed independently in two different solvers which indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
 
-In terms of the parameter space, the transverse shear gap is present across all configurations but grows most severe at high stiffness ratios and large volume fractions. The plane-strain transverse shear BVP couples displacement modes~2 and~4 in the cylindrical geometry, and this coupling cannot be captured by a zero-thickness interface with four scalar parameters. Unlike the CSA case, where the PINN fails only for out-of-distribution coating stiffnesses, the CCA failure is structural and persists regardless of the solver or the material configuration.
+Unlike the CSA case, where the PINN fails only for out-of-distribution coating stiffnesses, the CCA failure is structural and persists regardless of the solver or the material configuration.
 
 % -------------------------------------------------------------------
 \subsection{Diagnosing the Failure: Isotropic Best-Fit (4~Parameters)}
@@ -3190,8 +3164,7 @@ SR & 0.05 & 0.10 & 0.20 & 0.30 & 0.40 & 0.50 \\
 \end{tabular}
 \end{table}
 
-Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, as the heatmap in Figure~\ref{fig:ei_heatmap} makes visually clear. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$. The models agree only in a narrow corner of the parameter space where the interphase effect is weak---precisely the regime where the interface approximation is least needed.
-
+Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, as the heatmap in Figure~\ref{fig:ei_heatmap} makes visually clear. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$. The models agree only where the interphase effect is weak.
 % -------------------------------------------------------------------
 \subsection{Physical Interpretation}
 \label{subsec:ei_interpretation}
@@ -3232,7 +3205,7 @@ The heatmap in Figure~\ref{fig:ei_heatmap} shows how the transverse shear gap va
 \caption{CCA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The transverse shear gap between the 3-layer model and both EI-based predictions widens with increasing stiffness contrast.}
 \label{fig:cca_vs_sr}
 \end{figure}
-
+\newpage
 % ===================================================================
 \section{Discussion}
 \label{sec:results_discussion}
@@ -3241,7 +3214,7 @@ The heatmap in Figure~\ref{fig:ei_heatmap} shows how the transverse shear gap va
 The results of this chapter admit a clear reading once the role of geometry is taken into account.
 
 \paragraph{Why the interface works for CSA.}
-Particle-reinforced composites present the inverse PINN with a tractable problem. The two CSA boundary value problems each involve a single radial displacement mode, and the Extended Interface conditions---relating displacement jumps to traction averages at a single surface---capture this radial symmetry adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness---a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
+Particle-reinforced composites present the inverse PINN with a tractable problem. The two CSA boundary value problems each has one radial displacement mode, and the Extended Interface conditions---relating displacement jumps to traction averages at a single surface---capture this radial symmetry adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness---a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
 
 \paragraph{Why the interface fails for CCA.}
 Fibre-reinforced composites are a different matter. The transverse shear BVP mixes mode-2 and mode-4 radial displacement patterns, and within a finite-thickness coating each mode develops its own stress field over the radial extent of the layer. The zero-thickness interface reduces all of this to jump and average conditions at a single surface, losing the mode coupling in the process. The consequence shows up in~$G_{\text{tr}}$: the transverse shear modulus cannot be matched regardless of how the four interface parameters are tuned.
@@ -3249,7 +3222,7 @@ Fibre-reinforced composites are a different matter. The transverse shear BVP mix
 Two independent lines of evidence support this conclusion. A per-configuration differential evolution optimiser---free to fit each case individually---drives~$\bar{k}$ to its upper bound and~$\bar{\alpha}$ to~$1.0$ and still leaves~$G_{\text{tr}}$ errors of $2$--$32\,\%$. The inverse PINN, which must generalise across configurations rather than fitting each one separately, reaches $7$--$38\,\%$. That two methods with quite different properties agree on the failure points to the model rather than the algorithm. The stiffness ratio--volume fraction sweep makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction---precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
 
 \paragraph{Practical implications.}
-The asymmetry between the two geometries has a direct consequence for how this framework should be used in practice. For particle composites, the PINN-recovered parameters can be fed into the analytical forward model in a single evaluation---the approach works and the recovered parameters carry physical content. For fibre composites, any route through the Extended Interface model will carry a~$G_{\text{tr}}$ error that no amount of parameter tuning can eliminate; the better option is to work with the 3-layer interphase model directly. As a practical diagnostic for any new composite system, the optimisation-based gap check of Section~\ref{subsec:ei_isotropic} can serve as a first test before committing to the interface route.
+The asymmetry between the two geometries has a direct consequence for how this framework should be used in practice. For particle composites, the PINN-recovered parameters can be fed into the analytical forward model in a single evaluation the approach works and the recovered parameters carry physical content. For fibre composites, any route through the Extended Interface model will carry a~$G_{\text{tr}}$ error that no amount of parameter tuning can eliminate; the better option is to work with the 3-layer interphase model directly. As a practical diagnostic for any new composite system, the optimisation-based gap check of Section~\ref{subsec:ei_isotropic} can serve as a first test before committing to the interface route.
 
 Figure~\ref{fig:grand_comparison} places all three approaches on a single chart for direct comparison.
 
