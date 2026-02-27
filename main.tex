@@ -1941,7 +1941,55 @@ The three-layered interphase model introduced in Section~\ref{sec:interphase_mod
 
 We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into 3 coating layers between them. For \textbf{cylindrical fibres} (CCA), the core/fiber/inclusion has radius $r_1$ and properties $(\kappa^{(1)}, \lambda^{(1)}, \mu^{(1)})$. Coating layer $m$ where m = 1,2,3 occupies the annulus $r_m < r < r_{m+1}$ with properties $(\lambda^{(m)}, \mu^{(m)})$, and the matrix has properties $(\lambda^{(0)}, \mu^{(0)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by 3 concentric shells.
 
-A uniform far-field strain $\bs{\varepsilon}^{(0)}$ is applied at infinity. In each phase, we write the displacement and stress fields as functions of unknown amplitude coefficients. Continuity of displacement and traction at every internal boundary yields a linear system whose solution gives these amplitudes. Volume averaging over each phase then produces the concentration tensor components. The volume fractions and equivalent tensor formulas from Section~\ref{subsec:average_fields} apply directly.
+A uniform far-field strain $\bs{\varepsilon}^{(0)}$ is applied at infinity (Figure~\ref{fig:eshelby_multicoated}). In each phase, we write the displacement and stress fields as functions of unknown amplitude coefficients. Continuity of displacement and traction at every internal boundary yields a linear system whose solution gives these amplitudes. Volume averaging over each phase then produces the concentration tensor components. The volume fractions and equivalent tensor formulas from Section~\ref{subsec:average_fields} apply directly.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0]
+
+% --- Matrix domain (outer square) ---
+\draw[thick] (-3.8,-3.8) rectangle (3.8,3.8);
+
+% --- Boundary condition label at top ---
+\node[above] at (0,3.8) {$\bs{u} = \bs{\varepsilon}_0 \cdot \bs{x}$};
+
+% --- Concentric ellipses (outermost coating to innermost core) ---
+% L_N: outermost coating
+\draw[thick, fill=blue!5] (0,0) ellipse (2.8cm and 3.2cm);
+% Intermediate layer (unlabelled, just for dots)
+\draw[thick, fill=blue!8] (0,0) ellipse (2.3cm and 2.65cm);
+% L_1: first coating
+\draw[thick, fill=blue!12] (0,0) ellipse (1.7cm and 2.0cm);
+% Intermediate layer (unlabelled, just for dots)
+\draw[thick, fill=blue!16] (0,0) ellipse (1.2cm and 1.45cm);
+% L_h: heterogeneity (core inclusion)
+\draw[thick, fill=blue!22] (0,0) ellipse (0.75cm and 0.95cm);
+
+% --- Labels ---
+% L_0 (matrix) - top-left corner
+\node[font=\large] at (-2.9,3.0) {$L_0$};
+
+% L_N (outermost coating) - right side
+\node[font=\large] at (2.35,2.2) {$L_N$};
+
+% Dots between L_N and L_1
+\node[font=\Large, rotate=90] at (0.55,1.55) {$\cdots$};
+\node[font=\Large, rotate=90] at (-0.55,1.55) {$\cdots$};
+
+% L_1 (first coating)
+\node[font=\large] at (1.15,1.15) {$L_1$};
+
+% Dots between L_1 and L_h
+\node[font=\Large, rotate=90] at (0.35,0.85) {$\cdots$};
+\node[font=\Large, rotate=90] at (-0.35,0.85) {$\cdots$};
+
+% L_h (core heterogeneity)
+\node[font=\large] at (0,0) {$L_h$};
+
+\end{tikzpicture}
+\caption{Eshelby inhomogeneity problem for a multicoated reinforcement. The heterogeneity~$L_h$ is surrounded by $N$~coating layers $L_1, \ldots, L_N$, all embedded in an infinite matrix~$L_0$ subject to a uniform far-field strain $\bs{\varepsilon}_0$.}
+\label{fig:eshelby_multicoated}
+\end{figure}
 
 % -------------------------------------------------------------------
 \subsection{Fibre-Reinforced Composites (CCA)}
@@ -1952,6 +2000,7 @@ The transversely isotropic tensor structure (Section~\ref{subsec:tensor_structur
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     node distance=0.7cm and 0.4cm,
     block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
@@ -2005,7 +2054,8 @@ The transversely isotropic tensor structure (Section~\ref{subsec:tensor_structur
 \draw[arrow] (equiv) -- (mt);
 \draw[arrow] (mt) -- (output);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end \resizebox
 \caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the three-layered interphase model. Four independent BVPs yield the concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
 \label{fig:flowchart_interphase_cca}
 \end{figure}
@@ -2254,6 +2304,7 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 
 \begin{figure}[htbp]
 \centering
+\resizebox{0.85\textwidth}{!}{%
 \begin{tikzpicture}[
     node distance=0.7cm and 0.6cm,
     block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
@@ -2300,7 +2351,8 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 \draw[arrow] (equiv) -- (mt);
 \draw[arrow] (mt) -- (output);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end \resizebox
 \caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the three-layered interphase model. Two independent BVPs yield the isotropic concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
 \label{fig:flowchart_interphase_csa}
 \end{figure}
@@ -2584,6 +2636,7 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     node distance=0.7cm and 0.4cm,
     block/.style={rectangle, draw, fill=blue!8, text width=10em, text centered, rounded corners, minimum height=2.5em, font=\small},
@@ -2641,7 +2694,8 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 \draw[arrow] (ceq) -- (mt);
 \draw[arrow] (mt) -- (output);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end \resizebox
 \caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the fibre--matrix boundary.}
 \label{fig:flowchart_interface_cca}
 \end{figure}
@@ -2994,6 +3048,15 @@ The inverse problem takes the form: given the effective properties $K_{\text{eff
 We trained our NN on 100000 samples with different properties for $\kappa_1$ ranging between [0.5,100], $\mu_1$ ranging between [0.5,50], $\kappa_2$ ranging between [5,100] $\mu_2$ ranging between [2,50] The combined loss (Equations~\eqref{eq:pinn_loss} and~\eqref{eq:pinn_physics_loss}) is trained with AdamW and cosine annealing over 500~epochs. The best validation loss is reached at epoch~323; the full run completes in under one hour on a single CPU core.
 
 A practical observation emerged during training: The Neural Network has been validated against 28 configurations all coming from edge samples of different Stiffness Ratios, different Interpolation weights and different volume fractions. The earlier version of the model achieved only~$78.6\,\%$ pass rate because the edge samples used placeholder values for the interface parameters instead of properly computed ones. Replacing the placeholders with real forward-model outputs immediately raised the pass rate to~$100\,\%$ on the 28-configuration in-distribution validation suite. This shows the sensitivity of physics-informed training to data quality---inconsistent labels can cause the physics and data losses to work against each other.
+
+Figure~\ref{fig:pinn_loss_combined} shows the training loss curves for both geometries. The CSA inverse PINN (left panel) converges smoothly, with all loss components decreasing steadily and the best model selected at epoch~323. The CCA inverse PINN (right panel), trained under identical conditions, also converges but settles at a higher total loss---a first indication that the underlying model poses a harder inverse problem for the CCA geometry, as discussed in Section~\ref{sec:cca_results}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{pinn_loss_combined.pdf}
+\caption{Training loss curves for the CSA (left) and CCA (right) inverse PINNs. Both networks are trained for 500~epochs with adaptive loss weighting; the star marks the best validation epoch. The CSA model converges to a lower total loss than the CCA model, reflecting the structural adequacy of the Extended Interface model for spherical composites.}
+\label{fig:pinn_loss_combined}
+\end{figure}
 
 \paragraph{Soft-particle configurations:}
 To validate the trained PINN, we construct five test cases using a soft particle in a stiff matrix: $\kappa^{(1)} = 5$, $\mu^{(1)} = 3$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 0.25$), with $f = 0.3$ and interphase layer thickness ratios $\phi = (0.2, 0.3, 0.4)$. The first three cases use interpolated coating properties that fall between particle and matrix: a weak gradient ($w = 0.10, 0.05, 0.02$), a moderate gradient ($w = 0.75, 0.50, 0.25$), and a strong gradient ($w = 0.95, 0.85, 0.75$). The last two cases test coatings with stiffnesses far beyond both constituents ($\kappa = 100$), which the PINN has never encountered during training.
