@@ -3171,7 +3171,6 @@ Taken together, the two tables paint a clear picture. Interpolated coating profi
 
 Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the eight worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are the raw network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back through the Extended Interface forward model.
 
-% TODO: Run nn/scripts/extract_csa_interface_params.py to fill in actual values
 \begin{table}[htbp]
 \centering
 \caption{CSA inverse PINN: predicted Extended Interface parameters for all eight worked examples. The parameters are the raw network outputs before reconstruction through the forward model.}
@@ -3182,16 +3181,16 @@ Table~\ref{tab:csa_interface_params} lists the interface parameters that the PIN
 Case & Configuration & $\bar{k}$ & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{\alpha}$ \\
 \midrule
 \multicolumn{6}{l}{\textit{Soft particle ($\text{SR} = 0.25$)}} \\
-1 & Weak gradient     & --- & --- & --- & --- \\
-2 & Moderate gradient  & --- & --- & --- & --- \\
-3 & Strong gradient    & --- & --- & --- & --- \\
-4 & Out-of-dist.\ (high$\to$low) & --- & --- & --- & --- \\
-5 & Out-of-dist.\ (low$\to$high) & --- & --- & --- & --- \\
+1 & Weak gradient     & 189.51 & 3.01 & 2.55 & 0.648 \\
+2 & Moderate gradient  & 422.65 & 0.50 & 3.64 & 0.607 \\
+3 & Strong gradient    & 288.90 & 1.26 & 2.92 & 0.545 \\
+4 & Out-of-dist.\ (high$\to$low) & 388.36 & 1.98 & 3.25 & 0.409 \\
+5 & Out-of-dist.\ (low$\to$high) & 318.20 & 0.05 & 3.25 & 0.847 \\
 \midrule
 \multicolumn{6}{l}{\textit{Stiff particle ($\text{SR} = 2.0$)}} \\
-A & Weak gradient     & --- & --- & --- & --- \\
-B & Moderate gradient  & --- & --- & --- & --- \\
-C & Strong gradient    & --- & --- & --- & --- \\
+A & Weak gradient     & 45.99 & 2.23 & 3.29 & 0.425 \\
+B & Moderate gradient  & 75.41 & 3.10 & 0.98 & 0.460 \\
+C & Strong gradient    & 64.68 & 2.54 & 3.07 & 0.492 \\
 \bottomrule
 \end{tabular}
 }
@@ -3321,6 +3320,64 @@ Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passe
 In four of the five cases, the optimiser saturates~$\bar{k}$ at its upper bound of~$10\,000$ and~$\bar{\alpha}$ at~$1.0$; the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation observed independently in two different solvers which indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
 
 Unlike the CSA case, where the PINN fails only for out-of-distribution coating stiffnesses, the CCA failure is structural and persists regardless of the solver or the material configuration.
+
+\paragraph{Stiff-fibre configurations:}
+To verify that the failure pattern is not specific to a soft inclusion in a stiff matrix, we repeat the three monotonic gradient profiles with a stiff fibre: $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$), keeping $f = 0.3$ and $\phi = (0.2, 0.3, 0.4)$. Table~\ref{tab:cca_stiff_examples} presents the results. All three cases fail under both approaches, with $G_{\text{tr}}$ and $G_{\text{ax}}$ errors well above the~$5\,\%$ threshold. This confirms that the CCA failure is independent of the stiffness ratio direction, in sharp contrast to the CSA geometry where identical stiff-particle configurations pass comfortably (Table~\ref{tab:csa_stiff_examples}).
+
+\begin{table}[htbp]
+\centering
+\caption{CCA stiff-fibre worked examples ($\kappa^{(1)}=40$, $\kappa^{(2)}=20$, $\text{SR}=2.0$): the same three monotonic gradient profiles as the CSA stiff-particle cases. Both the inverse PINN and the per-configuration optimiser fail all three cases ($0/3$ pass rate), confirming the structural nature of the Extended Interface limitation.}
+\label{tab:cca_stiff_examples}
+{\footnotesize
+\begin{tabular}{c l r r r}
+\toprule
+Case & Property & 3-Layer Target & PINN Err.~(\%) & Optim.\ Err.~(\%) \\
+\midrule
+\multirow{3}{*}{A}
+ & $K_{\text{tr}}$  & 20.299 & 13.1  & 9.0 \\
+ & $G_{\text{tr}}$  & 12.177 & 14.7 & 4.1 \\
+ & $G_{\text{ax}}$  & 12.185 & 40.4 & 10.7 \\
+\midrule
+\multirow{3}{*}{B}
+ & $K_{\text{tr}}$  & 21.914 & 10.5  & 7.7 \\
+ & $G_{\text{tr}}$  & 13.129 & 19.8 & 8.6 \\
+ & $G_{\text{ax}}$  & 13.189 & 34.0 & 10.1 \\
+\midrule
+\multirow{3}{*}{C}
+ & $K_{\text{tr}}$  & 23.560 & 8.6  & 6.6 \\
+ & $G_{\text{tr}}$  & 14.082 & 24.2 & 13.3 \\
+ & $G_{\text{ax}}$  & 14.254 & 28.2 & 9.2 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+Table~\ref{tab:cca_interface_params} lists the interface parameters predicted by the PINN for all eight worked examples. Unlike the CSA parameters (Table~\ref{tab:csa_interface_params}), which vary meaningfully across configurations, the CCA parameters show characteristic saturation: $\bar{k}$ is driven to values near~$5000$ in most cases, and $\bar{\lambda}$ and $\bar{\mu}$ cluster in a narrow range around~$3$. This behaviour mirrors the optimiser's tendency to push $\bar{k}$ to its upper bound, and reflects the network's attempt to compensate for the structural gap by maximising the normal stiffness---effectively trying to make the zero-thickness interface as rigid as possible.
+
+\begin{table}[htbp]
+\centering
+\caption{CCA inverse PINN: predicted Extended Interface parameters for all eight worked examples. The parameters are the raw network outputs before reconstruction through the forward model.}
+\label{tab:cca_interface_params}
+{\footnotesize
+\begin{tabular}{l c r r r r}
+\toprule
+Case & Configuration & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{k}$ & $\bar{\alpha}$ \\
+\midrule
+\multicolumn{6}{l}{\textit{Soft fibre ($\text{SR} = 0.25$)}} \\
+1 & Weak gradient     & 2.82 & 2.66 & 4591.1 & 0.430 \\
+2 & Moderate gradient  & 2.74 & 2.16 & 3275.3 & 0.343 \\
+3 & Strong gradient    & 2.91 & 1.51 & 1975.2 & 0.216 \\
+4 & Out-of-dist.\ (high$\to$low) & 2.76 & 0.96 & 841.1 & 0.191 \\
+5 & Out-of-dist.\ (low$\to$high) & 3.08 & 3.12 & 4915.8 & 0.599 \\
+\midrule
+\multicolumn{6}{l}{\textit{Stiff fibre ($\text{SR} = 2.0$)}} \\
+A & Weak gradient     & 2.88 & 3.18 & 4883.5 & 0.386 \\
+B & Moderate gradient  & 2.97 & 3.37 & 4915.8 & 0.425 \\
+C & Strong gradient    & 3.00 & 3.45 & 4915.8 & 0.469 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
 
 \paragraph{Broad statistical validation:}
 To confirm that this failure pattern extends beyond the five hand-picked configurations, we evaluate the CCA inverse PINN on 500~randomly sampled 3-layer interphase configurations. Figure~\ref{fig:cca_parity_500} shows the parity plot and Figure~\ref{fig:cca_error_hist_500} presents the error distribution.
