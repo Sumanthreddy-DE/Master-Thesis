@@ -3169,6 +3169,25 @@ C & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.
 
 Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles only when the interphase stiffness profile falls outside the training distribution, as in Cases~4 and~5 of Table~\ref{tab:csa_worked_examples}, where coating layers have stiffnesses far beyond both constituents. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
 
+\paragraph{Broad statistical validation:}
+To assess the generalisation of the trained PINN beyond the hand-picked configurations above, we evaluate it on 500~randomly sampled 3-layer interphase configurations drawn from the training parameter space. Figure~\ref{fig:csa_parity_500} shows the parity plot comparing EGIM-reconstructed properties against the 3-layer targets, and Figure~\ref{fig:csa_error_hist_500} presents the corresponding error distribution.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_parity_500test.pdf}
+\caption{CSA inverse PINN evaluated on 500~randomly sampled 3-layer interphase configurations. Each point compares the EGIM-reconstructed property against the 3-layer target, coloured by relative error. The $K_{\text{eff}}$ reconstruction clusters tightly around the diagonal, while $G_{\text{eff}}$ shows more scatter but remains accurate for the majority of configurations.}
+\label{fig:csa_parity_500}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{csa_error_hist_500test.pdf}
+\caption{CSA error distribution over 500~random test configurations. Most $K_{\text{eff}}$ errors fall well below the~$5\,\%$ threshold (dashed line), while $G_{\text{eff}}$ errors are distributed more broadly but remain concentrated below~$10\,\%$. The median errors of~$1.4\,\%$ ($K_{\text{eff}}$) and~$4.0\,\%$ ($G_{\text{eff}}$) confirm that the majority of configurations are well-reconstructed.}
+\label{fig:csa_error_hist_500}
+\end{figure}
+
+The bulk modulus reconstruction is reliable across the parameter space, with~$82\,\%$ of configurations passing the~$5\,\%$ threshold. The shear modulus is more demanding: its pass rate drops to~$56\,\%$, and the error distribution has a heavier tail. However, the median $G_{\text{eff}}$ error of~$4.0\,\%$ remains below the threshold, indicating that the majority of randomly sampled configurations are well-reconstructed. The remaining outliers correspond to extreme stiffness contrasts or unusual interphase profiles near the boundary of the training domain.
+
 % -------------------------------------------------------------------
 \subsection{CSA Numerical Examples}
 \label{subsec:csa_numerical_examples}
@@ -3253,6 +3272,25 @@ Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passe
 In four of the five cases, the optimiser saturates~$\bar{k}$ at its upper bound of~$10\,000$ and~$\bar{\alpha}$ at~$1.0$; the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation observed independently in two different solvers which indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
 
 Unlike the CSA case, where the PINN fails only for out-of-distribution coating stiffnesses, the CCA failure is structural and persists regardless of the solver or the material configuration.
+
+\paragraph{Broad statistical validation:}
+To confirm that this failure pattern extends beyond the five hand-picked configurations, we evaluate the CCA inverse PINN on 500~randomly sampled 3-layer interphase configurations. Figure~\ref{fig:cca_parity_500} shows the parity plot and Figure~\ref{fig:cca_error_hist_500} presents the error distribution.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{cca_parity_500test.pdf}
+\caption{CCA inverse PINN evaluated on 500~randomly sampled 3-layer interphase configurations. $K_{\text{tr}}$ shows moderate scatter around the diagonal, while $G_{\text{tr}}$ and $G_{\text{ax}}$ deviate systematically, confirming the structural inadequacy of the Extended Interface model for cylindrical composites.}
+\label{fig:cca_parity_500}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{cca_error_hist_500test.pdf}
+\caption{CCA error distribution over 500~random test configurations. $K_{\text{tr}}$ errors cluster near the~$5\,\%$ threshold, whereas $G_{\text{tr}}$ and $G_{\text{ax}}$ errors spread broadly across~$10$--$50\,\%$. The $G_{\text{tr}}$ distribution is roughly uniform between~$10\,\%$ and~$35\,\%$ with no concentration near zero, confirming that this is a structural gap rather than a learning failure.}
+\label{fig:cca_error_hist_500}
+\end{figure}
+
+Across the 500~test configurations, only~$2\,\%$ of $G_{\text{tr}}$ reconstructions fall below the~$5\,\%$ threshold, with a mean error of~$23\,\%$. The $K_{\text{tr}}$ pass rate of~$45\,\%$ and $G_{\text{ax}}$ pass rate of~$16\,\%$ further confirm that the transverse shear gap between the Extended Interface model and the 3-layer interphase persists systematically across the full parameter space.
 
 % -------------------------------------------------------------------
 \subsection{Diagnosing the Failure: Isotropic Best-Fit (4~Parameters)}
