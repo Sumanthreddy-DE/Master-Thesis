@@ -3216,6 +3216,18 @@ To assess the generalisation of the trained PINN beyond the hand-picked configur
 
 The bulk modulus reconstruction is reliable across the parameter space, with~$82\,\%$ of configurations passing the~$5\,\%$ threshold. The shear modulus is more demanding: its pass rate drops to~$56\,\%$, and the error distribution has a heavier tail. However, the median $G_{\text{eff}}$ error of~$4.0\,\%$ remains below the threshold, indicating that the majority of randomly sampled configurations are well-reconstructed. The remaining outliers correspond to extreme stiffness contrasts or unusual interphase profiles near the boundary of the training domain.
 
+\paragraph{Structured parameter sweep:}
+To visualise how the PINN reconstruction accuracy varies with material contrast and particle content, we evaluate the network on a $6 \times 6$ grid of stiffness ratios ($\text{SR} \in \{0.1, 0.25, 0.5, 1.0, 1.5, 2.0\}$) and volume fractions ($f \in \{0.05, 0.10, 0.20, 0.30, 0.40, 0.50\}$), keeping the interphase geometry and grading fixed at the default values ($\phi = (0.2, 0.3, 0.4)$, weights $= (0.75, 0.50, 0.25)$). For each configuration, the 3-layer interphase target is computed, passed through the trained PINN, and the resulting EGIM parameters are forward-evaluated to obtain reconstructed properties.
+
+Figure~\ref{fig:csa_sweep_heatmap} presents the reconstruction errors as heatmaps. Of the~36 configurations,~33 pass the~$5\,\%$ threshold for both $K_{\text{eff}}$ and $G_{\text{eff}}$. The three failures occur at $\text{SR} = 0.1$ with $f \geq 0.30$, where the inclusion is much softer than the matrix and the interphase grading dominates the effective response. Outside this corner, errors remain well below~$2\,\%$ for both moduli. This pattern stands in sharp contrast to the CCA heatmap (Figure~\ref{fig:ei_heatmap}), where $G_{\text{tr}}$ errors grow monotonically with both stiffness ratio and volume fraction, reaching nearly~$40\,\%$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_sweep_heatmap.pdf}
+\caption{CSA inverse PINN reconstruction error across the stiffness ratio--volume fraction parameter space. Of~36 configurations,~33 pass the~$5\,\%$ threshold (cells marked~$*$ exceed the threshold). The three failures cluster at very soft inclusions ($\text{SR} = 0.1$) with high volume fractions. Compare with the CCA heatmap in Figure~\ref{fig:ei_heatmap}, where the error grows systematically across the entire parameter space.}
+\label{fig:csa_sweep_heatmap}
+\end{figure}
+
 % -------------------------------------------------------------------
 \subsection{CSA Numerical Examples}
 \label{subsec:csa_numerical_examples}
