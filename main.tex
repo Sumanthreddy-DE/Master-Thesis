@@ -3169,6 +3169,34 @@ C & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.
 
 Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles only when the interphase stiffness profile falls outside the training distribution, as in Cases~4 and~5 of Table~\ref{tab:csa_worked_examples}, where coating layers have stiffnesses far beyond both constituents. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
 
+Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the eight worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are the raw network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back through the Extended Interface forward model.
+
+% TODO: Run nn/scripts/extract_csa_interface_params.py to fill in actual values
+\begin{table}[htbp]
+\centering
+\caption{CSA inverse PINN: predicted Extended Interface parameters for all eight worked examples. The parameters are the raw network outputs before reconstruction through the forward model.}
+\label{tab:csa_interface_params}
+{\footnotesize
+\begin{tabular}{l c r r r r}
+\toprule
+Case & Configuration & $\bar{k}$ & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{\alpha}$ \\
+\midrule
+\multicolumn{6}{l}{\textit{Soft particle ($\text{SR} = 0.25$)}} \\
+1 & Weak gradient     & --- & --- & --- & --- \\
+2 & Moderate gradient  & --- & --- & --- & --- \\
+3 & Strong gradient    & --- & --- & --- & --- \\
+4 & Out-of-dist.\ (high$\to$low) & --- & --- & --- & --- \\
+5 & Out-of-dist.\ (low$\to$high) & --- & --- & --- & --- \\
+\midrule
+\multicolumn{6}{l}{\textit{Stiff particle ($\text{SR} = 2.0$)}} \\
+A & Weak gradient     & --- & --- & --- & --- \\
+B & Moderate gradient  & --- & --- & --- & --- \\
+C & Strong gradient    & --- & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
 \paragraph{Broad statistical validation:}
 To assess the generalisation of the trained PINN beyond the hand-picked configurations above, we evaluate it on 500~randomly sampled 3-layer interphase configurations drawn from the training parameter space. Figure~\ref{fig:csa_parity_500} shows the parity plot comparing EGIM-reconstructed properties against the 3-layer targets, and Figure~\ref{fig:csa_error_hist_500} presents the corresponding error distribution.
 
