@@ -3193,7 +3193,7 @@ The bulk modulus reconstruction is reliable across the parameter space, with~$82
 \label{subsec:csa_numerical_examples}
 % -------------------------------------------------------------------
 
-To further illustrate how the three modelling approaches compare across a continuous parameter range, Figures~\ref{fig:csa_vs_f} and~\ref{fig:csa_vs_sr} show sweeps over volume fraction and stiffness ratio, respectively.
+To further illustrate how the three modelling approaches compare across a continuous parameter range, Figures~\ref{fig:csa_vs_f}--\ref{fig:csa_vs_f_sr05} show sweeps over volume fraction and stiffness ratio for different material configurations.
 
 \begin{figure}[htbp]
 \centering
@@ -3209,7 +3209,16 @@ To further illustrate how the three modelling approaches compare across a contin
 \label{fig:csa_vs_sr}
 \end{figure}
 
-In both sweeps, the optimised Extended Interface model (dashed red) overlaps the 3-layer interphase target across the full parameter range, confirming that the spherical BVPs which involve only single-mode radial displacement patterns are well represented by the jump and average conditions of the Extended Interface model. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. Note that these sweeps use a different material configuration ($\kappa^{(1)} = 30$, $\kappa^{(2)} = 20$, $\text{SR} = 1.5$) than the worked examples in Table~\ref{tab:csa_worked_examples}, which accounts for the different error magnitudes. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
+To check whether this agreement holds across different stiffness contrasts, Figure~\ref{fig:csa_vs_f_sr05} repeats the volume fraction sweep for a soft-particle configuration ($\text{SR} = 0.5$, i.e.\ $\kappa^{(1)} = 10$, $\mu^{(1)} = 6$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{csa_properties_vs_f_sr05.pdf}
+\caption{CSA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 0.5$ (soft particle). The optimised EI model again overlaps the 3-layer target across the full range, confirming structural adequacy of the Extended Interface model even when the inclusion is softer than the matrix. The PINN captures the correct trend but shows slightly more scatter for $G_{\text{eff}}$ at higher volume fractions.}
+\label{fig:csa_vs_f_sr05}
+\end{figure}
+
+Across all three sweeps (Figures~\ref{fig:csa_vs_f}, \ref{fig:csa_vs_sr}, and~\ref{fig:csa_vs_f_sr05}), the optimised Extended Interface model overlaps the 3-layer interphase target, confirming that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model regardless of the stiffness contrast. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
 
 % ===================================================================
 \section{CCA: Inverse Parameter Identification and Representational Limits}
