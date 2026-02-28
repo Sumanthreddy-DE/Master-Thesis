@@ -791,13 +791,19 @@ $\phi_m$ & Volume fraction ratio \\[0.3em]
 
 \vspace{0.6cm}
 
-\textbf{Concentration Tensors and Transformations:}
+\textbf{Concentration Tensors:}
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $\mathbb{T}^{(q)}$ & Strain concentration tensor of phase $q$ \\[0.3em]
 $\mathbb{H}^{(q)}$ & Stress-strain concentration tensor of phase $q$ \\[0.3em]
 $\mathbb{T}^{\text{eq}}$, $\mathbb{H}^{\text{eq}}$ & Equivalent concentration tensors \\[0.3em]
 $T_\kappa, T_{44}, T_{55}$ & Independent scalar components of $\mathbb{T}$ (CCA) \\[0.3em]
 $T_\mu$ & Independent shear component of $\mathbb{T}$ (CSA) \\[0.3em]
+\end{tabular}
+
+\vspace{0.6cm}
+
+\textbf{Transformations:}
+\begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $\bs{R}$ & Rotation matrix \\[0.3em]
 $\bs{Q}_\varepsilon$, $\bs{Q}_\sigma$ & Voigt transformation matrices for strain and stress \\[0.3em]
 \end{tabular}
@@ -817,19 +823,17 @@ $\hat{\bs{\varepsilon}}$, $\hat{\bs{\sigma}}$ & Interface contributions to macro
 
 \vspace{0.6cm}
 
-\textbf{Homogenization and Effective Properties:}
+\textbf{Homogenization:}
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $\bs{\varepsilon}^{(0)}$ & Applied far-field strain \\[0.3em]
 $X_i$ & BVP amplitude coefficients \\[0.3em]
 ${}^{\mathrm{M}}\hspace{-1pt}\mathbb{C}$ & Macroscopic effective stiffness tensor \\[0.3em]
-$K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$ & Effective CCA moduli (transverse bulk, transverse shear, axial shear) \\[0.3em]
+$K_{\text{tr}}, G_{\text{tr}}, G_{\text{ax}}$ & Effective CCA moduli  \\[0.3em]
 $K_{\text{eff}}, G_{\text{eff}}$ & Effective CSA moduli (bulk, shear) \\[0.3em]
 \end{tabular}
 
 \smallskip
 \noindent
-The engineering notation relates to the macroscopic Lam\'{e} notation as $K_{\text{tr}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\kappa$, $G_{\text{tr}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}}$, $G_{\text{ax}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}}$ for CCA and $K_{\text{eff}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\kappa$, $G_{\text{eff}} \equiv {}^{\mathrm{M}}\hspace{-1pt}\mu$ for CSA.
-
 \vspace{0.6cm}
 
 \textbf{Neural Network:}
@@ -844,8 +848,8 @@ $\mathcal{L}$ & Loss function \\[0.3em]
 \textbf{Superscripts/Subscripts:}
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $(1)$ & Inclusion/core phase \\[0.3em]
-$(0)$ & Matrix phase (interphase model); also denotes far-field condition \\[0.3em]
-$(2)$ & Matrix phase (EGIM); first coating layer (interphase model) \\[0.3em]
+$(0)$ & Far-field condition \\[0.3em]
+$(2)$ & Matrix phase (EGIM)/first coating layer (interphase model) \\[0.3em]
 $(q)$ & General phase index \\[0.3em]
 $\text{eq}$ & Equivalent inhomogeneity \\[0.3em]
 ${}^{\mathrm{M}}$ & Macroscopic quantity \\[0.3em]
