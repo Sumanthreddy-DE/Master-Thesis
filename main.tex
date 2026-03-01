@@ -3180,7 +3180,7 @@ Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_
 \end{table}
 
 \paragraph{Stiff-particle configurations:}
-The five cases in Table 4.4 uses a soft particle in a stiff matrix ($\text{SR} = 0.25$). To check whether the PINN generalises to the opposite regime, we repeat the three monotonic gradient profiles with a stiff particle: $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$), keeping the same volume fraction and layer thicknesses. Table~\ref{tab:csa_stiff_examples} presents the results. All three cases pass comfortably, with the largest error ($1.35\,\%$ in $G_{\text{eff}}$ for the moderate gradient) well within the~$5\,\%$ threshold.
+The five cases in Table~\ref{tab:csa_worked_examples} use a soft particle in a stiff matrix ($\text{SR} = 0.25$). To check whether the PINN generalises to the opposite regime, we repeat the same five configurations---three monotonic gradients plus two out-of-distribution profiles---with a stiff particle: $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$), keeping the same volume fraction and layer thicknesses. Table~\ref{tab:csa_stiff_examples} presents the results. The three interpolated cases (A--C) pass comfortably, with the largest error ($1.35\,\%$ in $G_{\text{eff}}$) well within the~$5\,\%$ threshold. The out-of-distribution cases (D--E) fail, mirroring the pattern observed in Table~\ref{tab:csa_worked_examples}.
 
 \begin{table}[htbp]
 \centering
@@ -3194,18 +3194,21 @@ Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_
 A & $40 \to 22.0,\; 21.0,\; 20.4 \to 20$ & 20.304 & 20.287 & 0.08 & 12.085 & 12.087 & 0.01 \\
 B & $40 \to 35.0,\; 30.0,\; 25.0 \to 20$ & 21.951 & 21.913 & 0.17 & 12.686 & 12.514 & 1.35 \\
 C & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.087 & 0.03 \\
+\midrule
+D & $40 \to 100,\; 10,\; 1 \to 20$       & 11.690 & 10.188 & 12.85 & 1.807 & 6.528 & 261.31 \\
+E & $40 \to 1,\; 10,\; 100 \to 20$       & 25.096 & 26.537 & 5.74 & 16.712 & 16.226 & 2.91 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles only when the interphase stiffness profile falls outside the training distribution, as in Cases~4 and~5 of Table~\ref{tab:csa_worked_examples}, where coating layers have stiffnesses far beyond both constituents. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
+Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles when the interphase stiffness profile falls outside the training distribution---Cases~4 and~5 in Table~\ref{tab:csa_worked_examples} and Cases~D and~E in Table~\ref{tab:csa_stiff_examples}---where coating layers have stiffnesses far beyond both constituents. Case~D is particularly severe: the innermost coating ($\kappa = 100$) is stiffer than either constituent, while the outermost ($\kappa = 1$) is softer, producing a $G_{\text{eff}}$ error exceeding $260\,\%$. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
 
-Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the eight worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are the raw network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back through the Extended Interface forward model. Two trends are apparent from the predicted values. First, the normal stiffness~$\bar{k}$ is considerably larger for the soft-particle cases ($\sim$190--420) than for the stiff-particle cases ($\sim$45--75). When the inclusion is softer than the matrix, the interface must carry more normal stiffness to reproduce the effective bulk response of a finite-thickness graded interphase. Second, the damage-like parameter~$\bar{\alpha}$ decreases with increasing gradient strength for the soft-particle cases (0.648~$\to$~0.607~$\to$~0.545), suggesting that a sharper property mismatch at the coating--matrix boundary requires a larger traction discontinuity across the interface. The tangential parameters $\bar{\lambda}$ and $\bar{\mu}$ remain in a narrow range across all configurations and do not exhibit a clear systematic trend, which is consistent with the CSA geometry where deviatoric coupling is weaker than in the cylindrical case.
+Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the ten worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are the raw network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back through the Extended Interface forward model. Two trends are apparent from the predicted values. First, the normal stiffness~$\bar{k}$ is considerably larger for the soft-particle cases ($\sim$190--420) than for the stiff-particle cases ($\sim$45--75). When the inclusion is softer than the matrix, the interface must carry more normal stiffness to reproduce the effective bulk response of a finite-thickness graded interphase. Second, the damage-like parameter~$\bar{\alpha}$ decreases with increasing gradient strength for the soft-particle cases (0.648~$\to$~0.607~$\to$~0.545), suggesting that a sharper property mismatch at the coating--matrix boundary requires a larger traction discontinuity across the interface. The tangential parameters $\bar{\lambda}$ and $\bar{\mu}$ remain in a narrow range across all configurations and do not exhibit a clear systematic trend, which is consistent with the CSA geometry where deviatoric coupling is weaker than in the cylindrical case.
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: predicted Extended Interface parameters}
+\caption{CSA inverse PINN: predicted Extended Interface parameters for all ten worked examples.}
 \label{tab:csa_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3223,6 +3226,8 @@ Case & Configuration & $\bar{k}$ & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{\alpha}
 A & Weak gradient     & 45.99 & 2.23 & 3.29 & 0.425 \\
 B & Moderate gradient  & 75.41 & 3.10 & 0.98 & 0.460 \\
 C & Strong gradient    & 64.68 & 2.54 & 3.07 & 0.492 \\
+D & Out-of-dist.\ (high$\to$low) & 1.00 & 3.92 & 0.01 & 0.013 \\
+E & Out-of-dist.\ (low$\to$high) & 376.73 & 0.21 & 3.75 & 0.555 \\
 \bottomrule
 \end{tabular}
 }
