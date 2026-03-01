@@ -712,7 +712,7 @@ I hereby declare that I have written this Master's Thesis independently, unaided
 
 This thesis has never been submitted to any other examination authority and never been accepted as part of an examination achievement, neither in this form nor in a similar form.
 
-I also declare that I used AI for assistance with grammar correction, and enhancing the readability of the text. This tool was used solely to enhance the clarity and accuracy of my work and did not contribute to the content or ideas presented in this thesis.
+I also declare that I used AI for assistance with grammar correction, and enhancing the readability of the text. This tool was used solely to enhance the clarity and accuracy of my work and did not contribute to the ideas presented in this thesis.
 
 \vspace{2cm}
 \noindent
@@ -747,7 +747,7 @@ The mechanical behaviour of composite materials depends strongly on the thin int
 
 In this work, we develop a physics-informed neural network (PINN) that identifies the four parameters of the Extended General Interface Model directly from target effective properties computed via a three-layer interphase model. The network is trained on Mori-Tanaka homogenization data and embeds the governing equations into its loss function to ensure physically self-consistent predictions.
 
-We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN reconstructs effective properties with errors below~2\% for interpolated coating profiles, and a structured sweep over 36 stiffness ratio--volume fraction combinations confirms that 33 pass the~5\% acceptance threshold. For fibre-reinforced composites (CCA), the transverse shear response cannot be matched within the interface framework: even a per-configuration optimiser leaves a persistent $G_{\text{tr}}$ gap of approximately~23\%, pointing to a fundamental limitation of the zero-thickness approximation for fibre composites.
+We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN reconstructs effective properties with errors below~2\% for interpolated coating profiles, and a structured sweep over 36 stiffness ratio to volume fraction combinations confirms that 33 pass the~5\% prediction threshold. For fibre-reinforced composites (CCA), the transverse shear response cannot be matched within the interface framework: even a per-configuration optimiser leaves a persistent $G_{\text{tr}}$ gap of approximately~23\%, pointing to a fundamental limitation of the zero-thickness approximation for fibre composites.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Composite Materials, Interphase, Extended General Interface Model, Physics-Informed Neural Networks, Inverse Parameter Identification, Mori-Tanaka Homogenization, CCA, CSA.
@@ -775,7 +775,7 @@ We apply the framework to two composite geometries. For particle-reinforced comp
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $\bs{u}$ & Displacement vector \\[0.3em]
 $\bs{\sigma}$ & Cauchy stress tensor \\[0.3em]
-$\bs{\varepsilon}$ & Infinitesimal strain tensor \\[0.3em]
+$\bs{\varepsilon}$ & Strain tensor \\[0.3em]
 $\bs{t}$ & Surface traction vector \\[0.3em]
 $\bs{n}$, $\bar{\bs{n}}$ & Outward unit normal \\[0.3em]
 $\mathbb{C}$ & Fourth-order stiffness tensor \\[0.3em]
@@ -796,7 +796,7 @@ $\mathcal{I}$ & Interface surface \\[0.3em]
 $N$ & Number of coating layers \\[0.3em]
 $r_m$ & Outer radius of phase $m$ \\[0.3em]
 $f$ & Inclusion volume fraction \\[0.3em]
-$c_m$ & Sub-phase volume fraction within equivalent inhomogeneity \\[0.3em]
+$c_m$ & Sub-phase volume fraction \\[0.3em]
 $\phi_m$ & Volume fraction ratio \\[0.3em]
 \end{tabular}
 
@@ -860,7 +860,7 @@ $\mathcal{L}$ & Loss function \\[0.3em]
 \begin{tabular}{@{}p{2.5cm}p{10cm}@{}}
 $(1)$ & Inclusion/core phase \\[0.3em]
 $(0)$ & Far-field condition \\[0.3em]
-$(2)$ & Matrix phase (EGIM)/first coating layer (interphase model) \\[0.3em]
+$(2)$ & Matrix (EGIM)/first coating (interphase) \\[0.3em]
 $(q)$ & General phase index \\[0.3em]
 $\text{eq}$ & Equivalent inhomogeneity \\[0.3em]
 ${}^{\mathrm{M}}$ & Macroscopic quantity \\[0.3em]
@@ -897,7 +897,7 @@ $\bar{(\cdot)}$ & Interface quantity \\[0.3em]
 %\section{Motivation: Composite Materials in Modern Engineering}
 % -------------------------------------------------------------------
 
-Weight reduction has caused a fundamental shift in the materials used to build things over the past couple of decades especially in the aerospace industry. Carbon fiber reinforced polymers (CFRPs) are a high performance composite material now are part of the majority of airframe components in modern aircrafts like the Boeing 787 and Airbus A350. These planes use more than 50\% composite materials by structural weight \cite{Soutis2005}. This transition is happening beyond aerospace. For example, wind turbine blades are now routinely exceed 80 meters in length thanks to glass and carbon fiber reinforcements \cite{Mishnaevsky2017}, and car manufacturers incorporate CFRPs to meet stringent emission regulations through lightweighting \cite{Friedrich2013}, and civil infrastructure increasingly relies on fiber reinforced polymer strengthening systems \cite{Hollaway2010}.
+Weight reduction has caused a huge shift in the materials used to build things over the past couple of decades especially in the aerospace industry. Carbon fiber reinforced polymers (CFRPs), a high performance composite material, are now part of the majority of airframe components in modern aircrafts like the Boeing 787 and Airbus A350. These planes use more than 50\% composite materials by structural weight \cite{Soutis2005}. This transition is happening beyond aerospace. For example, wind turbine blades are now routinely exceeding 80 meters in length thanks to glass and carbon fiber reinforcements \cite{Mishnaevsky2017}, and car manufacturers incorporate CFRPs to meet stringent emission regulations through lightweighting \cite{Friedrich2013}, and civil infrastructure increasingly relies on fiber reinforced polymer strengthening systems \cite{Hollaway2010}.
 
 % Opening paragraph about composites - leads naturally into homogenization
 The appeal of composite materials lies in their exceptional strength-to-weight ratios that far exceed conventional metals. A unidirectional CFRP laminate can achieve tensile moduli exceeding 150 GPa at densities around 1.6 g/cm$^3$, compared to aluminum's 70 GPa at 2.7 g/cm$^3$ \cite{Chawla2019}. However, this performance is not an intrinsic property of the constituents alone. The overall behavior of a composite depends on its underlying microstructure specifically, on the orientation, distribution, volume fraction, and shape of its constituents, as well as the interactions between them \cite{Firooz2021}. Predicting this overall response from such complex microstructures is a challenging task that has motivated the development of various micromechanical methods, among which homogenization has proven particularly powerful.
@@ -907,9 +907,9 @@ The appeal of composite materials lies in their exceptional strength-to-weight r
 \label{sec:homogenization_review}
 % -------------------------------------------------------------------
 
-Homogenization aims to estimate the macroscopic behavior of a heterogeneous material based on the response of its underlying microstructure, that can replace the heterogeneous material with an equivalent homogeneous medium \cite{Hill1963}. The foundations were laid by variational bounds---from Voigt-Reuss \cite{Voigt1889, Reuss1929} to the tighter Hashin-Shtrikman bounds \cite{Hashin1963}---and by Eshelby's pioneering research \cite{Eshelby1957} on the elastic field of an ellipsoidal inclusion. Building on these, the Mori-Tanaka method \cite{Mori1973, Benveniste1987} provides explicit estimates for effective properties by assuming each inclusion experiences the average matrix strain as its far-field condition, while the composite cylinder assemblage (CCA) \cite{Hashin1964} offers exact solutions for specific fiber composite geometries.
+Homogenization aims to estimate the macroscopic behavior of a heterogeneous material based on the response of its underlying microstructure, that can replace the heterogeneous material with an equivalent homogeneous medium \cite{Hill1963}. The foundations were laid by variational bounds from Voigt-Reuss \cite{Voigt1889, Reuss1929} to the tighter Hashin-Shtrikman bounds \cite{Hashin1963} and by Eshelby's work \cite{Eshelby1957} on the elastic field of an ellipsoidal inclusion. Building on these, the Mori-Tanaka method \cite{Mori1973, Benveniste1987} provides explicit estimates for effective properties by assuming each inclusion experiences the average matrix strain as its far-field condition, while the composite cylinder assemblage (CCA) \cite{Hashin1964} offers exact solutions for specific fiber composite geometries.
 
-A limitation of classical homogenization, however, is that it cannot capture size-dependent material behavior. Since classical formulations lack a physical length-scale, they cannot account for the pronounced surface and interface effects that arise at small scales---for instance, in nanocomposites where the area-to-volume ratio becomes significant \cite{Duan2005, Sharma2003}. To address this problem, one has to explicitly include the region where the different phases meet.
+A limitation of classical homogenization, however, is that it cannot capture size-dependent material behavior. Since classical formulations lack a physical length-scale, they cannot account for the pronounced surface and interface effects that arise at small scales for instance, in nanocomposites where the area-to-volume ratio becomes significant \cite{Duan2005, Sharma2003}. To address this problem, one has to explicitly include the region where the different phases meet.
 
 % Now transition naturally to interphase...
 
@@ -3032,7 +3032,7 @@ With the inverse network architectures, training strategies, and the differentia
 \chapter{Results and Discussion}
 \label{ch:results}
 
-This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying that the 3-layer interphase model implementation is consistent. Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry, where the Extended Interface model proves structurally adequate and the network achieves a~$100\,\%$ pass rate. Section~\ref{sec:cca_results} turns to the CCA geometry: the inverse PINN fails here, and a systematic diagnosis reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
+This chapter presents the numerical results of the framework developed in Chapters~\ref{ch:theory} and~\ref{ch:methodology}. We begin by verifying if the 3-layer interphase model implementation is consistent or not. Section~\ref{sec:csa_results} then applies the inverse PINN to the CSA geometry and tries to predict the EGIM's parameters that can produce the same Bulk modulus and Shear Modulus(CSA), where the  Extended Interface model proves structurally adequate.  Section~\ref{sec:cca_results} does the same study on the CCA geometry: the inverse PINN fails here, and a systematic diagnosis using an differential evolution optimizer reveals that the failure originates not from the neural network but from a fundamental representational limit of the Extended Interface model itself. Section~\ref{sec:results_discussion} synthesises all findings and draws out practical implications.
 
 % ===================================================================
 \section{Verification of the 3-Layer Interphase Model}
@@ -3070,7 +3070,7 @@ Narrow ($\phi = 0.05,\, 0.15,\, 0.25$) & $< 10^{-13}$ & $< 10^{-13}$ & $< 10^{-1
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:hct_verification} confirms that the identity holds to machine precision (order~$10^{-14}$) across all phases and configurations. This verifies that the four boundary value problems---axial shear, transverse shear, in-plane, and overall axisymmetric---are solved consistently and that the stress concentration tensors are correctly derived from the strain concentration tensors.
+Table~\ref{tab:hct_verification} confirms that the identity holds to precision of order~$10^{-14}$ across all phases and configurations. This verifies that the four boundary value problems axial shear, transverse shear, in-plane, and overall axisymmetric are solved consistently and that the stress concentration tensors are correctly derived from the strain concentration tensors.
 
 % -------------------------------------------------------------------
 \subsection{Limiting Cases}
