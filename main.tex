@@ -2010,6 +2010,16 @@ The three-layered interphase model introduced in Section~\ref{sec:interphase_mod
 
 We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into 3 coating layers between them. For \textbf{cylindrical fibres} (CCA), the core/fiber/inclusion has radius $r_1$ and properties $(\kappa^{(1)}, \lambda^{(1)}, \mu^{(1)})$. Coating layer $m$ where m = 1,2,3 occupies the annulus $r_m < r < r_{m+1}$ with properties $(\lambda^{(m)}, \mu^{(m)})$, and the matrix has properties $(\lambda^{(0)}, \mu^{(0)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by 3 concentric shells.
 
+To model a graded interphase, each coating layer is assigned elastic properties by interpolating between inclusion and matrix. A weight $w_m \in [0,\,1]$ controls how close layer~$m$ sits to the inclusion ($w_m = 1$) or the matrix ($w_m = 0$):
+%
+\begin{equation}
+    \kappa^{(m)} = w_m \, \kappa^{(1)} + (1 - w_m) \, \kappa^{(2)}, \quad
+    \mu^{(m)} = w_m \, \mu^{(1)} + (1 - w_m) \, \mu^{(2)}, \quad m = 1, 2, 3
+    \label{eq:coating_interpolation}
+\end{equation}
+%
+A monotonically decreasing sequence such as $(w_1, w_2, w_3) = (0.75,\, 0.50,\, 0.25)$ produces a stiffness profile that grades from the inclusion outward to the matrix. Setting all weights to unity recovers a homogeneous inclusion with no interphase, while setting them to zero collapses the interphase into the matrix; both serve as verification benchmarks in Section~\ref{subsec:limiting_cases}. This parameterisation is convenient because a single set of weights generates all coating moduli from the constituent properties, and varying the weights lets us sweep across a wide range of interphase profiles during training data generation.
+
 A uniform far-field strain $\bs{\varepsilon}^{(0)}$ is applied at infinity (Figure~\ref{fig:eshelby_multicoated}). In each phase, we write the displacement and stress fields as functions of unknown amplitude coefficients. Continuity of displacement and traction at every internal boundary yields a linear system whose solution gives these amplitudes. Volume averaging over each phase then produces the concentration tensor components. The volume fractions and equivalent tensor formulas from Section~\ref{subsec:average_fields} apply directly.
 
 \begin{figure}[htbp]
@@ -3080,7 +3090,7 @@ Table~\ref{tab:hct_verification} confirms that the identity holds to precision o
 Two analytical limiting cases provide additional verification.
 
 \paragraph{Fibre limit.}
-When all coating layers are assigned the fibre properties ($w_1 = w_2 = w_3 = 1.0$), the interphase vanishes and the 3-layer model must reduce to the standard 2-phase Mori-Tanaka solution. Table~\ref{tab:limiting_fiber} compares the effective properties from both approaches.
+When all interpolation weights are set to unity ($w_1 = w_2 = w_3 = 1.0$ in Equation~\eqref{eq:coating_interpolation}), every coating layer takes the inclusion properties and the interphase vanishes. The 3-layer model must then reduce to the standard 2-phase Mori-Tanaka solution. Table~\ref{tab:limiting_fiber} compares the effective properties from both approaches.
 
 \begin{table}[htbp]
 \centering
