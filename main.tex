@@ -3180,7 +3180,7 @@ Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_
 \end{table}
 
 \paragraph{Stiff-particle configurations:}
-The five cases in Table~\ref{tab:csa_worked_examples} use a soft particle in a stiff matrix ($\text{SR} = 0.25$). To check whether the PINN generalises to the opposite regime, we repeat the same five configurations---three monotonic gradients plus two out-of-distribution profiles---with a stiff particle: $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$), keeping the same volume fraction and layer thicknesses. Table~\ref{tab:csa_stiff_examples} presents the results. The three interpolated cases (A--C) pass comfortably, with the largest error ($1.35\,\%$ in $G_{\text{eff}}$) well within the~$5\,\%$ threshold. The out-of-distribution cases (D--E) fail, mirroring the pattern observed in Table~\ref{tab:csa_worked_examples}.
+The five cases in Table~\ref{tab:csa_worked_examples} use a soft particle in a stiff matrix ($\text{SR} = 0.25$). To check whether the PINN generalises to the opposite regime, we repeat the same five configurations of three monotonic gradients plus two out-of-distribution profiles with a stiff particle: $\kappa^{(1)} = 40$, $\mu^{(1)} = 24$, $\kappa^{(2)} = 20$, $\mu^{(2)} = 12$ ($\text{SR} = 2.0$), keeping the same volume fraction and layer thicknesses. Table~\ref{tab:csa_stiff_examples} presents the results. The three interpolated cases (1-3) pass comfortably, with the largest error ($1.35\,\%$ in $G_{\text{eff}}$) well within the~$5\,\%$ threshold. The out-of-distribution cases (4 and 5) fail, in the pattern observed in Table~\ref{tab:csa_worked_examples}.
 
 \begin{table}[htbp]
 \centering
@@ -3191,20 +3191,20 @@ The five cases in Table~\ref{tab:csa_worked_examples} use a soft particle in a s
 \toprule
 Case & $\kappa$\,: particle $\to$ coatings $\to$ matrix & $K_{\text{tgt}}$ & $K_{\text{pred}}$ & $K_{\text{err}}$ [\%] & $G_{\text{tgt}}$ & $G_{\text{pred}}$ & $G_{\text{err}}$ [\%] \\
 \midrule
-A & $40 \to 22.0,\; 21.0,\; 20.4 \to 20$ & 20.304 & 20.287 & 0.08 & 12.085 & 12.087 & 0.01 \\
-B & $40 \to 35.0,\; 30.0,\; 25.0 \to 20$ & 21.951 & 21.913 & 0.17 & 12.686 & 12.514 & 1.35 \\
-C & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.087 & 0.03 \\
+1 & $40 \to 22.0,\; 21.0,\; 20.4 \to 20$ & 20.304 & 20.287 & 0.08 & 12.085 & 12.087 & 0.01 \\
+2 & $40 \to 35.0,\; 30.0,\; 25.0 \to 20$ & 21.951 & 21.913 & 0.17 & 12.686 & 12.514 & 1.35 \\
+3 & $40 \to 39.0,\; 37.0,\; 35.0 \to 20$ & 23.667 & 23.629 & 0.16 & 14.083 & 14.087 & 0.03 \\
 \midrule
-D & $40 \to 100,\; 10,\; 1 \to 20$       & 11.690 & 10.188 & 12.85 & 1.807 & 6.528 & 261.31 \\
-E & $40 \to 1,\; 10,\; 100 \to 20$       & 25.096 & 26.537 & 5.74 & 16.712 & 16.226 & 2.91 \\
+4 & $40 \to 100,\; 10,\; 1 \to 20$       & 11.690 & 10.188 & 12.85 & 1.807 & 6.528 & 261.31 \\
+5 & $40 \to 1,\; 10,\; 100 \to 20$       & 25.096 & 26.537 & 5.74 & 16.712 & 16.226 & 2.91 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-Taken together, the two tables paint a clear picture. Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles when the interphase stiffness profile falls outside the training distribution---Cases~4 and~5 in Table~\ref{tab:csa_worked_examples} and Cases~D and~E in Table~\ref{tab:csa_stiff_examples}---where coating layers have stiffnesses far beyond both constituents. Case~D is particularly severe: the innermost coating ($\kappa = 100$) is stiffer than either constituent, while the outermost ($\kappa = 1$) is softer, producing a $G_{\text{eff}}$ error exceeding $260\,\%$. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
+The two tables gives a clear picture. The Interpolated coating profiles for both soft and stiff particles are reconstructed reliably, with errors typically below~$2\,\%$. The PINN struggles when the interphase stiffness profile falls outside the training distribution of Cases~4 and~5 in both  Table~\ref{tab:csa_worked_examples} and in Table~\ref{tab:csa_stiff_examples} where coating layers have stiffnesses far beyond both constituents. Case~4 is particularly severe producing a $G_{\text{eff}}$ error exceeding $260\,\%$. For in-distribution configurations, the Extended Interface model is structurally adequate for spherical composites, and the PINN learns an accurate inverse mapping.
 
-Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the ten worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are the raw network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back through the Extended Interface forward model. Two trends are apparent from the predicted values. First, the normal stiffness~$\bar{k}$ is considerably larger for the soft-particle cases ($\sim$190--420) than for the stiff-particle cases ($\sim$45--75). When the inclusion is softer than the matrix, the interface must carry more normal stiffness to reproduce the effective bulk response of a finite-thickness graded interphase. Second, the damage-like parameter~$\bar{\alpha}$ decreases with increasing gradient strength for the soft-particle cases (0.648~$\to$~0.607~$\to$~0.545), suggesting that a sharper property mismatch at the coating--matrix boundary requires a larger traction discontinuity across the interface. The tangential parameters $\bar{\lambda}$ and $\bar{\mu}$ remain in a narrow range across all configurations and do not exhibit a clear systematic trend, which is consistent with the CSA geometry where deviatoric coupling is weaker than in the cylindrical case.
+Table~\ref{tab:csa_interface_params} lists the interface parameters that the PINN predicts for each of the ten worked examples. These four numbers ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are just the network outputs; the reconstruction errors in Tables~\ref{tab:csa_worked_examples} and~\ref{tab:csa_stiff_examples} are obtained by feeding them back to the Extended Interface forward model. Two trends are apparent from the predicted values. First, the normal stiffness~$\bar{k}$ is considerably larger for the soft-particle cases ($\sim$190--420) than for the stiff-particle cases ($\sim$45--75). When the inclusion is softer than the matrix, the interface must carry more normal stiffness to reproduce the effective bulk response of a finite-thickness graded interphase. Second, the parameter~$\bar{\alpha}$ decreases with increasing gradient strength for the soft-particle cases (0.648~$\to$~0.607~$\to$~0.545), suggesting that a sharper property mismatch at the coating--matrix boundary requires a larger traction discontinuity across the interface. The tangential parameters $\bar{\lambda}$ and $\bar{\mu}$ remain in a narrow range across all configurations and do not exhibit a clear systematic trend, which is consistent with the CSA geometry.
 
 \begin{table}[htbp]
 \centering
@@ -3239,28 +3239,28 @@ To assess the generalisation of the trained PINN beyond the hand-picked configur
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_parity_500test.pdf}
-\caption{CSA inverse PINN: parity plot over 500~random test configurations, coloured by relative error.}
+\caption{CSA inverse PINN: parity plot}
 \label{fig:csa_parity_500}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{csa_error_hist_500test.pdf}
-\caption{CSA error distribution over 500~random test configurations. The dashed line marks the~$5\,\%$ threshold.}
+\caption{CSA error distribution}
 \label{fig:csa_error_hist_500}
 \end{figure}
 
-The bulk modulus reconstruction is reliable across the parameter space, with~$82\,\%$ of configurations passing the~$5\,\%$ threshold. The shear modulus is more demanding: its pass rate drops to~$56\,\%$, and the error distribution has a heavier tail. However, the median $G_{\text{eff}}$ error of~$4.0\,\%$ remains below the threshold, indicating that the majority of randomly sampled configurations are well-reconstructed. The remaining outliers correspond to extreme stiffness contrasts or unusual interphase profiles near the boundary of the training domain.
+The bulk modulus reconstruction is reliable across the parameter space, with~$82\,\%$ of configurations passing the~$5\,\%$ threshold. The shear modulus is more demanding: its pass rate drops to~$56\,\%$. However, the median $G_{\text{eff}}$ error of~$4.0\,\%$ remains below the threshold, indicating that the majority of randomly sampled configurations are predicting well. The remaining outliers probably corresponds to extreme stiffness or unusual interphase profiles near the boundaries of the training domain.
 
 \paragraph{Structured parameter sweep:}
-To visualise how the PINN reconstruction accuracy varies with material contrast and particle content, we evaluate the network on a $6 \times 6$ grid of stiffness ratios ($\text{SR} \in \{0.1, 0.25, 0.5, 1.0, 1.5, 2.0\}$) and volume fractions ($f \in \{0.05, 0.10, 0.20, 0.30, 0.40, 0.50\}$), keeping the interphase geometry and grading fixed at the default values ($\phi = (0.2, 0.3, 0.4)$, weights $= (0.75, 0.50, 0.25)$). For each configuration, the 3-layer interphase target is computed, passed through the trained PINN, and the resulting EGIM parameters are forward-evaluated to obtain reconstructed properties.
+To visualise how the PINN reconstruction accuracy actually varies, we evaluate the network on a $6 \times 6$ grid of $\text{SR} \in \{0.1, 0.25, 0.5, 1.0, 1.5, 2.0\}$ and $f \in \{0.05, 0.10, 0.20, 0.30, 0.40, 0.50\}$, keeping the interphase geometry and grading fixed at the default values ($\phi = (0.2, 0.3, 0.4)$, weights $= (0.75, 0.50, 0.25)$). For each configuration, the 3-layer interphase target is computed, passed through the trained PINN, and the resulting EGIM parameters are forward-evaluated to obtain reconstructed properties.
 
-Figure~\ref{fig:csa_sweep_heatmap} presents the reconstruction errors as heatmaps. Of the~36 configurations,~33 pass the~$5\,\%$ threshold for both $K_{\text{eff}}$ and $G_{\text{eff}}$. The three failures occur at $\text{SR} = 0.1$ with $f \geq 0.30$, where the inclusion is much softer than the matrix and the interphase grading dominates the effective response. Outside this corner, errors remain well below~$2\,\%$ for both moduli. This pattern stands in sharp contrast to the CCA heatmap (Figure~\ref{fig:ei_heatmap}), where $G_{\text{tr}}$ errors grow monotonically with both stiffness ratio and volume fraction, reaching nearly~$40\,\%$.
+Figure~\ref{fig:csa_sweep_heatmap} presents the reconstruction errors as heatmaps. Of the~36 configurations,~33 pass the~$5\,\%$ threshold for both $K_{\text{eff}}$ and $G_{\text{eff}}$. The three failures occur at $\text{SR} = 0.1$ with $f \geq 0.30$, where the inclusion is much softer than the matrix and the interphase grading dominates the effective response. Outside this corner, errors remain well below~$2\,\%$ for both moduli.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_sweep_heatmap.pdf}
-\caption{CSA inverse PINN reconstruction error across the stiffness ratio--volume fraction space. Cells marked~$*$ exceed the~$5\,\%$ threshold.}
+\caption{CSA inverse PINN error across the SR - f space}
 \label{fig:csa_sweep_heatmap}
 \end{figure}
 
