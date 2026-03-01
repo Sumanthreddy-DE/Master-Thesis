@@ -3274,7 +3274,7 @@ To further illustrate how the three modelling approaches compare across a contin
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_properties_vs_f.pdf}
-\caption{CSA effective properties vs.\ volume fraction at $\text{SR} = 1.5$: 3-layer interphase (solid), best-fit EI (dashed), and PINN (markers).}
+\caption{CSA effective properties vs.\ volume fraction at $\text{SR} = 1.5$(stiff particle)}
 \label{fig:csa_vs_f}
 \end{figure}
 
@@ -3294,7 +3294,7 @@ To check whether this agreement holds across different stiffness contrasts, Figu
 \label{fig:csa_vs_f_sr05}
 \end{figure}
 
-Across all three sweeps (Figures~\ref{fig:csa_vs_f}, \ref{fig:csa_vs_sr}, and~\ref{fig:csa_vs_f_sr05}), the optimised Extended Interface model overlaps the 3-layer interphase target, confirming that the spherical BVPs---which involve only single-mode radial displacement patterns---are well represented by the jump and average conditions of the Extended Interface model regardless of the stiffness contrast. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus. This stands in clear contrast to the CCA geometry, where a systematic and irreducible gap opens for the transverse shear modulus (Sections~\ref{subsec:cca_pinn_results} and~\ref{subsec:ei_isotropic}).
+Across all three sweeps (Figures~\ref{fig:csa_vs_f}, \ref{fig:csa_vs_sr}, and~\ref{fig:csa_vs_f_sr05}), the optimised Extended Interface model overlaps the 3-layer interphase target, confirming that the spherical BVPs are well represented by the jump and average conditions of the Extended Interface model regardless of the stiffness contrast. The PINN predictions follow the correct trend for $K_{\text{eff}}$ and capture the overall behaviour for $G_{\text{eff}}$, though with more scatter in the shear modulus.
 
 % ===================================================================
 \section{CCA: Inverse Parameter Identification and Representational Limits}
