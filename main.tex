@@ -928,13 +928,7 @@ A well-established strategy to address the computational challenges of finite-th
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.90\textwidth]{figures/model_hierarchy.pdf}
-    \caption{Hierarchy of interface and interphase models. Left branch: zero-thickness
-    interface models, ordered from the simplest (perfect interface, no field jumps) to
-    the most general (EGIM, arbitrary jumps with position parameter~$\bar{\alpha}$).
-    Right branch: the finite-thickness 3-layer interphase model used as the
-    ground-truth reference. The green arrow denotes the homogenization pathway
-    developed in this thesis, which maps 3-layer interphase parameters onto EGIM
-    interface parameters (Chapter~\ref{ch:methodology}).}
+    \caption{Hierarchy of interface and interphase models studied in this thesis.}
     \label{fig:model_hierarchy}
 \end{figure}
 
@@ -1987,7 +1981,7 @@ This chapter develops the boundary value problems that determine the concentrati
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{figures/methodology_flowchart.pdf}
-    \caption{Overview of the methodology. The multi-coated interphase model and the interface-enhanced Mori-Tanaka model each produce concentration tensors through their respective BVPs. A neural network then learns the inverse mapping between these representations, recovering interface parameters from target effective properties.}
+    \caption{Overview of the methodology.}
     \label{fig:methodology_flowchart}
 \end{figure}
 
@@ -2120,7 +2114,7 @@ The transversely isotropic tensor structure (Section~\ref{subsec:tensor_structur
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the three-layered interphase model. Four independent BVPs yield the concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
+\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the three-layered interphase model.}
 \label{fig:flowchart_interphase_cca}
 \end{figure}
 
@@ -2417,7 +2411,7 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the three-layered interphase model. Two independent BVPs yield the isotropic concentration tensor components, which are assembled and homogenised via the Mori-Tanaka scheme.}
+\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the three-layered interphase model.}
 \label{fig:flowchart_interphase_csa}
 \end{figure}
 
@@ -2760,7 +2754,7 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the fibre--matrix boundary.}
+\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the Extended General Interface Model.}
 \label{fig:flowchart_interface_cca}
 \end{figure}
 
@@ -2889,7 +2883,7 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the Extended General Interface Model. The interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$, obtained from the inverse PINN, replace the coating layers with EGIM jump conditions at the particle--matrix boundary.}
+\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the Extended General Interface Model.}
 \label{fig:flowchart_interface_csa}
 \end{figure}
 
@@ -2940,7 +2934,7 @@ The network has three fully-connected hidden layers with 256~neurons each, tanh 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{nn_architecture.pdf}
-\caption{Architecture of the inverse PINN shared between CCA and CSA geometries. Eight inputs pass through three hidden layers with tanh activation. Output constraints enforce physical bounds: softplus for surface moduli, an exponential mapping for normal stiffness, and sigmoid for the position parameter.}
+\caption{Architecture of the inverse PINN shared between CCA and CSA geometries.}
 \label{fig:nn_architecture}
 \end{figure}
 
