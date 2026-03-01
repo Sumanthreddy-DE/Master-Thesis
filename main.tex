@@ -3435,48 +3435,7 @@ For each configuration, we solve
 using differential evolution (population size~15, 200~iterations) with bounds $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
 
 \paragraph{Stiffness ratio--volume fraction sweep.}
-To map the region where the two models agree, we conduct a sweep over six stiffness ratios $\text{SR} \in \{0.1,\, 0.5,\, 1.0,\, 2.0,\, 5.0,\, 10.0\}$ and six volume fractions $f \in \{0.05,\, 0.10,\, 0.20,\, 0.30,\, 0.40,\, 0.50\}$, giving~36 configurations. Table~\ref{tab:ei_sweep} lists the transverse shear error for each combination.
-
-\begin{table}[htbp]
-\centering
-\caption{$G_{\text{tr}}$ relative error~($\%$) between best-fit isotropic Extended Interface and 3-layer interphase, for each stiffness ratio--volume fraction combination. Cells marked with~($\ast$) satisfy the~$5\,\%$ threshold.}
-\label{tab:ei_sweep}
-\begin{tabular}{lcccccc}
-\toprule
- & \multicolumn{6}{c}{Volume fraction $f$} \\
-\cmidrule(lr){2-7}
-SR & 0.05 & 0.10 & 0.20 & 0.30 & 0.40 & 0.50 \\
-\midrule
-0.1  & 3.08$^\ast$ & 4.74$^\ast$ & 7.04  & 8.76  & 10.20 & 11.47 \\
-0.5  & 4.76$^\ast$ & 7.38  & 10.78 & 13.10 & 14.88 & 16.39 \\
-1.0  & 5.71  & 9.18  & 14.15 & 17.99 & 21.33 & 24.47 \\
-2.0  & 6.45  & 10.60 & 16.89 & 22.08 & 26.84 & 31.57 \\
-5.0  & 7.03  & 11.73 & 19.10 & 25.37 & 31.33 & 37.39 \\
-10.0 & 7.25  & 12.17 & 19.95 & 26.66 & 33.09 & 39.67 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Only~3 of the~36 combinations pass the acceptance threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, as the heatmap in Figure~\ref{fig:ei_heatmap} makes visually clear. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$. The models agree only where the interphase effect is weak.
-% -------------------------------------------------------------------
-\subsection{Physical Interpretation}
-\label{subsec:ei_interpretation}
-% -------------------------------------------------------------------
-
-The persistence of the $G_{\text{tr}}$ gap points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
-
-The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
-
-In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The worked examples support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate in the optimiser column of Table~\ref{tab:cca_worked_examples}, whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
-
-This finding explains why the inverse PINN fails in Section~\ref{subsec:cca_pinn_results}: the network was trained on data generated from the Extended Interface forward model, and that model is structurally incapable of reproducing the 3-layer transverse shear response. The PINN faithfully learned the EI model but inherited its limitation.
-
-% -------------------------------------------------------------------
-\subsection{Parameter Space Visualisation}
-\label{subsec:cca_visualisation}
-% -------------------------------------------------------------------
-
-The heatmap in Figure~\ref{fig:ei_heatmap} shows how the transverse shear gap varies across the stiffness ratio--volume fraction parameter space, using the optimiser results from Section~\ref{subsec:ei_isotropic}. The error grows monotonically with both stiffness contrast and fibre content. At $\text{SR} = 10$ and $f = 0.50$, the $G_{\text{tr}}$ error reaches nearly~$40\,\%$.
+To map the region where the two models agree, we conduct a sweep over six stiffness ratios $\text{SR} \in \{0.1,\, 0.5,\, 1.0,\, 2.0,\, 5.0,\, 10.0\}$ and six volume fractions $f \in \{0.05,\, 0.10,\, 0.20,\, 0.30,\, 0.40,\, 0.50\}$, giving~36 configurations. Figure~\ref{fig:ei_heatmap} maps the $G_{\text{tr}}$ error across this parameter space. Only~3 of the~36 combinations pass the~$5\,\%$ threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, reaching nearly~$40\,\%$ at $\text{SR} = 10$ and $f = 0.50$. The models agree only where the interphase effect is weak. Figures~\ref{fig:cca_vs_f} and~\ref{fig:cca_vs_sr} show individual sweeps along the volume fraction and stiffness ratio axes, respectively, with the characteristic $G_{\text{tr}}$ gap visible in both.
 
 \begin{figure}[htbp]
 \centering
@@ -3498,6 +3457,19 @@ The heatmap in Figure~\ref{fig:ei_heatmap} shows how the transverse shear gap va
 \caption{CCA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The transverse shear gap between the 3-layer model and both EI-based predictions widens with increasing stiffness contrast.}
 \label{fig:cca_vs_sr}
 \end{figure}
+
+% -------------------------------------------------------------------
+\subsection{Physical Interpretation}
+\label{subsec:ei_interpretation}
+% -------------------------------------------------------------------
+
+The persistence of the $G_{\text{tr}}$ gap points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
+
+The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
+
+In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The worked examples support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate in the optimiser column of Table~\ref{tab:cca_worked_examples}, whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
+
+This finding explains why the inverse PINN fails in Section~\ref{subsec:cca_pinn_results}: the network was trained on data generated from the Extended Interface forward model, and that model is structurally incapable of reproducing the 3-layer transverse shear response. The PINN faithfully learned the EI model but inherited its limitation.
 \newpage
 % ===================================================================
 \section{Discussion}
@@ -3510,9 +3482,9 @@ The results of this chapter admit a clear reading once the role of geometry is t
 Particle-reinforced composites present the inverse PINN with a tractable problem. The two CSA boundary value problems each has one radial displacement mode, and the Extended Interface conditions relating displacement jumps to traction averages at a single surface capture this radial symmetry adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
 
 \paragraph{Why the interface fails for CCA.}
-Fibre-reinforced composites are a different matter. The transverse shear BVP mixes mode-2 and mode-4 radial displacement patterns, and within a finite-thickness coating each mode develops its own stress field over the radial extent of the layer. The zero-thickness interface reduces all of this to jump and average conditions at a single surface, losing the mode coupling in the process. The consequence shows up in~$G_{\text{tr}}$: the transverse shear modulus cannot be matched regardless of how the four interface parameters are tuned.
+Fibre-reinforced composites are a different matter. As discussed in Section~\ref{subsec:ei_interpretation}, the transverse shear BVP couples mode-2 and mode-4 radial displacement patterns across the finite-thickness coating layers, and the zero-thickness interface cannot encode this volumetric mode interaction. The consequence is a persistent $G_{\text{tr}}$ gap that no parameter tuning can eliminate.
 
-Two independent lines of evidence support this conclusion. A per-configuration differential evolution optimiser free to fit each case individually drives~$\bar{k}$ to its upper bound and~$\bar{\alpha}$ to~$1.0$ and still leaves~$G_{\text{tr}}$ errors of $2$--$32\,\%$. The inverse PINN, which must generalise across configurations rather than fitting each one separately, exceeds~$22\,\%$ in four of the five cases and reaches~$38\,\%$ in the worst. That two methods with quite different properties agree on the failure in four of five cases points to the model rather than the algorithm. The stiffness ratio-volume fraction sweep makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
+Two independent lines of evidence support this conclusion. The per-configuration optimiser and the inverse PINN, despite their quite different properties, agree on the failure pattern across nearly all tested configurations. The stiffness ratio--volume fraction sweep (Figure~\ref{fig:ei_heatmap}) makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction---precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
 
 \paragraph{Practical implications.}
 The asymmetry between the two geometries has a direct consequence for how this framework should be used in practice. For particle composites, the PINN-recovered parameters can be fed into the analytical forward model in a single evaluation the approach works and the recovered parameters carry physical content. For fibre composites, any route through the Extended Interface model will carry a~$G_{\text{tr}}$ error that no amount of parameter tuning can eliminate; the better option is to work with the 3-layer interphase model directly. As a practical diagnostic for any new composite system, the optimisation-based gap check of Section~\ref{subsec:ei_isotropic} can serve as a first test before committing to the interface route.
