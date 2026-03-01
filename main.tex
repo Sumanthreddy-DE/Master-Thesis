@@ -3309,14 +3309,14 @@ We now apply the same inverse PINN framework to the CCA geometry, where the tran
 \label{subsec:cca_pinn_implications}
 % -------------------------------------------------------------------
 
-The CCA variant of the inverse network takes 8~inputs ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ plus material properties and volume fraction) and produces four EGIM parameters. We train on $200\,000$~samples for 500~epochs using the same loss function and adaptive weighting scheme as the CSA case, with the training data generated from the CCA Extended Interface forward model. Fibre moduli are sampled log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$, while matrix moduli are drawn uniformly from $\kappa^{(2)} \in [10, 50]$ and $\mu^{(2)} \in [5, 25]$. The wider fibre ranges and log-uniform sampling are necessary because fibre-reinforced composites in practice span several orders of magnitude in stiffness contrast, from glass fibres in polymer matrices ($\text{SR} \approx 20$) to carbon fibres in metal matrices ($\text{SR} > 50$), and uniform sampling over such a range would under-represent the softer end. The volume fraction covers $f \in [0.05, 0.55]$. The full training run takes approximately 2.5~hours on a single CPU core.
+The CCA variant of the inverse network takes 8~inputs ($K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ plus material properties and volume fraction) to produce same four EGIM parameters. We train on $200\,000$~samples for 500~epochs using the same loss function and adaptive weighting scheme as the CSA, with the training data generated from the CCA Extended Interface forward model. Fibre moduli are sampled log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$, while matrix moduli are drawn uniformly from $\kappa^{(2)} \in [10, 50]$ and $\mu^{(2)} \in [5, 25]$. The wider fibre ranges and log-uniform sampling are necessary because fibre-reinforced composites in practice span several orders of magnitude in stiffness contrast, from glass fibres in polymer matrices ($\text{SR} \approx 20$) to carbon fibres in metal matrices ($\text{SR} > 50$), and uniform sampling over such a range would under-represent the softer end. The volume fraction covers $f \in [0.05, 0.55]$. The full training run takes approximately 2.5~hours on a single CPU core.
 
 \paragraph{Worked examples:}
 To compare directly with the CSA results, we apply the CCA inverse PINN to the same five test cases used in Table~\ref{tab:csa_worked_examples}: a soft particle ($\kappa^{(1)} = 5$, $\mu^{(1)} = 3$) in a stiff matrix ($\kappa^{(2)} = 20$, $\mu^{(2)} = 12$), at $f = 0.3$. For each case, we also run a differential evolution optimiser that searches the EI parameter space independently per configuration (population size~15, 200~iterations), establishing a lower bound on the model error.
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN and differential evolution optimiser: soft-fibre worked examples ($\text{SR}=0.25$, $f=0.3$). A case passes if all three errors remain below~$5\,\%$.}
+\caption{CCA inverse PINN and differential evolution optimiser: soft fiber}
 \label{tab:cca_worked_examples}
 {\footnotesize
 \begin{tabular}{c l r r r}
@@ -3352,9 +3352,9 @@ Case & Property & 3-Layer Target & PINN Err.~(\%) & Optim.\ Err.~(\%) \\
 }
 \end{table}
 
-Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passes any of the five cases. The optimiser achieves lower errors on average it fits each configuration independently rather than generalising with a single set of weights but even its best-fit solutions leave $G_{\text{tr}}$ errors above~$6\,\%$ in four of five cases. Case~4 (non-monotonic, high$\to$low coating stiffness) is the sole exception: both approaches capture $G_{\text{tr}}$ within~$2\,\%$. However, $G_{\text{ax}}$ errors remain above~$5\,\%$ even here, so the case still fails overall.
+Table~\ref{tab:cca_worked_examples} presents the results. Neither approach passes any of the five cases. The optimiser achieves lower errors on average. It fits each configuration independently rather than generalising with a single set of weights but even its best-fit solutions leave $G_{\text{tr}}$ errors above~$6\,\%$ in four of five cases. Case~4 (non-monotonic, high$\to$low coating stiffness) is the sole exception: both approaches capture $G_{\text{tr}}$ within~$2\,\%$. However, $G_{\text{ax}}$ errors remain above~$5\,\%$ even here, so the case still fails overall.
 
-In four of the five cases, the optimiser saturates~$\bar{k}$ at its upper bound of~$10\,000$ and~$\bar{\alpha}$ at~$1.0$; the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation observed independently in two different solvers which indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
+In four of the five cases, the PINN drives~$k_n$ to similar levels ($\sim\!4900$). This parameter saturation observed independently in two different solvers which indicates a structural limitation of the Extended Interface model rather than a learning or optimisation failure. Section~\ref{subsec:ei_isotropic} extends this analysis across the full parameter space to map where the two models agree.
 
 Unlike the CSA case, where the PINN fails only for out-of-distribution coating stiffnesses, the CCA failure is structural and persists regardless of the solver or the material configuration.
 
@@ -3363,7 +3363,7 @@ To verify that the failure pattern is not specific to a soft inclusion in a stif
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN and optimiser: stiff-fibre worked examples ($\text{SR}=2.0$, $f=0.3$).}
+\caption{CCA inverse PINN and optimiser: stiff-fiber worked examples ($\text{SR}=2.0$, $f=0.3$).}
 \label{tab:cca_stiff_examples}
 {\footnotesize
 \begin{tabular}{c l r r r}
@@ -3393,7 +3393,7 @@ Table~\ref{tab:cca_interface_params} lists the interface parameters predicted by
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN: predicted Extended Interface parameters for all eight worked examples.}
+\caption{CCA inverse PINN: predicted Extended Interface parameters }
 \label{tab:cca_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
