@@ -2940,19 +2940,20 @@ The network has three fully-connected hidden layers with 256~neurons each, tanh 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{nn_architecture.pdf}
-\caption{Architecture of the inverse PINN shared between CCA and CSA geometries. Eight inputs (effective properties, material moduli, volume fraction) pass through three hidden layers of 256~neurons with tanh activation. Output constraints enforce physical bounds: softplus for surface moduli, an exponential mapping for normal stiffness, and sigmoid for the position parameter.}
+\caption{Architecture of the inverse PINN shared between CCA and CSA geometries. Eight inputs pass through three hidden layers with tanh activation. Output constraints enforce physical bounds: softplus for surface moduli, an exponential mapping for normal stiffness, and sigmoid for the position parameter.}
 \label{fig:nn_architecture}
 \end{figure}
 
 \paragraph{Training data generation.}
-We generate $200\,000$~samples by sampling the EGIM parameter space. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10; log-uniform sampling is necessary because the stiffness ratios span two orders of magnitude and uniform sampling would severely under-represent soft inclusions. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$ to reduce prediction errors in extreme configurations. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
+We generate $200\,000$~samples by sampling the EGIM parameter space. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10; log-uniform sampling is necessary because the stiffness ratios spans between 0.05 and 10 and uniform sampling would severely under-represent soft inclusions. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$ to reduce prediction errors in extreme configurations. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
 
 \paragraph{Loss function.}
-The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the differentiable EGIM forward model and computes the relative error against the target effective properties, enforcing forward-model self-consistency at every training step. An adaptive weighting scheme inspired by ReLoBRaLo~\cite{Bischof2021} adjusts the relative contribution of each term based on convergence rates, preventing either term from dominating~\cite{Krishnapriyan2021}. We train with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing, batch size~512, and gradient clipping at 1.0 for 500~epochs.
+The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the EGIM forward model and computes the relative error against the target effective properties, enforcing forward-model self-consistency at every training step. An adaptive weighting scheme inspired by ReLoBRaLo~\cite{Bischof2021} adjusts the relative contribution of each term based on convergence rates, preventing either term from dominating~\cite{Krishnapriyan2021}. We train with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing, batch size~512, and gradient clipping at 1.0 for 500~epochs.
 
 \paragraph{CSA training considerations.}
 \label{subsec:inverse_pinn}
-The CSA inverse problem requires a modified training strategy because only two effective moduli ($K_{\text{eff}}$, $G_{\text{eff}}$) are available to recover four interface parameters. The training set therefore combines three data sources: $50\,000$~EGIM-generated samples covering the full parameter space, $5\,000$~edge samples concentrated near extreme stiffness ratios and volume fractions, and $500$~samples derived directly from the 3-layer CSA interphase model. The last source anchors the network to the actual deployment domain, exposing it to the interphase-to-interface mapping during training rather than relying solely on EGIM-generated data. The CSA physics loss penalises the discrepancy against the two target moduli:
+The CSA inverse problem requires a modified training strategy because only two effective moduli ($K_{\text{eff}}$, $G_{\text{eff}}$) are available to recover four interface parameters. The training set therefore combines three data sources: $100\,000$~EGIM-generated samples covering the full parameter space, 
+$5\,000$~edge samples concentrated near extreme stiffness ratios and volume fractions, and $500$~samples derived directly from the 3-layer CSA interphase model. The last source anchors the network to the actual deployment domain, exposing it to the interphase-to-interface mapping during training rather than relying solely on EGIM-generated data. The CSA physics loss penalises the discrepancy against the two target moduli:
 %
 \begin{equation}
 \label{eq:pinn_loss}
@@ -2966,7 +2967,7 @@ The CSA inverse problem requires a modified training strategy because only two e
 %
 with $w_K = 1.5$ and $w_G = 1.0$. The adaptive weights are capped at 150 for $w_{\text{phys}}$ and 5 for $w_{\text{data}}$~\cite{Bischof2021}. Training uses AdamW ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing over 500~epochs, batch size~256, and gradient clipping at norm~1.0; the best validation loss is reached at epoch~322.
 
-Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complete inverse parameter identification pipeline for the CCA and CSA geometries, respectively.
+Algorithms~\ref{alg:inverse_cca} summarise the complete inverse parameter identification pipeline for both the CCA and CSA geometries.
 
 \begin{algorithm}[htbp]
 \caption{Generalized Inverse parameter identification pipeline}
@@ -3004,7 +3005,7 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \label{subsec:de_baseline}
 % -------------------------------------------------------------------
 
-The inverse PINN predicts interface parameters in a single forward pass, but a natural question arises: how close are these predictions to the best parameters achievable by unconstrained optimisation? To answer this, we employ differential evolution (DE)~\cite{StornPrice1997} as an independent, per-configuration baseline. DE is a gradient-free, population-based global optimisation algorithm that iteratively improves a set of candidate solutions through mutation, crossover, and selection. Unlike gradient-based methods, it does not require the objective landscape to be smooth or differentiable, making it well suited for the non-convex parameter spaces encountered in interface model fitting.
+The inverse PINN predicts interface parameters in a single forward pass, but a natural question arises: how close are these predictions to the best parameters achievable by unconstrained optimisation? To answer this, we employ differential evolution (DE)~\cite{StornPrice1997} as an independent, per-configuration benchmark. DE is a gradient-free, population-based global optimisation algorithm that iteratively improves a set of candidate solutions through mutation, crossover, and selection. Unlike gradient-based methods, it does not require the objective landscape to be smooth or differentiable, making it well suited for the non-convex parameter spaces encountered in interface model fitting.
 
 For each test configuration, the DE optimiser minimises the sum of squared relative errors between the EGIM-predicted and 3-layer target effective moduli:
 %
