@@ -3389,11 +3389,11 @@ Case & Property & 3-Layer Target & PINN Err.~(\%) & Optim.\ Err.~(\%) \\
 }
 \end{table}
 
-Table~\ref{tab:cca_interface_params} lists the interface parameters predicted by the PINN for all eight worked examples. Unlike the CSA parameters (Table~\ref{tab:csa_interface_params}), which vary meaningfully across configurations, the CCA parameters show characteristic saturation: $\bar{k}$ is driven to values near~$5000$ in most cases, and $\bar{\lambda}$ and $\bar{\mu}$ cluster in a narrow range around~$3$. This behaviour mirrors the optimiser's tendency to push $\bar{k}$ to its upper bound, and reflects the network's attempt to compensate for the structural gap by maximising the normal stiffness---effectively trying to make the zero-thickness interface as rigid as possible.
+Tables~\ref{tab:cca_interface_params} and~\ref{tab:cca_optim_params} list the interface parameters found by the PINN and the differential evolution optimiser, respectively. Unlike the CSA parameters (Table~\ref{tab:csa_interface_params}), which vary meaningfully across configurations, both solvers exhibit characteristic saturation in the CCA case. The PINN drives~$\bar{k}$ to values near~$5000$ (close to its output constraint ceiling), while the optimiser pushes~$\bar{k}$ all the way to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$ in seven of eight cases. Meanwhile, the optimiser collapses~$\bar{\mu}$ to near-zero values ($< 0.06$), concentrating all tangential compliance into~$\bar{\lambda}$ alone. This consistent saturation pattern across two independent solvers confirms that the Extended Interface model is being stretched to its representational limit, and no reparameterisation within the four-parameter isotropic space can close the gap.
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN: predicted Extended Interface parameters }
+\caption{CCA inverse PINN: predicted Extended Interface parameters.}
 \label{tab:cca_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3411,6 +3411,31 @@ Case & Configuration & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{k}$ & $\bar{\alpha}
 A & Weak gradient     & 2.88 & 3.18 & 4883.5 & 0.386 \\
 B & Moderate gradient  & 2.97 & 3.37 & 4915.8 & 0.425 \\
 C & Strong gradient    & 3.00 & 3.45 & 4915.8 & 0.469 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{CCA differential evolution optimiser: best-fit Extended Interface parameters for the same eight cases. Note the saturation of~$\bar{k}$ at the upper bound ($10\,000$) and~$\bar{\alpha}$ at~$1.0$ in seven of eight cases.}
+\label{tab:cca_optim_params}
+{\footnotesize
+\begin{tabular}{l c r r r r}
+\toprule
+Case & Configuration & $\bar{\lambda}$ & $\bar{\mu}$ & $\bar{k}$ & $\bar{\alpha}$ \\
+\midrule
+\multicolumn{6}{l}{\textit{Soft fibre ($\text{SR} = 0.25$)}} \\
+1 & Weak gradient     & 7.46 & 0.04 & 10000.0 & 1.000 \\
+2 & Moderate gradient  & 5.58 & 0.03 & 10000.0 & 1.000 \\
+3 & Strong gradient    & 8.11 & 0.01 & 10000.0 & 1.000 \\
+4 & Out-of-dist.\ (high$\to$low) & 3.06 & 0.01 & 898.3 & 0.000 \\
+5 & Out-of-dist.\ (low$\to$high) & 1.59 & 0.11 & 10000.0 & 1.000 \\
+\midrule
+\multicolumn{6}{l}{\textit{Stiff fibre ($\text{SR} = 2.0$)}} \\
+A & Weak gradient     & 4.89 & 0.01 & 10000.0 & 1.000 \\
+B & Moderate gradient  & 5.39 & 0.03 & 10000.0 & 1.000 \\
+C & Strong gradient    & 2.39 & 0.05 & 10000.0 & 1.000 \\
 \bottomrule
 \end{tabular}
 }
