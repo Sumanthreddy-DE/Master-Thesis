@@ -747,7 +747,7 @@ The mechanical behaviour of composite materials depends strongly on the thin int
 
 In this work, we develop a physics-informed neural network (PINN) that identifies the four parameters of the Extended General Interface Model directly from target effective properties computed via a three-layer interphase model. The network is trained on Mori-Tanaka homogenization data and embeds the governing equations into its loss function to ensure physically self-consistent predictions.
 
-We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN achieves a 100\% pass rate across 28 validation configurations with mean errors below 2\%. For fibre-reinforced composites (CCA), the transverse shear response cannot be matched within the interface framework, pointing to a fundamental limitation of the zero-thickness approximation for fibre composites.
+We apply the framework to two composite geometries. For particle-reinforced composites (CSA), the inverse PINN reconstructs effective properties with errors below~2\% for interpolated coating profiles, and a structured sweep over 36 stiffness ratio--volume fraction combinations confirms that 33 pass the~5\% acceptance threshold. For fibre-reinforced composites (CCA), the transverse shear response cannot be matched within the interface framework: even a per-configuration optimiser leaves a persistent $G_{\text{tr}}$ gap of approximately~23\%, pointing to a fundamental limitation of the zero-thickness approximation for fibre composites.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Composite Materials, Interphase, Extended General Interface Model, Physics-Informed Neural Networks, Inverse Parameter Identification, Mori-Tanaka Homogenization, CCA, CSA.
