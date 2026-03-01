@@ -3097,7 +3097,7 @@ When all phases---including the fibre---share the matrix properties, the composi
 
 \begin{table}[htbp]
 \centering
-\caption{Matrix limiting case: all phases set to matrix properties. The composite properties must equal the matrix moduli exactly.}
+\caption{Matrix limiting case: all phases set to matrix properties.}
 \label{tab:limiting_matrix}
 \begin{tabular}{lccc}
 \toprule
@@ -3135,7 +3135,7 @@ Figure~\ref{fig:pinn_loss_combined} shows the training loss curves for both geom
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{pinn_loss_combined.pdf}
-\caption{Training loss curves for the CSA (left) and CCA (right) inverse PINNs. Both networks are trained for 500~epochs with adaptive loss weighting; the star marks the best validation epoch. The CSA model converges to a lower total loss than the CCA model, reflecting the structural adequacy of the Extended Interface model for spherical composites.}
+\caption{Training loss curves for the CSA (left) and CCA (right) inverse PINNs. The star marks the best validation epoch.}
 \label{fig:pinn_loss_combined}
 \end{figure}
 
@@ -3146,7 +3146,7 @@ Table~\ref{tab:csa_worked_examples} presents the results. For interpolated coati
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: five worked examples with a soft particle ($\kappa^{(1)}=5$, $\kappa^{(2)}=20$, $\text{SR}=0.25$). Cases~1--3 use interpolated coatings between particle and matrix; Cases~4--5 use out-of-distribution coatings with stiffnesses far beyond both constituents. The stiffness profile shows $\kappa$ from particle through three coating layers to matrix. A case passes if both errors remain below~$5\,\%$.}
+\caption{CSA inverse PINN: soft-particle worked examples ($\text{SR}=0.25$, $f=0.3$). A case passes if both errors remain below~$5\,\%$.}
 \label{tab:csa_worked_examples}
 {\footnotesize
 \begin{tabular}{l c c c c c c c}
@@ -3169,7 +3169,7 @@ The five cases above all use a soft particle in a stiff matrix ($\text{SR} = 0.2
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: three stiff-particle worked examples ($\kappa^{(1)}=40$, $\kappa^{(2)}=20$, $\text{SR}=2.0$). The same three monotonic gradient profiles as Cases~1--3 in Table~\ref{tab:csa_worked_examples} are used, with the particle--matrix stiffness ratio reversed. All errors remain below~$5\,\%$.}
+\caption{CSA inverse PINN: stiff-particle worked examples ($\text{SR}=2.0$, $f=0.3$).}
 \label{tab:csa_stiff_examples}
 {\footnotesize
 \begin{tabular}{l c c c c c c c}
@@ -3190,7 +3190,7 @@ Table~\ref{tab:csa_interface_params} lists the interface parameters that the PIN
 
 \begin{table}[htbp]
 \centering
-\caption{CSA inverse PINN: predicted Extended Interface parameters for all eight worked examples. The parameters are the raw network outputs before reconstruction through the forward model.}
+\caption{CSA inverse PINN: predicted Extended Interface parameters for all eight worked examples.}
 \label{tab:csa_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3219,14 +3219,14 @@ To assess the generalisation of the trained PINN beyond the hand-picked configur
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_parity_500test.pdf}
-\caption{CSA inverse PINN evaluated on 500~randomly sampled 3-layer interphase configurations. Each point compares the EGIM-reconstructed property against the 3-layer target, coloured by relative error. The $K_{\text{eff}}$ reconstruction clusters tightly around the diagonal, while $G_{\text{eff}}$ shows more scatter but remains accurate for the majority of configurations.}
+\caption{CSA inverse PINN: parity plot over 500~random test configurations, coloured by relative error.}
 \label{fig:csa_parity_500}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{csa_error_hist_500test.pdf}
-\caption{CSA error distribution over 500~random test configurations. Most $K_{\text{eff}}$ errors fall well below the~$5\,\%$ threshold (dashed line), while $G_{\text{eff}}$ errors are distributed more broadly but remain concentrated below~$10\,\%$. The median errors of~$1.4\,\%$ ($K_{\text{eff}}$) and~$4.0\,\%$ ($G_{\text{eff}}$) confirm that the majority of configurations are well-reconstructed.}
+\caption{CSA error distribution over 500~random test configurations. The dashed line marks the~$5\,\%$ threshold.}
 \label{fig:csa_error_hist_500}
 \end{figure}
 
@@ -3240,7 +3240,7 @@ Figure~\ref{fig:csa_sweep_heatmap} presents the reconstruction errors as heatmap
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_sweep_heatmap.pdf}
-\caption{CSA inverse PINN reconstruction error across the stiffness ratio--volume fraction parameter space. Of~36 configurations,~33 pass the~$5\,\%$ threshold (cells marked~$*$ exceed the threshold). The three failures cluster at very soft inclusions ($\text{SR} = 0.1$) with high volume fractions. Compare with the CCA heatmap in Figure~\ref{fig:ei_heatmap}, where the error grows systematically across the entire parameter space.}
+\caption{CSA inverse PINN reconstruction error across the stiffness ratio--volume fraction space. Cells marked~$*$ exceed the~$5\,\%$ threshold.}
 \label{fig:csa_sweep_heatmap}
 \end{figure}
 
@@ -3254,14 +3254,14 @@ To further illustrate how the three modelling approaches compare across a contin
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_properties_vs_f.pdf}
-\caption{CSA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 1.5$, comparing the 3-layer interphase model (solid blue), best-fit Extended Interface via optimisation (dashed red), and inverse PINN predictions (green markers). The optimised EI model overlaps the 3-layer target across the full range, confirming the structural adequacy of the Extended Interface model for CSA geometry. The PINN tracks $K_{\text{eff}}$ closely but shows larger scatter for $G_{\text{eff}}$, particularly at higher volume fractions.}
+\caption{CSA effective properties vs.\ volume fraction at $\text{SR} = 1.5$: 3-layer interphase (solid), best-fit EI (dashed), and PINN (markers).}
 \label{fig:csa_vs_f}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_properties_vs_sr.pdf}
-\caption{CSA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The optimised EI model again tracks the 3-layer target closely, while the PINN predictions follow the correct trend with some scatter for $G_{\text{eff}}$. In contrast to the CCA geometry (Figure~\ref{fig:cca_vs_sr}), no systematic gap appears between the interphase and interface models.}
+\caption{CSA effective properties vs.\ stiffness ratio at $f = 0.3$.}
 \label{fig:csa_vs_sr}
 \end{figure}
 
@@ -3270,7 +3270,7 @@ To check whether this agreement holds across different stiffness contrasts, Figu
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{csa_properties_vs_f_sr05.pdf}
-\caption{CSA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 0.5$ (soft particle). The optimised EI model again overlaps the 3-layer target across the full range, confirming structural adequacy of the Extended Interface model even when the inclusion is softer than the matrix. The PINN captures the correct trend but shows slightly more scatter for $G_{\text{eff}}$ at higher volume fractions.}
+\caption{CSA effective properties vs.\ volume fraction at $\text{SR} = 0.5$ (soft particle).}
 \label{fig:csa_vs_f_sr05}
 \end{figure}
 
@@ -3296,7 +3296,7 @@ To compare directly with the CSA results, we apply the CCA inverse PINN to the s
 
 \begin{table}[htbp]
 \centering
-\caption{CCA worked examples: five test cases (same configurations as CSA Table~\ref{tab:csa_worked_examples}) evaluated with both the inverse PINN and a per-configuration differential evolution optimiser. The optimiser fits each configuration independently, providing a lower bound on the achievable error. A case passes if all three errors remain below~$5\,\%$; both approaches yield~$0/5$ pass rate.}
+\caption{CCA inverse PINN and differential evolution optimiser: soft-fibre worked examples ($\text{SR}=0.25$, $f=0.3$). A case passes if all three errors remain below~$5\,\%$.}
 \label{tab:cca_worked_examples}
 {\footnotesize
 \begin{tabular}{c l r r r}
@@ -3343,7 +3343,7 @@ To verify that the failure pattern is not specific to a soft inclusion in a stif
 
 \begin{table}[htbp]
 \centering
-\caption{CCA stiff-fibre worked examples ($\kappa^{(1)}=40$, $\kappa^{(2)}=20$, $\text{SR}=2.0$): the same three monotonic gradient profiles as the CSA stiff-particle cases. Both the inverse PINN and the per-configuration optimiser fail all three cases ($0/3$ pass rate), confirming the structural nature of the Extended Interface limitation.}
+\caption{CCA inverse PINN and optimiser: stiff-fibre worked examples ($\text{SR}=2.0$, $f=0.3$).}
 \label{tab:cca_stiff_examples}
 {\footnotesize
 \begin{tabular}{c l r r r}
@@ -3373,7 +3373,7 @@ Table~\ref{tab:cca_interface_params} lists the interface parameters predicted by
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN: predicted Extended Interface parameters for all eight worked examples. The parameters are the raw network outputs before reconstruction through the forward model.}
+\caption{CCA inverse PINN: predicted Extended Interface parameters for all eight worked examples.}
 \label{tab:cca_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3402,14 +3402,14 @@ To confirm that this failure pattern extends beyond the five hand-picked configu
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{cca_parity_500test.pdf}
-\caption{CCA inverse PINN evaluated on 500~randomly sampled 3-layer interphase configurations. $K_{\text{tr}}$ shows moderate scatter around the diagonal, while $G_{\text{tr}}$ and $G_{\text{ax}}$ deviate systematically, confirming the structural inadequacy of the Extended Interface model for cylindrical composites.}
+\caption{CCA inverse PINN: parity plot over 500~random test configurations, coloured by relative error.}
 \label{fig:cca_parity_500}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{cca_error_hist_500test.pdf}
-\caption{CCA error distribution over 500~random test configurations. $K_{\text{tr}}$ errors cluster near the~$5\,\%$ threshold, whereas $G_{\text{tr}}$ and $G_{\text{ax}}$ errors spread broadly across~$10$--$50\,\%$. The $G_{\text{tr}}$ distribution is roughly uniform between~$10\,\%$ and~$35\,\%$ with no concentration near zero, confirming that this is a structural gap rather than a learning failure.}
+\caption{CCA error distribution over 500~random test configurations. The dashed line marks the~$5\,\%$ threshold.}
 \label{fig:cca_error_hist_500}
 \end{figure}
 
@@ -3439,21 +3439,21 @@ To map the region where the two models agree, we conduct a sweep over six stiffn
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.75\textwidth]{ei_gap_heatmap.pdf}
-\caption{Transverse shear relative error~($\%$) between best-fit isotropic Extended Interface and 3-layer interphase across the stiffness ratio--volume fraction parameter space. The error grows monotonically with both parameters, exceeding~$30\,\%$ for stiff inclusions at high volume fractions.}
+\caption{$G_{\text{tr}}$ relative error~($\%$) between best-fit Extended Interface and 3-layer interphase across the stiffness ratio--volume fraction space.}
 \label{fig:ei_heatmap}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{cca_properties_vs_f.pdf}
-\caption{CCA effective properties vs.\ volume fraction~$f$ at $\text{SR} = 1.0$, comparing the 3-layer interphase model (solid blue), best-fit Extended Interface via optimisation (dashed red), and inverse PINN (green markers). The $G_{\text{tr}}$ panel (centre) shows the characteristic gap: neither the optimisation-based EI fit nor the PINN can track the 3-layer target as~$f$ increases.}
+\caption{CCA effective properties vs.\ volume fraction at $\text{SR} = 1.0$: 3-layer interphase (solid), best-fit EI (dashed), and PINN (markers).}
 \label{fig:cca_vs_f}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{cca_properties_vs_sr.pdf}
-\caption{CCA effective properties vs.\ stiffness ratio (SR) at $f = 0.3$. The transverse shear gap between the 3-layer model and both EI-based predictions widens with increasing stiffness contrast.}
+\caption{CCA effective properties vs.\ stiffness ratio at $f = 0.3$.}
 \label{fig:cca_vs_sr}
 \end{figure}
 
@@ -3493,14 +3493,7 @@ Figure~\ref{fig:grand_comparison} places all three approaches on a single chart 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/grand_comparison.pdf}
-    \caption{Summary comparison of mean relative errors across the approaches studied
-    in this thesis. Three property groups are shown: transverse bulk
-    modulus~$K_{\mathrm{tr}}$ (or~$K_{\mathrm{eff}}$ for CSA), transverse shear
-    modulus~$G_{\mathrm{tr}}$ (or~$G_{\mathrm{eff}}$), and axial shear
-    modulus~$G_{\mathrm{ax}}$ (CCA geometry only). The CSA inverse PINN achieves
-    errors below~$2\,\%$ on both moduli. All CCA-based approaches
-    exceed the $5\,\%$ threshold (dashed line) on~$G_{\mathrm{tr}}$, confirming
-    the structural limitation of the Extended Interface model for fibre composites.}
+    \caption{Mean relative errors across all approaches studied in this thesis. The dashed line marks the~$5\,\%$ acceptance threshold.}
     \label{fig:grand_comparison}
 \end{figure}
 
