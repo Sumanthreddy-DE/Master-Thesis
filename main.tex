@@ -2979,7 +2979,7 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \State Solve 4 BVPs for CCA and only two BVPs for CSA
 \State Extract $\mathbb{T}^{(q)}$, $\mathbb{H}^{(q)}$ for all q = 1,2,3,4
 \State Compute equivalent tensors: $\mathbb{T}^{\text{eq}} = \sum c_r \mathbb{T}^{(r)}$, $\mathbb{H}^{\text{eq}} = \sum c_r \mathbb{H}^{(r)}$
-\State Homogenise via Mori-Tanaka 
+\State Homogenise via Mori-Tanaka
 \State Effective moduli: $K_{\text{tr}}^{\text{target}}, G_{\text{tr}}^{\text{target}}, G_{\text{ax}}^{\text{target}}$
 \Statex
 \State \textbf{--- Inverse prediction using neural network ---}
@@ -2988,7 +2988,7 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \Statex
 \State \textbf{--- Verification using EGIM forward model ---}
 \State Solve EGIM BVPs using predicted $\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha}$ with same fibre/matrix properties
-\State Homogenise via Mori-Tanaka 
+\State Homogenise via Mori-Tanaka
 \State Predicted effective moduli: $K_{\text{tr}}^{\text{pred}}, G_{\text{tr}}^{\text{pred}}, G_{\text{ax}}^{\text{pred}}$
 \State Compute relative errors: $e_i = |C_i^{\text{pred}} - C_i^{\text{target}}| / |C_i^{\text{target}}|$ for each modulus
 \If{all $e_i < $ tolerance}
@@ -2999,8 +2999,26 @@ Algorithms~\ref{alg:inverse_cca} and~\ref{alg:inverse_csa} summarise the complet
 \end{algorithmic}
 \end{algorithm}
 
+% -------------------------------------------------------------------
+\subsection{Differential Evolution Baseline}
+\label{subsec:de_baseline}
+% -------------------------------------------------------------------
 
-With the inverse network architectures and training strategies in place, Chapter~\ref{ch:results} presents the results for both geometries: the CSA inverse PINN achieves a~$100\,\%$ pass rate, while the CCA case reveals a fundamental representational limit of the Extended Interface model that no parameter identification method can overcome.
+The inverse PINN predicts interface parameters in a single forward pass, but a natural question arises: how close are these predictions to the best parameters achievable by unconstrained optimisation? To answer this, we employ differential evolution (DE)~\cite{StornPrice1997} as an independent, per-configuration baseline. DE is a gradient-free, population-based global optimisation algorithm that iteratively improves a set of candidate solutions through mutation, crossover, and selection. Unlike gradient-based methods, it does not require the objective landscape to be smooth or differentiable, making it well suited for the non-convex parameter spaces encountered in interface model fitting.
+
+For each test configuration, the DE optimiser minimises the sum of squared relative errors between the EGIM-predicted and 3-layer target effective moduli:
+%
+\begin{equation}
+    \min_{\bar{\lambda},\, \bar{\mu},\, \bar{k},\, \bar{\alpha}} \;
+    \sum_{p} \left( \frac{p^{\text{EI}} - p^{\text{3-layer}}}{p^{\text{3-layer}}} \right)^{\!2}
+    \label{eq:de_objective}
+\end{equation}
+%
+where $p$ runs over the relevant effective moduli ($K_{\text{eff}}$, $G_{\text{eff}}$ for CSA; $K_{\text{tr}}$, $G_{\text{tr}}$, $G_{\text{ax}}$ for CCA). We use a population size of~15, a maximum of 200~iterations, and bound the search space to $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
+
+The key distinction between the two approaches is one of generality versus optimality. The PINN learns a single mapping that covers the entire parameter space and produces predictions instantaneously, but it must generalise across all configurations. The DE optimiser, by contrast, fits each configuration independently and is therefore free to find the globally best parameters for that specific case. This makes DE an ideal diagnostic tool: if the optimiser also fails to reproduce the target properties, the mismatch must be structural, originating from the Extended Interface model itself rather than from the neural network. In Chapter~\ref{ch:results}, we use this distinction to separate network prediction errors from fundamental model limitations.
+
+With the inverse network architectures, training strategies, and the differential evolution baseline in place, Chapter~\ref{ch:results} presents the results for both geometries: the CSA inverse PINN achieves a~$100\,\%$ pass rate, while the CCA case reveals a fundamental representational limit of the Extended Interface model that no parameter identification method can overcome.
 
 % -------------------------------------------------------------------
 %   CHAPTER 4: RESULTS AND DISCUSSION
