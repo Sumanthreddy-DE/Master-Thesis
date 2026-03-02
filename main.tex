@@ -317,7 +317,8 @@
 
 @techreport{ChatzigeorgiouMulticoated,
   author       = {Chatzigeorgiou, G. and Chen, Q. and Meraghni, F.},
-  title        = {Multicoated inhomogeneities: {Fortran} subroutines},
+  title        = {Composites with multicoated inhomogeneities: Equivalent
+inhomogeneity},
   institution  = {LEM3 -- UMR 7239 CNRS, Arts et M\'{e}tiers Sciences et Technologies},
   year         = {2024},
   type         = {Internal Report},
@@ -1181,7 +1182,7 @@ For composites with imperfect interfaces, the classical Eshelby formula~\eqref{e
 \label{sec:interphase_model}
 % ===================================================================
 
-In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with varying material properties. The idea of replacing a multi-coated inclusion by an equivalent homogeneous one dates back to the works of Hervé and Zaoui~\cite{Herve1993, Herve1995} and Benveniste et al.~\cite{Benveniste1989}. The formulations and notation used throughout this section follow the internal report by Chatzigeorgiou et al.~\cite{ChatzigeorgiouMulticoated}. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{C}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{C}^{(2)}, \mathbb{C}^{(3)}, \ldots, \mathbb{C}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{C}^{(5)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with varying material properties. The idea of replacing a multi-coated inclusion by an equivalent homogeneous one dates back to the works of Hervé and Zaoui~\cite{Herve1993, Herve1995} and Benveniste et al.~\cite{Benveniste1989}. The formulations and notation used throughout this section follow the report by Chatzigeorgiou et al.~\cite{ChatzigeorgiouMulticoated}. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{C}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{C}^{(2)}, \mathbb{C}^{(3)}, \ldots, \mathbb{C}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{C}^{(5)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
 
 % -------------------------------------------------------------------
 \subsection{Average Fields and Volume Fractions}
