@@ -897,7 +897,7 @@ $\bar{(\cdot)}$ & Interface quantity \\[0.3em]
 %\section{Motivation: Composite Materials in Modern Engineering}
 % -------------------------------------------------------------------
 
-Weight reduction has caused a huge shift in the materials used to build things over the past couple of decades especially in the aerospace industry. Carbon fiber reinforced polymers (CFRPs), a high performance composite material, are now part of the majority of airframe components in modern aircrafts like the Boeing 787 and Airbus A350. These planes use more than 50\% composite materials by structural weight \cite{Soutis2005}. This transition is happening beyond aerospace. For example, wind turbine blades are now routinely exceeding 80 meters in length thanks to glass and carbon fiber reinforcements \cite{Mishnaevsky2017}, and car manufacturers incorporate CFRPs to meet stringent emission regulations through lightweighting \cite{Friedrich2013}, and civil infrastructure increasingly relies on fiber reinforced polymer strengthening systems \cite{Hollaway2010}.
+Weight reduction has caused a huge shift in the materials used to build things over the past couple of decades especially in the aerospace industry. Carbon fiber reinforced polymers (CFRPs), a high performance composite material, are now part of the majority of airframe components in modern aircrafts like the Boeing 787 and Airbus A350. These planes use more than 50\% composite materials by structural weight\cite{Soutis2005}. 
 
 % Opening paragraph about composites - leads naturally into homogenization
 The appeal of composite materials lies in their exceptional strength-to-weight ratios that far exceed conventional metals. A unidirectional CFRP laminate can achieve tensile moduli exceeding 150 GPa at densities around 1.6 g/cm$^3$, compared to aluminum's 70 GPa at 2.7 g/cm$^3$ \cite{Chawla2019}. However, this performance is not an intrinsic property of the constituents alone. The overall behavior of a composite depends on its underlying microstructure specifically, on the orientation, distribution, volume fraction, and shape of its constituents, as well as the interactions between them \cite{Firooz2021}. Predicting this overall response from such complex microstructures is a challenging task that has motivated the development of various micromechanical methods, among which homogenization has proven particularly powerful.
@@ -907,7 +907,7 @@ The appeal of composite materials lies in their exceptional strength-to-weight r
 \label{sec:homogenization_review}
 % -------------------------------------------------------------------
 
-Homogenization aims to estimate the macroscopic behavior of a heterogeneous material based on the response of its underlying microstructure, that can replace the heterogeneous material with an equivalent homogeneous medium \cite{Hill1963}. The foundations were laid by variational bounds from Voigt-Reuss \cite{Voigt1889, Reuss1929} to the tighter Hashin-Shtrikman bounds \cite{Hashin1963} and by Eshelby's work \cite{Eshelby1957} on the elastic field of an ellipsoidal inclusion. Building on these, the Mori-Tanaka method \cite{Mori1973, Benveniste1987} provides explicit estimates for effective properties by assuming each inclusion experiences the average matrix strain as its far-field condition, while the composite cylinder assemblage (CCA) \cite{Hashin1964} offers exact solutions for specific fiber composite geometries.
+Homogenization aims to estimate the macroscopic behavior of a heterogeneous material based on the response of its underlying microstructure, that can replace the heterogeneous material with an equivalent homogeneous medium \cite{Hill1963}. The foundations were laid by variational bounds from Voigt-Reuss \cite{Voigt1889, Reuss1929} to the Hashin-Shtrikman bounds \cite{Hashin1963} and by Eshelby's work \cite{Eshelby1957} on the elastic field of an ellipsoidal inclusion. Building on these, the Mori-Tanaka method \cite{Mori1973, Benveniste1987} provides explicit estimates for effective properties by assuming each inclusion experiences the average matrix strain as its far-field condition, while the composite cylinder assemblage (CCA) \cite{Hashin1964} offers exact solutions for specific fiber composite geometries.
 
 A limitation of classical homogenization, however, is that it cannot capture size-dependent material behavior. Since classical formulations lack a physical length-scale, they cannot account for the pronounced surface and interface effects that arise at small scales for instance, in nanocomposites where the area-to-volume ratio becomes significant \cite{Duan2005, Sharma2003}. To address this problem, one has to explicitly include the region where the different phases meet.
 
@@ -919,18 +919,18 @@ A limitation of classical homogenization, however, is that it cannot capture siz
 \label{sec:interphase}
 % -------------------------------------------------------------------
 
-The region where fiber and matrix join is termed as the \textit{interphase} which is a three-dimensional zone of finite thickness where material properties transition from those of the reinforcement to those of the matrix. This region forms through various mechanisms creating chemically distinct layers with unique properties typically with 50 to 500 nm as thickness \cite{Jones1991}. These Interphases significantly influence overall composite behavior since load transfer from matrix to fiber occurs entirely through this region, and failure processes like debonding, crack initiation and delamination which often starts from here \cite{Kim1998}.
+The region where fiber and matrix join is termed as the \textit{interphase} which is a three-dimensional zone of finite thickness where material properties transition from those of the reinforcement to those of the matrix. This region forms through various mechanisms creating chemically distinct layers with unique properties typically with 50 to 500 nm as thickness \cite{Jones1991}. These Interphases significantly influence overall composite behavior since load transfer from matrix to fiber occurs entirely through this region \cite{Kim1998}.
 %in ceramic matrix composites, diffusion processes generate compositionally graded zones; in nanocomposites, polymer chains near filler surfaces exhibit altered mobility extending several nanometers into the bulk \cite{Ciprari2006}
 %\subsection{Interphase Modeling Approaches}
 
-The primary approach to study interphases was to consider them as a homogeneous independent phase between constituents \cite{Walpole1978}. Luo and Weng \cite{Luo1987, Luo1989} developed a modified Mori-Tanaka method for composites with coated fibers and particles, while Benveniste et al. \cite{Benveniste1989} obtained effective moduli for composites with coated fibers. For more realistic analyses, interphases can be assumed to possess spatially variable properties---inhomogeneous, graded, or multilayered. Herv\'{e} and Zaoui \cite{Herve1993, Herve1995} derived elastic fields for multilayered inclusions, providing a framework suited to analyze graded interphases.
+The primary approach to study interphases was to consider them as a homogeneous independent phase between constituents \cite{Walpole1978}. Luo and Weng \cite{Luo1987, Luo1989} developed a modified Mori-Tanaka method for composites with coated fibers and particles, while Benveniste et al. \cite{Benveniste1989} obtained effective moduli for composites with coated fibers. For a more realistic analysis, interphases can be assumed to possess spatially variable properties like inhomogeneous, graded, or multilayered. Herv\'{e} and Zaoui \cite{Herve1993, Herve1995} derived elastic fields for multilayered inclusions, providing a framework suited to analyze graded interphases.
 
 \subsection{Computational Challenge}
 
-From a computational perspective, the interphase presents a significant challenge. Finite element analysis requires discretizing this thin layer, but the extreme aspect ratios involved---a 100 nm interphase surrounding a 7 $\mu$m diameter carbon fiber---lead to severely ill-conditioned stiffness matrices and prohibitive mesh densities \cite{Firooz2019}. For representative volume elements containing hundreds of fibers, explicitly resolving each interphase becomes computationally intractable. This tension between physical accuracy and computational feasibility motivates the development of simplified mathematical descriptions---namely, replacing the volumetric interphase with a zero-thickness \textit{interface} model.
+From a computational perspective, the interphase presents a significant challenge. Finite element analysis requires discretizing this thin layer, but the extreme aspect ratios involved a 100 nm interphase surrounding a 7 $\mu$m diameter carbon fiber lead to severely ill-conditioned stiffness matrices and prohibitive mesh densities \cite{Firooz2019}. For RVEs containing hundreds of fibers, explicitly resolving each interphase becomes computationally expensive. This tension between physical accuracy and computational practicality motivates the development of simplified mathematical descriptions which replaces the interphase with finite volume with a zero-thickness \textit{interface} model.
 
 % -------------------------------------------------------------------
-\section{Interface Models: Mathematical Abstraction}
+\section{Interface Models:}
 \label{sec:interface_models_intro}
 % -------------------------------------------------------------------
 
@@ -939,13 +939,13 @@ A well-established strategy to address the computational challenges of finite-th
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.90\textwidth]{figures/model_hierarchy.pdf}
-    \caption{Hierarchy of interface and interphase models studied in this thesis.}
+    \caption{Hierarchy of interface and interphase models}
     \label{fig:model_hierarchy}
 \end{figure}
 
-Interface models form a hierarchy of increasing generality, as illustrated in the left branch of Figure~\ref{fig:model_hierarchy}. The simplest is the \textit{perfect interface}, which enforces continuity of both displacement and traction across the surface---convenient but unable to capture any interphase physics. Relaxing one continuity condition while maintaining the other leads to two classical imperfect models. The \textit{cohesive} (spring-layer) interface \cite{Hashin1991, Needleman1987} allows displacement jumps, representing compliant interphases such as soft coatings or degraded bonds. The \textit{elastic} (membrane) interface \cite{Gurtin1975, Gurtin1978}, permits traction jumps driven by surface stresses while maintaining displacement continuity, and captures stiff interphases that resist tangential deformation.
+Interface models form a hierarchy of increasing generality, as illustrated in the left branch of Figure~\ref{fig:model_hierarchy}. The simplest is the \textit{perfect interface}, which enforces continuity of both displacement and traction across the surface convenient but unable to capture any interphase physics. Relaxing one continuity condition while maintaining the other leads to two classical imperfect models. The \textit{cohesive} (spring-layer) interface \cite{Hashin1991, Needleman1987} allows displacement jumps. The \textit{elastic} (membrane) interface \cite{Gurtin1975, Gurtin1978}, permits traction jumps driven by surface stresses while maintaining displacement continuity, and captures stiff interphases that resist tangential deformation.
 
-Real interphases often exhibit characteristics of both compliant and stiff behaviour simultaneously. Hashin \cite{Hashin2002} and Benveniste and Miloh \cite{Benveniste2001} unified the above into a \textit{general interface model} (GIM) that admits both displacement and traction jumps. All earlier models emerge as limiting cases of the GIM. However, the GIM implicitly assumes the interface lies at the geometric mid-plane of the original interphase, an assumption that becomes problematic for graded or asymmetric interphases. Firooz et al.\ \cite{Firooz2019, Firooz2021} addressed this by introducing the \textit{Extended General Interface Model} (EGIM), which adds a position parameter $\bar{\alpha} \in [0, 1]$ that allows the interface to sit anywhere within the original interphase region.
+Real interphases often exhibit characteristics of both compliant and stiff behaviour simultaneously. Hashin \cite{Hashin2002} and Benveniste and Miloh \cite{Benveniste2001} unified the above into a \textit{general interface model} (GIM) that admits both displacement and traction jumps. All earlier models emerge as limiting cases of the GIM. However, the GIM assumes the interface lies at the geometric mid-plane of the original interphase, an assumption that becomes problematic for graded or asymmetric interphases. Firooz et al.\ \cite{Firooz2019, Firooz2021} addressed this by introducing the \textit{Extended General Interface Model} (EGIM), which adds a position parameter $\bar{\alpha} \in [0, 1]$ that allows the interface to sit anywhere within the original interphase region.
 
 The complete EGIM is thus characterised by four independent parameters:
 %
@@ -956,17 +956,16 @@ The complete EGIM is thus characterised by four independent parameters:
     \item $\bar{\alpha}$ --- position parameter 
 \end{itemize}
 %
-The formal mathematical definitions of these parameters, the jump and average operators, the constitutive relations of the interface, and the resulting concentration tensors, are developed in Chapter~\ref{ch:theory}.
 
 % -------------------------------------------------------------------
 \section{The Research Gap: Parameter Identification}
 % -------------------------------------------------------------------
 
-The theoretical framework described above provides a coherent path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties \cite{Firooz2021}.
+The theoretical framework described in section above provides a path from finite-thickness interphases to computationally efficient interface models. However, a critical gap remains in practical application: the interface parameters ($\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$) are phenomenological quantities that cannot be directly measured or straightforwardly derived from known interphase properties \cite{Firooz2021}.
 
-Consider a concrete example: given a CFRP system with a sizing layer of known thickness $h$ and elastic moduli ($\lambda_{\text{sizing}}$, $\mu_{\text{sizing}}$), what interface stiffness $\bar{k}$ produces the same effective composite response? The answer is not obvious, and several complicating factors arise:
+Consider an example: given a CFRP system with a sizing layer of known thickness $h$ and elastic moduli ($\lambda_{\text{sizing}}$, $\mu_{\text{sizing}}$), what interface stiffness $\bar{k}$ produces the same effective composite response? The answer is not obvious, and several complicating factors arise:
 
-\paragraph{Non-uniqueness and coupling:} The interface parameters interact in complex ways---different combinations of $\bar{k}$ and $\bar{\alpha}$ can yield identical macroscopic responses \cite{Firooz2021}, and a single parameter like $\bar{k}$ affects both bulk and shear moduli simultaneously, making independent identification from individual loading cases difficult \cite{Firooz2019}.
+\paragraph{Non-uniqueness:} The interface parameters interact in complex ways different combinations of $\bar{k}$ and $\bar{\alpha}$ can yield identical macroscopic responses \cite{Firooz2021}, and a single parameter like $\bar{k}$ affects both bulk and shear moduli simultaneously, making independent identification from individual loading cases difficult \cite{Firooz2019}.
 
 \paragraph{Graded Properties:} Real interphases rarely exhibit uniform properties. Sizing agents create cross-linking density gradients \cite{Wu2019}, diffusion processes generate compositional profiles, and damage accumulation produces spatially varying stiffness \cite{Ciprari2006, Jones1991}. Mapping such complexity onto equivalent interface parameters requires systematic methodology.
 
@@ -977,7 +976,7 @@ Consider a concrete example: given a CFRP system with a sizing layer of known th
 Two fundamentally different strategies exist for determining interface parameters from interphase descriptions: asymptotic derivation and direct parametric identification. Understanding their limitations motivates the data-driven approach adopted in this thesis.
 
 \paragraph{Asymptotic Approach.}
-Asymptotic analysis treats the interphase thickness $\varepsilon$ as a small parameter and examines the limiting behavior as $\varepsilon \to 0$. Pioneered by B\"{o}vik \cite{Bovik1994} and developed by Benveniste \cite{Benveniste2006}, this methodology expands the displacement and stress fields within the interphase as Taylor series about the mid-surface, then enforces continuity conditions at the boundaries. The \textit{scaling} of interphase stiffness with thickness determines the resulting interface type: soft scaling ($\mathbb{C} \sim \varepsilon$) yields a cohesive interface with $\bar{k} = \mu/h$, while stiff scaling ($\mathbb{C} \sim \varepsilon^{-1}$) produces a membrane-type interface \cite{Lebon2010, Lebon2011}. Although elegant, this approach presupposes complete knowledge of the interphase properties and their scaling regime conditions rarely met for real interphases that are spatially graded or only partially characterised through indirect measurements\cite{Lebon2010}.
+Asymptotic analysis treats the interphase thickness $\varepsilon$ as a small parameter and examines the limiting behavior as $\varepsilon \to 0$. This approach is pioneered by B\"{o}vik \cite{Bovik1994} and developed by Benveniste \cite{Benveniste2006}. This methodology expands the displacement and stress fields within the interphase as Taylor series about the mid-surface, then enforces continuity conditions at the boundaries. The \textit{scaling} of interphase stiffness with thickness determines the resulting interface type: soft scaling ($\mathbb{C} \sim \varepsilon$) yields a cohesive interface with $\bar{k} = \mu/h$, while stiff scaling ($\mathbb{C} \sim \varepsilon^{-1}$) produces a membrane-type interface \cite{Lebon2010, Lebon2011}. Although it looks elegant, this approach assumes comprehensive understanding of the interphase properties and related scaling regime conditions, which are rarely met for real interphases that are spatially graded or only partially characterised through indirect measurements\cite{Lebon2010}.
 
 \paragraph{Direct Parametric Identification.}
 An alternative strategy requires the interface model to reproduce the same effective composite response as the interphase model. One seeks interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ such that:
@@ -995,11 +994,11 @@ This matching condition leads to an \textit{underdetermined} system: the EGIM ha
 \section{Bridging the Gap: A Data-Driven Approach}
 % -------------------------------------------------------------------
 
-The limitations outlined above---underdetermined inverse problems, non-unique parameter mappings, and incomplete interphase characterisation suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges.
+The limitations outlined above suggest that purely analytical routes to parameter identification have inherent constraints. This thesis develops a computational framework that combines analytical homogenization with neural networks to address these challenges.
 
 We develop a physics-informed neural network (PINN) that directly identifies interface parameters from target mechanical response. Unlike iterative inverse optimisation, which requires repeated forward solves at each iteration, the trained PINN identifies parameters in a single forward pass; the physics loss embedded during training~\cite{Raissi2019} ensures that predictions remain consistent with the governing homogenization equations. We apply the same inverse network to both CSA and CCA geometries to test the scope of the interface model across different composite types.
 
-Neural networks are preferred over alternatives such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002} because the mapping is highly nonlinear, the input space is seven- to eight-dimensional, and the training datasets contain $200\,000$ samples(CCA) a regime where Gaussian processes become computationally prohibitive \cite{Liu2020} and polynomial expansions struggle with the strong nonlinearities. The detailed justification is given in Section~\ref{sec:neural_network}.
+Neural networks are preferred over alternatives such as Gaussian process regression \cite{Rasmussen2006} or polynomial chaos expansions \cite{Xiu2002} because the mapping is highly nonlinear, the input space is seven- to eight-dimensional, and the training datasets contain around $200\,000$ samples(CCA) a regime where Gaussian processes become computationally prohibitive \cite{Liu2020}. The detailed justification is given in Section~\ref{sec:neural_network}.
 
 % -------------------------------------------------------------------
 \section{Objectives}
@@ -1008,7 +1007,7 @@ Neural networks are preferred over alternatives such as Gaussian process regress
 The primary objective of this thesis is to investigate the relationship between finite-thickness interphase models and zero-thickness interface models in composite homogenization, and to develop neural network approaches where analytical methods reach their limits. Specifically, the research aims to:
 
 \begin{enumerate}
-    \item \textbf{Implement and Verify the Multi-Coated Interphase Model:} For both fibre-reinforced (CCA) and particle-reinforced (CSA) composites, establishing a trusted reference solution through consistency checks and limiting-case verification.
+    \item \textbf{Implement and Verify the Multi-Coated Interphase Model:} For both fiber-reinforced (CCA) and particle-reinforced (CSA) composites, establishing a trusted reference solution through consistency checks and limiting-case verification.
 
     \item \textbf{Develop an Inverse PINN for Parameter Identification:} Construct a physics-informed neural network that identifies interface parameters from target mechanical response, embedding the homogenization equations directly into the training process.
 
@@ -1023,11 +1022,11 @@ The primary objective of this thesis is to investigate the relationship between 
 
 This work is structured as follows:
 
-\textbf{Chapter~\ref{ch:theory}} presents the theoretical foundations. It begins with the governing equations of continuum mechanics and homogenization---balance laws, the Hill-Mandel condition, and the Eshelby inclusion problem. The coordinate transformation machinery for cylindrical and spherical geometries is then established. The multi-coated inclusion model for interphase analysis is developed, the concentration tensor structures are derived, and the interface models from perfect to extended general are formulated. The interface-enhanced Mori-Tanaka homogenization framework is developed, and the chapter concludes with an introduction to feedforward neural networks and physics-informed learning.
+\textbf{Chapter~\ref{ch:theory}} presents the theoretical foundations. It begins with the governing equations of continuum mechanics and homogenization which includes balance laws, the Hill-Mandel condition, and the Eshelby inclusion problem. The coordinate transformations for cylindrical and spherical geometries is then established. The multi-coated inclusion model for interphase analysis is developed, the concentration tensor structures are derived, and the interface models from perfect to extended general are formulated. The interface-enhanced Mori-Tanaka homogenization framework is developed, and the chapter concludes with an introduction to feedforward neural networks and physics-informed learning.
 
 \textbf{Chapter~\ref{ch:methodology}} develops the methodology. The boundary value problems for the multi-layered interphase model and the interface-enhanced Mori-Tanaka model are derived for fibre-reinforced (CCA) and particle-reinforced (CSA) composites. The neural network architecture for inverse parameter identification is presented, along with training procedures and data generation.
 
-\textbf{Chapter~\ref{ch:results}} presents the results and discussion. The three-layered interphase model is first verified through consistency checks and limiting cases. The representational limits of the Extended Interface Model are quantified through systematic gap analysis with worked numerical examples. Inverse PINNs for both CSA and CCA geometries are demonstrated, with the CCA case providing independent confirmation of the gap. The chapter concludes with a discussion of the findings and practical recommendations.
+\textbf{Chapter~\ref{ch:results}} presents the results and discussion. The three-layered interphase model is first verified through consistency checks and limiting cases. Inverse PINNs for both CSA and CCA geometries are demonstrated, with the CCA case providing independent confirmation of the gap. The limits of the Extended Interface Model are quantified through systematic gap analysis with numerical examples. The chapter concludes with a discussion of the findings and practical recommendations.
 
 \textbf{Chapter~\ref{ch:conclusion}} summarises the contributions, discusses limitations of the current framework, and outlines directions for future research.
 
@@ -1064,7 +1063,7 @@ Homogenization relies on the concept of a Representative Volume Element (RVE) wh
 %
 where $\ell_{\text{micro}}$ is the characteristic inclusion size (fiber radius or particle diameter), $\ell_{\text{RVE}}$ is the RVE dimension, and $\ell_{\text{macro}}$ is the structural length scale. This condition is the basic requirement for any mean-field homogenization scheme. When this condition holds, the heterogeneous material can be replaced by an equivalent homogeneous medium whose effective stiffness ${}^{\mathrm{M}}\hspace{-1pt}\mathbb{C}$ relates macroscopic stress and strain.
 
-For composite cylinder and composite sphere assemblages used in this work, the RVE is a single coated inclusion surrounded by matrix material. Hashin \cite{Hashin1964} showed that assemblages of such unit cells, packed to fill all available space, yield exact effective properties. This is a stronger result than approximate mean-field estimates, and it provides the benchmark against which our numerical implementations are verified in Chapter~\ref{ch:results}.
+For composite cylinder and composite sphere assemblages used in this work, the RVE is a single coated inclusion surrounded by matrix material. Hashin \cite{Hashin1964} showed that assemblages of such unit cells, packed to fill all available space, yield exact effective properties.
 
 % -------------------------------------------------------------------
 \subsection{Balance of Linear Momentum}
@@ -1086,7 +1085,7 @@ where $\mathcal{B}$ denotes the bulk domain (all phases).
 \label{subsec:constitutive_relations}
 % -------------------------------------------------------------------
 
-Both models in this thesis assume linear elastic, isotropic phase materials. The strain and stress tensors in Voigt notation are:
+Both the models in this thesis assume linear elastic, isotropic phase materials. The strain and stress tensors in Voigt notation are:
 %
 \begin{equation}
     \bs{\varepsilon} =
@@ -1149,31 +1148,31 @@ The Hill-Mandel condition then requires:
     \label{eq:hill_mandel}
 \end{equation}
 
-This is satisfied by linear displacement (Dirichlet) boundary conditions, uniform traction (Neumann) boundary conditions, or periodic boundary conditions \cite{Hill1963}. In the Mori-Tanaka framework used throughout this thesis, we adopt linear displacement boundary conditions: $\bs{u} = \bs{\varepsilon}^{(0)} \cdot \bs{x}$ at infinity.
+This is satisfied by linear displacement (Dirichlet) boundary conditions, uniform traction (Neumann) boundary conditions, or periodic boundary conditions \cite{Hill1963}.
 
 % -------------------------------------------------------------------
 \subsection{Eshelby Problem and the Mori-Tanaka Assumption}
 \label{subsec:eshelby_problem}
 % -------------------------------------------------------------------
 
-The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{C}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{C}^{(0)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the  strain concentration tensor $\mathbb{T}$ satisfies:
+The Eshelby inclusion problem \cite{Eshelby1957} considers a single ellipsoidal inhomogeneity with stiffness $\mathbb{C}^{(1)}$ embedded in an infinite matrix with stiffness $\mathbb{C}^{(2)}$, subject to a uniform far-field strain $\bs{\varepsilon}^{(0)}$. Eshelby's fundamental result is that the strain inside the inhomogeneity is uniform, and the  strain concentration tensor $\mathbb{T}$ satisfies:
 %
 \begin{equation}
-    \bs{\varepsilon}^{(1)} = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
+    \bs{\varepsilon}^{(1)} = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)} \quad
     \label{eq:eshelby_dilute}
 \end{equation}
 %
 
 The Mori-Tanaka method \cite{Mori1973, Benveniste1987} extends this result to finite inclusion volume fractions by a mean-field assumption: each inclusion experiences the \textit{average matrix strain} $\bs{\varepsilon}^{(2)}$ (rather than the macroscopic strain) as its far-field condition. The effective stiffness then follows from the concentration tensors and volume fractions.
 
-For composites with imperfect interfaces, the classical Eshelby formula~\eqref{eq:eshelby_dilute} no longer applies directly, because the interface conditions modify the stress and displacement fields around the inclusion. In this case, the concentration tensors are computed by solving boundary value problems that incorporate the specific interface constitutive law---a procedure detailed in Chapter~\ref{ch:methodology}.
+For composites with imperfect interfaces, the classical Eshelby formula~\eqref{eq:eshelby_dilute} no longer applies directly, because the interface conditions modify the stress and displacement fields around the inclusion. In this case, the concentration tensors are computed by solving boundary value problems that incorporate the specific interface constitutive law a procedure detailed in Chapter~\ref{ch:methodology}.
 
 % ===================================================================
 \section{Three-Layered Interphase Model}
 \label{sec:interphase_model}
 % ===================================================================
 
-In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with spatially varying properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{C}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{C}^{(2)}, \mathbb{C}^{(3)}, \ldots, \mathbb{C}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{C}^{(0)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
+In many composite systems, the transition from inclusion to matrix is not abrupt but occurs through a graded interphase region with varying material properties. The three-layered interphase model handles this by discretising the interphase into $N$ coating layers, each with piecewise-constant material properties. An inhomogeneity (core) with stiffness $\mathbb{C}^{(1)}$ is surrounded by coating layers with stiffnesses $\mathbb{C}^{(2)}, \mathbb{C}^{(3)}, \ldots, \mathbb{C}^{(N+1)}$, where N is number of coatings. All of this is embedded in an infinite matrix with stiffness $\mathbb{C}^{(5)}$ subject to a uniform far-field strain. In the present work, we use $N=3$ coating layers, which convergence studies show is sufficient for most engineering interphase profiles. To avoid working with a large number of material phases, the core and its surrounding coatings are replaced by a single equivalent inhomogeneity with effective stiffness $\mathbb{C}^{\text{eq}}$. We then apply Mori-Tanaka homogenization to obtain the effective properties of the composite system.
 
 % -------------------------------------------------------------------
 \subsection{Average Fields and Volume Fractions}
@@ -1212,7 +1211,7 @@ For homogenization, we define the average strain and stress in each phase $i$:
     \label{eq:average_fields}
 \end{equation}
 %
-for $i = 1, 2, 3, 4, 0$.
+for $i = 1, 2, 3, 4, 5$.
 
 For phases with constant material properties, these tensors are related by:
 %
@@ -1235,10 +1234,10 @@ The volume fractions characterise the relative sizes of the phases within the eq
 where $V_m$ is the volume of phase $m = 1,2,3,4$(core+3 coatings). These can be expressed recursively:
 %
 \begin{align}
-    c_4 &= 1 - \phi_4 \nonumber\\
+    c_4 &= 1 - \phi_4 \nonumber \\
     c_{3} &= \phi_4 - \phi_4 \phi_{3} \nonumber\\
     c_{2} &= \phi_4 \phi_{3} - \phi_4 \phi_{3} \phi_{2} \nonumber\\
-    c_1 &= \phi_4 \phi_{3}\phi_2 \phi_1
+    c_1 &= \phi_4 \phi_{3}\phi_2 \phi_1 \quad \text{(core)}
     \label{eq:volume_fractions_recursive}
 \end{align}
 
@@ -1403,7 +1402,7 @@ A useful identity is $\bs{Q}_\varepsilon^{-1} = \bs{Q}_\sigma^T$ and $\bs{Q}_\si
 \subsubsection{Tensor Structure for Fibre-Reinforced Composites (2D, CCA)}
 \label{subsec:tensor_structure_fiber}
 
-For long cylindrical fibers, the composite exhibits transverse isotropy. The strain concentration tensor in Voigt notation take the block-diagonal form:
+For long cylindrical fibers, we assume the composite exhibits transverse isotropy. The strain concentration tensor in Voigt notation takes the form:
 %
 \begin{equation}
     \mathbb{T}^{(q)} =
@@ -1418,7 +1417,7 @@ For long cylindrical fibers, the composite exhibits transverse isotropy. The str
     \label{eq:T_fiber_structure}
 \end{equation}
 %
-The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T_{44}^{(q)}$ and $T_{55}^{(q)}$ govern transverse and axial shear. The stress concentration tensor has the corresponding structure:
+The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T_{44}^{(q)}$ and $T_{55}^{(q)}$ govern transverse and axial shear. \\The stress concentration tensor has the corresponding structure:
 %
 \begin{equation}
     \mathbb{H}^{(q)} =
@@ -1433,14 +1432,14 @@ The upper-left $3 \times 3$ block couples in-plane and axial responses, while $T
     \label{eq:H_fiber_structure}
 \end{equation}
 
-All the independent components needed for $\mathbb{T}$, and $\mathbb{H}$ are calculated from the BVP solutions (Section~\ref{subsec:fiber_bvp}).
+All the independent components needed for $\mathbb{T}^{(q)}$, and $\mathbb{H}^{(q)}$ are calculated using BVP solutions (Section~\ref{subsec:fiber_bvp}).
 
 \subsubsection{Tensor Structure for Particle-Reinforced Composites (3D, CSA)}
 \label{subsec:tensor_structure_particle}
 
 For spherical particles, the tensors exhibit full isotropy:
 %
-The strain concentration tensor in Voigt notation take the block-diagonal form:
+The strain concentration tensor in Voigt notation takes the form:
 \begin{equation}
     \mathbb{T}^{(q)} =
     \begin{bmatrix}
@@ -1468,7 +1467,7 @@ The stress concentration tensor has the corresponding structure:
 \end{equation}
 
 
-All the independent components needed for $\mathbb{T}$, and $\mathbb{H}$ are calculated from the BVP solutions (Section~\ref{subsec:particle_bvp}).
+All the independent components needed for $\mathbb{T}^{(q)}$, and $\mathbb{H}^{(q)}$ are calculated from the BVP solutions (Section~\ref{subsec:particle_bvp}).
 
 % -------------------------------------------------------------------
 \subsection{Homogenization}
@@ -1482,41 +1481,21 @@ With the equivalent concentration tensors in hand, we obtain the stiffness of th
     \label{eq:equivalent_stiffness}
 \end{equation}
 %
-The tensor $\mathbb{C}^{\text{eq}}$ represents the stiffness of a single homogeneous inclusion that would produce the same average response as the original multi-coated particle. Since $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ already encode the full interaction between the applied far-field strain and the layered inclusion---including the volume-weighted contributions of all phases---they can be substituted directly into the Mori-Tanaka formula. The Mori-Tanaka assumption replaces the far-field strain with the average matrix strain ($\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$), and the macroscopic composite stiffness follows as:
+The tensor $\mathbb{C}^{\text{eq}}$ represents the stiffness of a single homogeneous inclusion that would produce the same average response as the original multi-coated particle. Since $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ already encode the full interaction between the applied far-field strain and the layered inclusion including the volume-weighted contributions of all phases which can be substituted directly into the Mori-Tanaka formula. This Mori-Tanaka assumption replaces the far-field strain with the average matrix strain ($\bs{\varepsilon}^{(0)} \equiv \bs{\varepsilon}^{(2)}$), and the macroscopic composite stiffness follows as:
 %
 \begin{equation}
     \boxed{{}^{\mathrm{M}}\hspace{-1pt}\mathbb{C} = \left[(1-f)\mathbb{C}^{(2)} + f\,\mathbb{H}^{\text{eq}}\right] : \left[(1-f)\mathbb{I} + f\,\mathbb{T}^{\text{eq}}\right]^{-1}}
     \label{eq:MT_interphase}
 \end{equation}
 %
-where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)}$ denotes the matrix stiffness. In the Mori-Tanaka formula we follow the standard two-phase convention (inclusion = phase~$1$, matrix = phase~$2$); this is distinct from the multi-layered numbering ($0$ = matrix, $1$ = core, $2, \ldots, N{+}1$ = coatings) used in the BVP setup above. Because the tensor structure is block-diagonal, the $6 \times 6$ formula reduces to scalar expressions for each independent modulus.
-
-For \textbf{fibre-reinforced composites} (2D, CCA), three independent effective moduli are obtained:
-%
-\begin{align}
-    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f \, H_{\kappa}^{\text{eq}}}{(1-f) + f \, T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{tr}} &= \frac{(1-f)\mu^{(2)} + f \, H_{44}^{\text{eq}}}{(1-f) + f \, T_{44}^{\text{eq}}} \label{eq:mutr_eff_interphase}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu_{\text{ax}} &= \frac{(1-f)\mu^{(2)} + f \, H_{55}^{\text{eq}}}{(1-f) + f \, T_{55}^{\text{eq}}} \label{eq:muax_eff_interphase}
-\end{align}
-%
-where $\kappa^{(2)} = \lambda^{(2)} + \mu^{(2)}$ is the plane-strain bulk modulus of the matrix.
-
-For \textbf{particle-reinforced composites} (3D, CSA), two effective moduli suffice:
-%
-\begin{align}
-    {}^{\mathrm{M}}\hspace{-1pt}\kappa &= \frac{(1-f)\kappa^{(2)} + f \, H_{\kappa}^{\text{eq}}}{(1-f) + f \, T_{\kappa}^{\text{eq}}} \label{eq:kappa_eff_interphase_csa}\\[6pt]
-    {}^{\mathrm{M}}\hspace{-1pt}\mu &= \frac{(1-f)\mu^{(2)} + f \, H_{\mu}^{\text{eq}}}{(1-f) + f \, T_{\mu}^{\text{eq}}} \label{eq:mu_eff_interphase_csa}
-\end{align}
-%
-where $\kappa^{(2)} = \lambda^{(2)} + \frac{2}{3}\mu^{(2)}$ is the 3D bulk modulus.
-
+where $f$ is the overall volume fraction of inhomogeneities and $\mathbb{C}^{(2)}$ denotes the matrix stiffness. In the Mori-Tanaka formula we follow the standard two-phase convention (inclusion = phase~$1$, matrix = phase~$2$); this is distinct from the multi-layered numbering ($0$ = matrix, $1$ = core, $2, \ldots, N{+}1$ = coatings) used in the BVP setup above. 
 % ===================================================================
 \section{Extended General Interface Model}
 \label{sec:interface_model}
 \label{sec:interface_models}
 % ===================================================================
 
-An alternative to modelling the interphase as a volumetric region is to shrink it to a zero-thickness interface with its own constitutive law. This is the idea behind interface models. Instead of discretising the graded region into layers, we can assign material-like parameters directly to the surface separating inclusion and matrix. In this section we develop the Extended General Interface Model (EGIM) \cite{Firooz2022}, which is the most general linear interface model and encompasses all simpler interface models as special cases.
+An alternative to modelling the interphase as a volumetric region is to shrink it to a zero-thickness interface which has its own constitutive laws. This is the idea behind interface models. Instead of discretising the graded region into layers, we can assign material-like parameters directly to the surface separating inclusion and matrix. In this section we develop the Extended General Interface Model (EGIM) \cite{Firooz2022}, which is the most general linear interface model and encompasses all simpler interface models as special cases. The formulations and derivations presented throughout this section follow those of Firooz et al. \cite{Firooz2022}.
 
 % -------------------------------------------------------------------
 \subsection{Interface Kinematics}
@@ -1726,7 +1705,7 @@ For particle-reinforced composites with a spherical interface, the constitutive 
 %
 Due to the full isotropy of the spherical geometry, only two interface moduli ($\bar{\lambda}$, $\bar{\mu}$) govern the tangential response which means there is no distinction between in-plane and out-of-plane shear as in the cylindrical case.
 
-\newpage
+
 For isotropic interfaces which we are assuming in both 2D and 3D, a single parameter $\bar{k}$ is enough:
 %
 \begin{equation}
@@ -3389,11 +3368,11 @@ Case & Property & 3-Layer Target & PINN Err.~(\%) & Optim.\ Err.~(\%) \\
 }
 \end{table}
 
-Tables~\ref{tab:cca_interface_params} and~\ref{tab:cca_optim_params} list the interface parameters found by the PINN and the differential evolution optimiser, respectively. Unlike the CSA parameters (Table~\ref{tab:csa_interface_params}), which vary meaningfully across configurations, both solvers exhibit characteristic saturation in the CCA case. The PINN drives~$\bar{k}$ to values near~$5000$ (close to its output constraint ceiling), while the optimiser pushes~$\bar{k}$ all the way to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$ in seven of eight cases. Meanwhile, the optimiser collapses~$\bar{\mu}$ to near-zero values ($< 0.06$), concentrating all tangential compliance into~$\bar{\lambda}$ alone. This consistent saturation pattern across two independent solvers confirms that the Extended Interface model is being stretched to its representational limit, and no reparameterisation within the four-parameter isotropic space can close the gap.
+Tables~\ref{tab:cca_interface_params} and~\ref{tab:cca_optim_params} list the interface parameters found by the PINN and the differential evolution optimiser, respectively. Unlike the CSA parameters (Table~\ref{tab:csa_interface_params}), which vary meaningfully across configurations, both solvers exhibit characteristic saturation in the CCA case. The PINN drives~$\bar{k}$ to values near~$5000$, while the optimiser pushes~$\bar{k}$ all the way to its upper bound of~$10\,000$ and~$\bar{\alpha}$ to~$1.0$ in seven of eight cases. Meanwhile, the optimiser collapses~$\bar{\mu}$ to near-zero values ($< 0.06$). This consistent saturation pattern across two independent solvers confirms that the Extended Interface model is being stretched to its representational limit, and no reparameterization within the four-parameter isotropic space can close the gap.
 
 \begin{table}[htbp]
 \centering
-\caption{CCA inverse PINN: predicted Extended Interface parameters.}
+\caption{CCA inverse PINN: predicted Extended Interface parameters}
 \label{tab:cca_interface_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3418,7 +3397,7 @@ C & Strong gradient    & 3.00 & 3.45 & 4915.8 & 0.469 \\
 
 \begin{table}[htbp]
 \centering
-\caption{CCA differential evolution optimiser: best-fit Extended Interface parameters for the same eight cases. Note the saturation of~$\bar{k}$ at the upper bound ($10\,000$) and~$\bar{\alpha}$ at~$1.0$ in seven of eight cases.}
+\caption{CCA DE optimiser: best-fit Extended Interface parameters}
 \label{tab:cca_optim_params}
 {\footnotesize
 \begin{tabular}{l c r r r r}
@@ -3447,14 +3426,14 @@ To confirm that this failure pattern extends beyond the five hand-picked configu
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{cca_parity_500test.pdf}
-\caption{CCA inverse PINN: parity plot over 500~random test configurations, coloured by relative error.}
+\caption{CCA inverse PINN: parity plot}
 \label{fig:cca_parity_500}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{cca_error_hist_500test.pdf}
-\caption{CCA error distribution over 500~random test configurations. The dashed line marks the~$5\,\%$ threshold.}
+\caption{CCA error distribution }
 \label{fig:cca_error_hist_500}
 \end{figure}
 
@@ -3479,7 +3458,7 @@ For each configuration, we solve
 using differential evolution (population size~15, 200~iterations) with bounds $\bar{\lambda} \in [0,\, 10]$, $\bar{\mu} \in [0.01,\, 10]$, $\bar{k} \in [1,\, 10\,000]$, and $\bar{\alpha} \in [0,\, 1]$.
 
 \paragraph{Stiffness ratio--volume fraction sweep.}
-To map the region where the two models agree, we conduct a sweep over six stiffness ratios $\text{SR} \in \{0.1,\, 0.5,\, 1.0,\, 2.0,\, 5.0,\, 10.0\}$ and six volume fractions $f \in \{0.05,\, 0.10,\, 0.20,\, 0.30,\, 0.40,\, 0.50\}$, giving~36 configurations. Figure~\ref{fig:ei_heatmap} maps the $G_{\text{tr}}$ error across this parameter space. Only~3 of the~36 combinations pass the~$5\,\%$ threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both stiffness ratio and volume fraction, reaching nearly~$40\,\%$ at $\text{SR} = 10$ and $f = 0.50$. The models agree only where the interphase effect is weak. Figures~\ref{fig:cca_vs_f} and~\ref{fig:cca_vs_sr} show individual sweeps along the volume fraction and stiffness ratio axes, respectively, with the characteristic $G_{\text{tr}}$ gap visible in both.
+To map the region where the two models agree, we conduct a sweep over six stiffness ratios $\text{SR} \in \{0.1,\, 0.5,\, 1.0,\, 2.0,\, 5.0,\, 10.0\}$ and six volume fractions $f \in \{0.05,\, 0.10,\, 0.20,\, 0.30,\, 0.40,\, 0.50\}$, giving~36 configurations. Figure~\ref{fig:ei_heatmap} maps the $G_{\text{tr}}$ error across this parameter space. Only~3 of the~36 combinations pass the~$5\,\%$ threshold, all at $\text{SR} = 0.1$ (soft inclusion) with $f \leq 0.10$. The error grows monotonically with both SR and $f$, reaching nearly~$40\,\%$ at $\text{SR} = 10$ and $f = 0.50$. The models agree only where the interphase effect is weak. Figures~\ref{fig:cca_vs_f} and~\ref{fig:cca_vs_sr} show individual sweeps along the volume fraction and stiffness ratio axes, respectively, with the characteristic $G_{\text{tr}}$ gap visible in both.
 
 \begin{figure}[htbp]
 \centering
@@ -3491,7 +3470,7 @@ To map the region where the two models agree, we conduct a sweep over six stiffn
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{cca_properties_vs_f.pdf}
-\caption{CCA effective properties vs.\ volume fraction at $\text{SR} = 1.0$: 3-layer interphase (solid), best-fit EI (dashed), and PINN (markers).}
+\caption{CCA effective properties vs.\ volume fraction at $\text{SR} = 1.0$}
 \label{fig:cca_vs_f}
 \end{figure}
 
@@ -3509,12 +3488,12 @@ To map the region where the two models agree, we conduct a sweep over six stiffn
 
 The persistence of the $G_{\text{tr}}$ gap points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
 
-The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface, which cannot encode the mode interaction.
+The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface.
 
-In contrast, the axial shear BVP (BVP~3) involves a single radial mode, and the in-plane bulk BVP (BVP~1) has a similarly simple radial structure. These single-mode problems are well represented by interface conditions that relate displacement jumps to traction averages. The worked examples support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate in the optimiser column of Table~\ref{tab:cca_worked_examples}, whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
+In contrast, the axial shear BVP (BVP~3) and the in-plane bulk BVP (BVP~1) involves a single radial mode. These single-mode problems are well represented by interface conditions. The worked examples support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate in the optimiser column of Table~\ref{tab:cca_worked_examples}, whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
 
 This finding explains why the inverse PINN fails in Section~\ref{subsec:cca_pinn_results}: the network was trained on data generated from the Extended Interface forward model, and that model is structurally incapable of reproducing the 3-layer transverse shear response. The PINN faithfully learned the EI model but inherited its limitation.
-\newpage
+
 % ===================================================================
 \section{Discussion}
 \label{sec:results_discussion}
@@ -3526,21 +3505,13 @@ The results of this chapter admit a clear reading once the role of geometry is t
 Particle-reinforced composites present the inverse PINN with a tractable problem. The two CSA boundary value problems each has one radial displacement mode, and the Extended Interface conditions relating displacement jumps to traction averages at a single surface capture this radial symmetry adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
 
 \paragraph{Why the interface fails for CCA.}
-Fibre-reinforced composites are a different matter. As discussed in Section~\ref{subsec:ei_interpretation}, the transverse shear BVP couples mode-2 and mode-4 radial displacement patterns across the finite-thickness coating layers, and the zero-thickness interface cannot encode this volumetric mode interaction. The consequence is a persistent $G_{\text{tr}}$ gap that no parameter tuning can eliminate.
+Fibre-reinforced composites are a different matter. As discussed in Section~\ref{subsec:ei_interpretation}, the transverse shear BVP couples mode-2 and mode-4 radial displacement patterns across the finite-thickness coating layers, and the zero-thickness interface cannot encode this volumetric mode interaction. The consequence is the  $G_{\text{tr}}$ gap that no parameter tuning can eliminate.
 
-Two independent lines of evidence support this conclusion. The per-configuration optimiser and the inverse PINN, despite their quite different properties, agree on the failure pattern across nearly all tested configurations. The stiffness ratio--volume fraction sweep (Figure~\ref{fig:ei_heatmap}) makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction---precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
+Two independent lines of evidence support this conclusion. The per-configuration optimiser and the inverse PINN, despite their quite different properties, agree on the failure pattern across nearly all tested configurations. The stiffness ratio--volume fraction sweep (Figure~\ref{fig:ei_heatmap}) makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
 
 \paragraph{Practical implications.}
 The asymmetry between the two geometries has a direct consequence for how this framework should be used in practice. For particle composites, the PINN-recovered parameters can be fed into the analytical forward model in a single evaluation the approach works and the recovered parameters carry physical content. For fibre composites, any route through the Extended Interface model will carry a~$G_{\text{tr}}$ error that no amount of parameter tuning can eliminate; the better option is to work with the 3-layer interphase model directly. As a practical diagnostic for any new composite system, the optimisation-based gap check of Section~\ref{subsec:ei_isotropic} can serve as a first test before committing to the interface route.
 
-Figure~\ref{fig:grand_comparison} places all three approaches on a single chart for direct comparison.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/grand_comparison.pdf}
-    \caption{Mean relative errors across all approaches studied in this thesis. The dashed line marks the~$5\,\%$ acceptance threshold.}
-    \label{fig:grand_comparison}
-\end{figure}
 
 % -------------------------------------------------------------------
 %   CHAPTER 5: CONCLUSION
