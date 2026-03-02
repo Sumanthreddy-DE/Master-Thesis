@@ -617,6 +617,28 @@ inhomogeneity},
   doi     = {10.1023/A:1008202821328}
 }
 
+@inproceedings{Glorot2010,
+  author    = {Glorot, Xavier and Bengio, Yoshua},
+  title     = {Understanding the difficulty of training deep feedforward neural networks},
+  booktitle = {Proceedings of the 13th International Conference on Artificial Intelligence and Statistics (AISTATS)},
+  year      = {2010},
+  pages     = {249--256}
+}
+
+@inproceedings{Loshchilov2017,
+  author    = {Loshchilov, Ilya and Hutter, Frank},
+  title     = {{SGDR}: {Stochastic} gradient descent with warm restarts},
+  booktitle = {Proceedings of the 5th International Conference on Learning Representations (ICLR)},
+  year      = {2017}
+}
+
+@inproceedings{Loshchilov2019,
+  author    = {Loshchilov, Ilya and Hutter, Frank},
+  title     = {Decoupled weight decay regularization},
+  booktitle = {Proceedings of the 7th International Conference on Learning Representations (ICLR)},
+  year      = {2019}
+}
+
 \end{filecontents}
 
 \usepackage[backend=biber, style=ieee, dashed=false, doi=true, isbn=false]{biblatex}
@@ -1949,7 +1971,7 @@ A feedforward neural network maps an input vector~$\bs{x}$ to an output vector~$
     \label{eq:nn_layer}
 \end{equation}
 %
-where $\bs{W}^{(\ell)}$ is a weight matrix, $\bs{b}^{(\ell)}$ a bias vector, and $\bs{y}^{(0)} = \bs{x}$. The network weights~$\bs{\theta} = \{\bs{W}^{(\ell)}, \bs{b}^{(\ell)}\}_\ell$ are calibrated by minimising a loss function $\mathcal{L}(\bs{\theta})$ that measures the discrepancy between predictions and targets, using gradient-based optimisation with a learning rate schedule to allow fine convergence in later training epochs.
+where $\bs{W}^{(\ell)}$ is a weight matrix, $\bs{b}^{(\ell)}$ a bias vector, and $\bs{y}^{(0)} = \bs{x}$. The network weights~$\bs{\theta} = \{\bs{W}^{(\ell)}, \bs{b}^{(\ell)}\}_\ell$ are calibrated by minimising a loss function $\mathcal{L}(\bs{\theta})$ that measures the discrepancy between predictions and targets, using gradient-based optimisation with a learning rate schedule to allow fine convergence in later training epochs. With sufficient width, such networks are universal approximators, capable of representing any continuous function on a compact domain~\cite{Hornik1989, Cybenko1989}. For a comprehensive treatment of deep learning fundamentals, the reader is referred to Goodfellow et al.~\cite{Goodfellow2016}.
 
 \paragraph{Physics-Informed Neural Networks.}
 Standard neural networks learn entirely from data. When the system obeys known physical laws, these laws can be embedded directly into the training process. Raissi et al.~\cite{Raissi2019} introduced physics-informed neural networks (PINNs), where the loss function includes a term that penalises violations of the governing equations:
@@ -2939,7 +2961,7 @@ For CCA composites, the network takes 8~inputs: the three target effective modul
 For CSA composites, the input reduces to 7~features (two isotropic target moduli $K_{\text{eff}}$, $G_{\text{eff}}$ plus material properties and volume fraction), while the output dimension remains four.
 
 \paragraph{Architecture.}
-The network has three fully-connected hidden layers with 256~neurons each, tanh activations, and Xavier normal initialisation. Physical constraints are enforced directly on the outputs: softplus for $\bar{\lambda}$ and $\bar{\mu}$ (non-negativity of surface elastic moduli), an exponential mapping clamped to $[-2, 8.5]$ for $\bar{k}$ (covering $[1, 5000]$, appropriate for a stiffness parameter spanning several orders of magnitude), and a sigmoid for $\bar{\alpha} \in [0, 1]$. The total parameter count is approximately $135\,000$. Tanh activation is chosen because the output parameters are bounded and continuous: it is smooth everywhere and zero-centred, which suits both gradient flow and the bounded target space. Three hidden layers of 256~neurons provide sufficient capacity for the $8 \to 4$ mapping. Figure~\ref{fig:nn_architecture} illustrates the complete architecture.
+The network has three fully-connected hidden layers with 256~neurons each, tanh activations, and Xavier normal initialisation~\cite{Glorot2010}. Physical constraints are enforced directly on the outputs: softplus for $\bar{\lambda}$ and $\bar{\mu}$ (non-negativity of surface elastic moduli), an exponential mapping clamped to $[-2, 8.5]$ for $\bar{k}$ (covering $[1, 5000]$, appropriate for a stiffness parameter spanning several orders of magnitude), and a sigmoid for $\bar{\alpha} \in [0, 1]$. The total parameter count is approximately $135\,000$. Tanh activation is chosen because the output parameters are bounded and continuous: it is smooth everywhere and zero-centred, which suits both gradient flow and the bounded target space. Three hidden layers of 256~neurons provide sufficient capacity for the $8 \to 4$ mapping. Figure~\ref{fig:nn_architecture} illustrates the complete architecture.
 
 \begin{figure}[htbp]
 \centering
@@ -2952,7 +2974,7 @@ The network has three fully-connected hidden layers with 256~neurons each, tanh 
 We generate $200\,000$~samples by sampling the EGIM parameter space. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10; log-uniform sampling is necessary because the stiffness ratios spans between 0.05 and 10 and uniform sampling would severely under-represent soft inclusions. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$ to reduce prediction errors in extreme configurations. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
 
 \paragraph{Loss function.}
-The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the EGIM forward model and computes the relative error against the target effective properties, enforcing forward-model self-consistency at every training step. An adaptive weighting scheme inspired by ReLoBRaLo~\cite{Bischof2021} adjusts the relative contribution of each term based on convergence rates, preventing either term from dominating~\cite{Krishnapriyan2021}. We train with AdamW ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing, batch size~512, and gradient clipping at 1.0 for 500~epochs.
+The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the EGIM forward model and computes the relative error against the target effective properties, enforcing forward-model self-consistency at every training step. An adaptive weighting scheme inspired by ReLoBRaLo~\cite{Bischof2021} adjusts the relative contribution of each term based on convergence rates, preventing either term from dominating~\cite{Krishnapriyan2021}. We train with AdamW~\cite{Loshchilov2019} ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing~\cite{Loshchilov2017}, batch size~512, and gradient clipping at 1.0 for 500~epochs.
 
 \paragraph{CSA training considerations.}
 \label{subsec:inverse_pinn}
@@ -2969,7 +2991,7 @@ $5\,000$~edge samples concentrated near extreme stiffness ratios and volume frac
     \mathcal{L}_{\text{phys}} = \frac{1}{N}\sum_{i=1}^{N} \left[ w_K \left(\frac{K_{\text{eff},i}^{\text{pred}} - K_{\text{eff},i}^{\text{target}}}{K_{\text{eff},i}^{\text{target}}}\right)^{2} + w_G \left(\frac{G_{\text{eff},i}^{\text{pred}} - G_{\text{eff},i}^{\text{target}}}{G_{\text{eff},i}^{\text{target}}}\right)^{2} \right]
 \end{equation}
 %
-with $w_K = 1.5$ and $w_G = 1.0$. The adaptive weights are capped at 150 for $w_{\text{phys}}$ and 5 for $w_{\text{data}}$~\cite{Bischof2021}. Training uses AdamW ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing over 500~epochs, batch size~256, and gradient clipping at norm~1.0; the best validation loss is reached at epoch~322.
+with $w_K = 1.5$ and $w_G = 1.0$. The adaptive weights are capped at 150 for $w_{\text{phys}}$ and 5 for $w_{\text{data}}$~\cite{Bischof2021}. Training uses AdamW~\cite{Loshchilov2019} ($\eta = 10^{-3}$, weight decay $10^{-4}$), cosine annealing~\cite{Loshchilov2017} over 500~epochs, batch size~256, and gradient clipping at norm~1.0; the best validation loss is reached at epoch~322.
 
 Algorithms~\ref{alg:inverse_cca} summarise the complete inverse parameter identification pipeline for both the CCA and CSA geometries.
 
