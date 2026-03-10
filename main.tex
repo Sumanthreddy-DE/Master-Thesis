@@ -1816,9 +1816,9 @@ The concentration tensors satisfy the same relations as before:
 \end{equation}
 but now the components of $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ depend on the interface parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ in addition to the bulk material properties. They are obtained by solving interface-modified BVPs, as derived in Chapter~\ref{ch:methodology}.
 
-\subsubsection{Tensor Structure for Fibre Composites (2D, CCA)}
+\subsubsection{Tensor Structure for Fiber Composites (2D, CCA)}
 
-For long cylindrical fibres, the composite exhibits transverse isotropy. The strain concentration tensor for the fibre in Voigt notation takes the block-diagonal form:
+For long cylindrical fibres, the composite exhibits transverse isotropy. The strain concentration tensor for the fiber in Voigt notation takes the block-diagonal form:
 %
 \begin{equation}
     \mathbb{T}^{(1)} =
@@ -1876,8 +1876,7 @@ The stress concentration tensor for the equivalent inhomogeneity has the corresp
     \end{bmatrix}
     \label{eq:H_eq_interface_cca}
 \end{equation}
-
-The tensor $\mathbb{T}^{\text{eq}}$ for the interface model has the same block-diagonal form with components $T_{\kappa}^{\text{eq}}$, $T_{44}^{\text{eq}}$, $T_{55}^{\text{eq}}$, and the off-diagonal entries $T_{13}^{\text{eq}}$, $T_{31}^{\text{eq}}$, $T_{33}^{\text{eq}}$. The stress-strain tensor $\mathbb{H}^{\text{eq}}$ follows the same pattern. The key difference is that these components are functions of $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ rather than being volume-weighted sums over coating layers.
+The unknowns in these tensors depend on interface parameters rather than on multi-layer volume averages.
 
 \subsubsection{Tensor Structure for Particle Composites (3D, CSA)}
 
@@ -1952,7 +1951,7 @@ The Mori-Tanaka method assumes each inclusion experiences the average matrix str
     \label{eq:MT_interface}
 \end{equation}
 %
-where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ incorporate the interface effects. The interface BVPs solve for a single inclusion with modified boundary conditions---there are no internal coating layers. Both the interphase model (Equation~\eqref{eq:MT_interphase}) and the interface model use the same Mori-Tanaka formula with their respective equivalent concentration tensors plugged in directly.
+where $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ incorporate the interface effects. The interface BVPs solve for a single inclusion with modified boundary conditions---there are no internal coating layers. Both the interphase model (Equation~\eqref{eq:MT_interphase}) and the interface model use the same Mori-Tanaka formula with their respective equivalent concentration tensors substituted directly.
 
 
 
@@ -1971,7 +1970,7 @@ A feedforward neural network maps an input vector~$\bs{x}$ to an output vector~$
     \label{eq:nn_layer}
 \end{equation}
 %
-where $\bs{W}^{(\ell)}$ is a weight matrix, $\bs{b}^{(\ell)}$ a bias vector, and $\bs{y}^{(0)} = \bs{x}$. The network weights~$\bs{\theta} = \{\bs{W}^{(\ell)}, \bs{b}^{(\ell)}\}_\ell$ are calibrated by minimising a loss function $\mathcal{L}(\bs{\theta})$ that measures the discrepancy between predictions and targets, using gradient-based optimisation with a learning rate schedule to allow fine convergence in later training epochs. With sufficient width, such networks are universal approximators, capable of representing any continuous function on a compact domain~\cite{Hornik1989, Cybenko1989}. For a comprehensive treatment of deep learning fundamentals, the reader is referred to Goodfellow et al.~\cite{Goodfellow2016}.
+where $\bs{W}^{(\ell)}$ is a weight matrix, $\bs{b}^{(\ell)}$ a bias vector, and $\bs{y}^{(0)} = \bs{x}$. The network weights~$\bs{\theta} = \{\bs{W}^{(\ell)}, \bs{b}^{(\ell)}\}_\ell$ are calibrated by minimising a loss function $\mathcal{L}(\bs{\theta})$ that measures the error between predictions and target values, using gradient-based optimisation with a learning rate schedule to allow fine convergence in later training epochs. With sufficient width, such networks are universal approximators, capable of representing any continuous function on a compact domain~\cite{Hornik1989, Cybenko1989}. For a comprehensive treatment of deep learning fundamentals, the reader is referred to Goodfellow et al.~\cite{Goodfellow2016}.
 
 \paragraph{Physics-Informed Neural Networks.}
 Standard neural networks learn entirely from data. When the system obeys known physical laws, these laws can be embedded directly into the training process. Raissi et al.~\cite{Raissi2019} introduced physics-informed neural networks (PINNs), where the loss function includes a term that penalises violations of the governing equations:
@@ -1986,7 +1985,7 @@ Here $\mathcal{L}_{\text{data}}$ measures the fit to observations, $\mathcal{L}_
 PINNs operate in two modes. In the \textit{forward} mode the network approximates the solution field of a differential equation. In the \textit{inverse} mode the unknowns are the parameters of the governing equations themselves: given observed data, the network recovers the unknown parameters and the physics loss verifies that they reproduce the observations. The present work uses the inverse mode exclusively. A known challenge in PINN training is that the data and physics loss terms can compete during optimisation; adaptive weighting strategies~\cite{Bischof2021} are used to prevent either term from dominating, and are described in full in Chapter~\ref{ch:methodology}.
 
 \paragraph{Connection to the Present Work.}
-The inverse PINN developed in this thesis takes the effective properties of a composite with graded interphase as input and predicts the four unknown EGIM interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$. The physics loss evaluates these predicted parameters through the differentiable EGIM forward model from Section~\ref{sec:interface_model} and penalises discrepancies against the target properties. Unlike PDE-based PINNs, this setup involves no collocation points or PDE residual evaluation; the ``physics'' is the algebraic homogenization model itself, which is exact and fully differentiable. Chapter~\ref{ch:methodology} develops the specific architecture, output constraints, training data generation, and loss function for both CCA and CSA composites.
+The inverse PINN developed in this thesis takes the effective properties of a composite with graded interphase as input and predicts the four unknown EGIM interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$. The physics loss evaluates these predicted parameters through the differentiable EGIM forward model from Section~\ref{sec:interface_model} and penalises discrepancies against the target properties. Unlike PDE-based PINNs, this setup involves no PDE residual evaluation; the ``physics'' is the algebraic homogenization model itself, which is exact and fully differentiable. The network we are using is more precisely a \textit{physics-constrained} neural network, since the physical laws enter as algebraic constraints in the loss rather than as PDE residuals. Nevertheless, we retain the term PINN throughout this work, following its broader usage in the literature. Chapter~\ref{ch:methodology} develops the specific architecture, output constraints, training data generation, and loss function for both CCA and CSA composites.
 
 
 
@@ -1996,9 +1995,9 @@ The inverse PINN developed in this thesis takes the effective properties of a co
 \chapter{Methodology}
 \label{ch:methodology}
 
-Chapter~\ref{ch:theory} established the theoretical models, the three-layered interphase model and the Extended General Interface Model together with the concentration tensor framework that connects them and the neural network concepts that underpin the inverse methodology. Both models ultimately produce concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that enter the same Mori-Tanaka formula; the difference lies only in how those tensors are obtained. This shared structure is what makes parameter identification possible: one seeks interface parameters whose concentration tensors match those of the interphase model. Whether such parameters always exist is a question this chapter begins to address, and Chapter~\ref{ch:results} answers definitively.
+Chapter~\ref{ch:theory} established the theoretical models, the three-layered interphase model and the Extended General Interface Model together with the concentration tensor framework that connects them. It also introduced the neural network concepts that support the inverse methodology. Both models ultimately produce concentration tensors $\mathbb{T}^{\text{eq}}$ and $\mathbb{H}^{\text{eq}}$ that enter the same Mori-Tanaka formula; the difference lies only in how those tensors are obtained.
 
-This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture -- based on the concepts introduced in Section~\ref{sec:nn_background} -- that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
+This chapter develops the boundary value problems that determine the concentration tensor components, for both fibre-reinforced (CCA) and particle-reinforced (CSA) composites. We first solve the multi-coated interphase BVPs (Section~\ref{sec:multicoated_forward}), then the interface-enhanced Mori-Tanaka BVPs (Section~\ref{sec:interface_forward}). Section~\ref{sec:neural_network} presents the specific network architecture based on the concepts introduced in Section~\ref{sec:nn_background} -- that we use to bridge the gap between these two models. Figure~\ref{fig:methodology_flowchart} shows the overall pipeline.
 
 \begin{figure}[htbp]
     \centering
@@ -2019,7 +2018,55 @@ The three-layered interphase model introduced in Section~\ref{sec:interphase_mod
 \label{subsec:interphase_problem_setup}
 % -------------------------------------------------------------------
 
-We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into 3 coating layers between them. For \textbf{cylindrical fibres} (CCA), the core/fiber/inclusion has radius $r_1$ and properties $(\kappa^{(1)}, \lambda^{(1)}, \mu^{(1)})$. Coating layer $m$ where m = 1,2,3 occupies the annulus $r_m < r < r_{m+1}$ with properties $(\lambda^{(m)}, \mu^{(m)})$, and the matrix has properties $(\lambda^{(0)}, \mu^{(0)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by 3 concentric shells.
+We consider a single inclusion embedded in an infinite matrix, with the interphase discretised into 3 coating layers between them. For \textbf{cylindrical fibres} (CCA), the core/fiber/inclusion has radius $r_1$ and properties $(\kappa^{(1)}, \mu^{(1)})$. Coating layer $m$ where m = 1,2,3 occupies the annulus $r_m < r < r_{m+1}$ with properties $(\kappa^{(m)}, \mu^{(m)})$, and the matrix has properties $(\kappa^{(5)}, \mu^{(5)})$. The analysis uses cylindrical coordinates $(r, \theta, z)$. For \textbf{spherical particles} (CSA), the same layered structure applies in spherical coordinates $(r, \theta, \phi)$, with the core particle of radius $r_1$ coated by 3 concentric shells.
+
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0]
+
+% --- Matrix domain (outer square) ---
+\draw[thick] (-3.8,-3.8) rectangle (3.8,3.8);
+
+% --- Boundary condition label at top ---
+\node[above] at (0,3.8) {$\bs{u} = \bs{\varepsilon}_0 \cdot \bs{x}$};
+
+% --- Concentric ellipses (outermost coating to innermost core) ---
+
+% Intermediate layer (unlabelled, just for dots)
+\draw[thick, fill=blue!8] (0,0) ellipse (2.3cm and 2.65cm);
+% L_1: first coating
+\draw[thick, fill=blue!12] (0,0) ellipse (1.7cm and 2.0cm);
+% Intermediate layer (unlabelled, just for dots)
+\draw[thick, fill=blue!16] (0,0) ellipse (1.2cm and 1.45cm);
+% L_h: heterogeneity (core inclusion)
+\draw[thick, fill=blue!22] (0,0) ellipse (0.75cm and 0.95cm);
+
+% --- Labels ---
+% L_0 (matrix) - top-left corner
+\node[font=\large] at (-2.9,3.0) {$L_5$};
+
+% L_N (outermost coating) - right side
+\node[font=\large] at (1.6,1.6) {$L_4$};
+
+% Dots between L_N and L_1
+\node[font=\Large, rotate=90] at (0.55,1.55) {$\cdots$};
+\node[font=\Large, rotate=90] at (-0.55,1.55) {$\cdots$};
+
+% L_1 (first coating)
+\node[font=\large] at (1.15,1.15) {$L_3$};
+\node[font=\large] at (0.80,0.8) {$L_2$};
+% Dots between L_1 and L_h
+\node[font=\Large, rotate=90] at (0.35,0.85) {$\cdots$};
+\node[font=\Large, rotate=90] at (-0.35,0.85) {$\cdots$};
+
+% L_h (core heterogeneity)
+\node[font=\large] at (0,0) {$L_1$};
+
+\end{tikzpicture}
+\caption{Eshelby inhomogeneity problem for a multicoated reinforcement.}
+\label{fig:eshelby_multicoated}
+\end{figure}
 
 To model a graded interphase, each coating layer is assigned elastic properties by interpolating between inclusion and matrix. A weight $w_m \in [0,\,1]$ controls how close layer~$m$ sits to the inclusion ($w_m = 1$) or the matrix ($w_m = 0$):
 %
@@ -2033,53 +2080,6 @@ A monotonically decreasing sequence such as $(w_1, w_2, w_3) = (0.75,\, 0.50,\, 
 
 A uniform far-field strain $\bs{\varepsilon}^{(0)}$ is applied at infinity (Figure~\ref{fig:eshelby_multicoated}). In each phase, we write the displacement and stress fields as functions of unknown amplitude coefficients. Continuity of displacement and traction at every internal boundary yields a linear system whose solution gives these amplitudes. Volume averaging over each phase then produces the concentration tensor components. The volume fractions and equivalent tensor formulas from Section~\ref{subsec:average_fields} apply directly.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[scale=1.0]
-
-% --- Matrix domain (outer square) ---
-\draw[thick] (-3.8,-3.8) rectangle (3.8,3.8);
-
-% --- Boundary condition label at top ---
-\node[above] at (0,3.8) {$\bs{u} = \bs{\varepsilon}_0 \cdot \bs{x}$};
-
-% --- Concentric ellipses (outermost coating to innermost core) ---
-% L_N: outermost coating
-\draw[thick, fill=blue!5] (0,0) ellipse (2.8cm and 3.2cm);
-% Intermediate layer (unlabelled, just for dots)
-\draw[thick, fill=blue!8] (0,0) ellipse (2.3cm and 2.65cm);
-% L_1: first coating
-\draw[thick, fill=blue!12] (0,0) ellipse (1.7cm and 2.0cm);
-% Intermediate layer (unlabelled, just for dots)
-\draw[thick, fill=blue!16] (0,0) ellipse (1.2cm and 1.45cm);
-% L_h: heterogeneity (core inclusion)
-\draw[thick, fill=blue!22] (0,0) ellipse (0.75cm and 0.95cm);
-
-% --- Labels ---
-% L_0 (matrix) - top-left corner
-\node[font=\large] at (-2.9,3.0) {$L_0$};
-
-% L_N (outermost coating) - right side
-\node[font=\large] at (2.35,2.2) {$L_N$};
-
-% Dots between L_N and L_1
-\node[font=\Large, rotate=90] at (0.55,1.55) {$\cdots$};
-\node[font=\Large, rotate=90] at (-0.55,1.55) {$\cdots$};
-
-% L_1 (first coating)
-\node[font=\large] at (1.15,1.15) {$L_1$};
-
-% Dots between L_1 and L_h
-\node[font=\Large, rotate=90] at (0.35,0.85) {$\cdots$};
-\node[font=\Large, rotate=90] at (-0.35,0.85) {$\cdots$};
-
-% L_h (core heterogeneity)
-\node[font=\large] at (0,0) {$L_h$};
-
-\end{tikzpicture}
-\caption{Eshelby inhomogeneity problem for a multicoated reinforcement. The heterogeneity~$L_h$ is surrounded by $N$~coating layers $L_1, \ldots, L_N$, all embedded in an infinite matrix~$L_0$ subject to a uniform far-field strain $\bs{\varepsilon}_0$.}
-\label{fig:eshelby_multicoated}
-\end{figure}
 
 % -------------------------------------------------------------------
 \subsection{Fibre-Reinforced Composites (CCA)}
@@ -2146,7 +2146,7 @@ The transversely isotropic tensor structure (Section~\ref{subsec:tensor_structur
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the three-layered interphase model.}
+\caption{Flowchart for fibre-reinforced composites (CCA) using the three-layered interphase model.}
 \label{fig:flowchart_interphase_cca}
 \end{figure}
 
@@ -2166,7 +2166,7 @@ The radial stress in each phase q is:
 \begin{equation}
     \sigma_{rr}^{(q)} = 2\beta\left[(\lambda^{(q)} + \mu^{(q)}) X_{2q-1} - \mu^{(q)} \frac{X_{2q}}{r^2}\right]
     \label{eq:sigma_rr_bulk}
-\end{equation}with the 10 unknowns which can be determined via applying the boundary conditions: 
+\end{equation}with the 10 unknowns (5 layers*2)which can be determined via applying the boundary conditions: 
 \begin{enumerate}
     \item Finite displacement at origin: $X_2 = 0$
     \item Continuity of displacement at  $r = r_1\implies u_r^{(1)} = u_r^{(2)}$
@@ -2260,7 +2260,7 @@ Similarly using Eq~\ref{eq:interface_concentration_def} volume-averaged strain i
     T_{44}^{(q)} &= \frac{3X_{4(q-1)+4} \kappa^{(q)} r_a^2 + 3X_{4(q-1)+4} \kappa^{(q)} r_b^2 + 4X_{4(q-1)+3} \kappa^{(q)} + 2X_{4(q-1)+3} \mu^{(q)}}{4 \cos(2\theta) (2\kappa^{(q)} + \mu^{(q)})} \label{eq:T44_fiber} \\ \nonumber
     H_{44}^{(q)} &= \mu^{(q)} T_{44}^{(q)}
 \end{empheq}
-where the 20 unknowns can be determined via applying the boundary conditions: 
+where the 20 unknowns (5*4)can be determined via applying the boundary conditions: 
 \begin{enumerate}
     \item Finite displacement at origin: $X_1 = 0 \quad X_2 = 0$
     \item Orthogonal equilibrium at  $r = r_1\implies u_r^{(1)}(r_1) = u_r^{(2)}(r_1), \quad u_{\theta}^{(1)}(r_1) = u_{\theta}^{(2)}(r_1)$
@@ -2278,7 +2278,7 @@ where the 20 unknowns can be determined via applying the boundary conditions:
 
 \subsubsection{BVP 3: Axial Shear Response}
 
-For far-field displacement $\bs{u}^{(0)} = [0, 0, \beta r \cos\theta]^T$, the displacement field is:
+For far-field displacement $\bs{u}^{(0)} = [0, 0, \beta r \cos\theta]^T$, the corresponding displacement field in each phase is:
 %
 \begin{equation}
     u_z^{(q)}(r, \theta) = \beta r \cos\theta \left(X_{2q-1} + X_{2q} \frac{1}{r^2}\right), \quad u_r^{(q)} = u_\theta^{(q)} = 0
@@ -2329,7 +2329,7 @@ with the 10 unknowns which can be determined via applying the boundary condition
 \end{enumerate}
 \subsubsection{BVP 4: Overall Axisymmetric Response}
 
-The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, and $H_{33}^{(q)}$ that characterise the axial response. We apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
+The first three BVPs determine the in-plane concentration tensor components. To complete the transversely isotropic tensor, we need the coupling components $T_{13}^{(q)}$, $H_{13}^{(q)}$, and $H_{33}^{(q)}$. So for this case, we apply a uniform axial strain $\varepsilon_{zz}^{(0)} = 1$ at the far field, which produces:
 %
 \begin{equation}
     \bs{u}^{(0)}(r, \theta, z) =
@@ -2443,13 +2443,13 @@ The isotropic tensor structure (Section~\ref{subsec:tensor_structure_particle}) 
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the three-layered interphase model.}
+\caption{Flowchart for particle-reinforced composites (CSA) using the three-layered interphase model.}
 \label{fig:flowchart_interphase_csa}
 \end{figure}
 
 \subsubsection{BVP 1: Hydrostatic Response}
 
-Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
+Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field in each phase is:
 %
 \begin{equation}
     u_r^{(q)} = \beta(X_{2q-1} r + \frac{X_{2q}}{r^2}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0 \quad q=1,2,3,4,5
@@ -2522,7 +2522,7 @@ In each phase, the displacement fields involve four radial modes with exponents 
 where $\xi_1 = 1$, $\xi_2 = 3$, $\xi_3 = -4$, $\xi_4 = -2$. The amplitude ratio $A_i^{(q)}$ depend on the material properties of phase~$q$:
 %
 \begin{equation}
-    A_1 = 1, \quad A_2 = \frac{9\kappa - 6\mu}{15\kappa + 11\mu}, \quad A_3 = -\frac{3}{2}, \quad A_4 = \frac{3(\kappa + \mu)}{2\mu}
+    A_1^{(q)} = 1, \quad A_2^{(q)} = \frac{9\kappa^{(q)} - 6\mu^{(q)}}{15\kappa^{(q)} + 11\mu^{(q)}}, \quad A_3^{(q)} = -\frac{3}{2}, \quad A_4^{(q)} = \frac{3(\kappa^{(q)} + \mu^{(q)})}{2\mu^{(q)}}
     \label{eq:a_coefficients}
 \end{equation}
 %
@@ -2557,7 +2557,7 @@ Now if we substitute all the unknown Tensor components we just found in Eq ~\eqr
 \label{sec:interface_forward}
 % ===================================================================
 
-Where the interphase model (Section~\ref{sec:multicoated_forward}) uses multiple coating layers, the EGIM collapses the graded region onto a single zero-thickness surface at $r = r_1$, governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ defined in Section~\ref{sec:interface_model}. The displacement ans\"{a}tze from Section~\ref{sec:multicoated_forward} carry over directly, but the perfect-bonding conditions at $r = r_1$ are replaced by the EGIM cohesive and elastic jump conditions from Section~\ref{subsec:interface_constitutive_relations}. Four BVPs are needed for CCA composites and two for CSA composites.
+Where the interphase model (Section~\ref{sec:multicoated_forward}) uses multiple coating layers, the EGIM collapses the graded region onto a single zero-thickness surface at $r = r_1$, governed by four parameters $(\bar{k}, \bar{\lambda}, \bar{\mu}, \bar{\alpha})$ defined in Section~\ref{sec:interface_model}. The displacement ans\"{a}tz from Section~\ref{sec:multicoated_forward} carry over directly, but the perfect-bonding conditions at $r = r_1$ are replaced by the EGIM cohesive and elastic jump conditions from Section~\ref{subsec:interface_constitutive_relations}.
 
 % -------------------------------------------------------------------
 \subsection{Problem Setup}
@@ -2575,13 +2575,13 @@ A uniform far-field strain $\varepsilon^{(0)}$ is applied at infinity. At the in
 For cylindrical fibres, the transversely isotropic concentration tensor (Section~\ref{subsec:tensor_structure_fiber}) requires four independent BVPs: in-plane bulk, transverse shear, axial shear, and overall axisymmetric loading. Each BVP uses the same displacement field as the corresponding interphase BVP in Section~\ref{subsec:fiber_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
 
 \subsubsection{BVP 1: In-Plane Bulk Response}
-Consider an RVE subject to a far field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$, then the displacement field takes the same form as Equation~\eqref{eq:ur_bulk_fiber}. 
+Consider an RVE subject to a far field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$, then the displacement field takes the form:
 \begin{equation}
     u_r^{(q)} = \beta r\left(X_{2q-1} \,  + \frac{X_{2q}}{(r/r_1)^2}\right), \quad u_\theta^{(q)} = u_z^{(q)} = 0 \quad  \text{for q = 1,2}
     \label{eq:ur_bulk_fiber}
 \end{equation}
 %
-\\ resulting in 4 unkniwns that can be determined by imposing boundary conditions along with interface conditions as follows, \begin{itemize}
+\\ resulting in 4 unknowns that can be determined by imposing boundary conditions along with interface conditions as follows, \begin{itemize}
 
 \item finite displacement at $r=0$:
 \begin{equation}
@@ -2686,7 +2686,7 @@ resulting in 4 unknowns $X_1, X_2, X_3, X_4$ that can be determined via imposing
 \end{align}
 
 %
-from Eq~\ref{eq:interface_concentration_def} 
+from Eq~\ref{eq:interface_concentration_def} we have
 \begin{align}
     \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
     \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
@@ -2786,7 +2786,7 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of fibre-reinforced composites (CCA) using the Extended General Interface Model.}
+\caption{Flowchart for fibre-reinforced composites (CCA) using the Extended General Interface Model.}
 \label{fig:flowchart_interface_cca}
 \end{figure}
 
@@ -2798,7 +2798,7 @@ Now that we have all unknown coefficients of $T^{(1)}$, $H^{(1)}$, $T^{(eq)}$ an
 For spherical particles, the isotropic concentration tensor (Section~\ref{subsec:tensor_structure_particle}) requires two BVPs: hydrostatic and deviatoric. Each BVP uses the same displacement field as the corresponding interphase BVP in Section~\ref{subsec:particle_bvp}, but with only two phases ($q = 1$ for inclusion, $q = 2$ for matrix).
 
 \subsubsection{BVP 1: Hydrostatic Response}
-Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field is:
+Consider the RVE subject to far-field displacement $\bs{u}^{(0)} = [\beta r, 0, 0]^T$ in spherical coordinates, the displacement field in each phase is:
 %
 \begin{equation}
     u_r^{(q)} = \beta r(X_{2q-1}  + \frac{X_{2q}}{(r/r_1)^3}), \quad u_\theta^{(q)} = u_\phi^{(q)} = 0 \quad q=1,2
@@ -2833,7 +2833,7 @@ Assume the RVE is subject to a deviatoric far field displacement \begin{equation
 The displacement field takes the same form as Equations~\eqref{eq:ur_deviatoric}--\eqref{eq:utheta_deviatoric}, with eight unknowns. With finite displacement at origin($X_3 = X_4 = 0$) and far-field conditions on the matrix ($X_5 = 1$ and $X_6 = 1$), we apply the same EGIM conditions as we did in Transverse shear response to solve for the 4 unknowns left
 
 
-wfrom Eq~\ref{eq:interface_concentration_def} 
+from Eq~\ref{eq:interface_concentration_def} 
 \begin{align}
     \bs{\varepsilon}^{(1)}  = \mathbb{T}^{(1)} : \bs{\varepsilon}^{(0)}, \quad
     \bs{\sigma}^{(1)}  = \mathbb{H}^{(1)} : \bs{\varepsilon}^{(0)} \\
@@ -2915,7 +2915,7 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 
 \end{tikzpicture}%
 }% end \resizebox
-\caption{Flowchart for computing effective properties of particle-reinforced composites (CSA) using the Extended General Interface Model.}
+\caption{Flowchart for particle-reinforced composites (CSA) using the Extended General Interface Model.}
 \label{fig:flowchart_interface_csa}
 \end{figure}
 
@@ -2924,7 +2924,7 @@ wfrom Eq~\ref{eq:interface_concentration_def}
 \label{subsec:tensor_assembly}
 % -------------------------------------------------------------------
 
-The BVP solutions populate the full concentration tensors whose Voigt structure was defined in Section~\ref{subsec:tensor_structure_fiber} (CCA) and Section~\ref{subsec:tensor_structure_particle} (CSA). 
+The BVP solutions give the full concentration tensors whose Voigt structure was defined in Section~\ref{subsec:tensor_structure_fiber} (CCA) and Section~\ref{subsec:tensor_structure_particle} (CSA). 
 The equivalent stiffness of the equivalent inhomogeneity is:
 %
 \begin{empheq}[box=\fbox]{equation}
@@ -2939,14 +2939,13 @@ This $\mathbb{C}^{\text{eq}}$ represents the stiffness of a homogeneous inclusio
     \label{eq:MT_interface_ch3}
 \end{equation}
 %
-which yields the scalar effective moduli 
 
 % ===================================================================
 \section{Neural Network Architectures}
 \label{sec:neural_network}
 % ===================================================================
 
-This section describes the neural network architecture used for the central problem of the present work: given the effective properties produced by the three-layered interphase model, find the EGIM interface parameters that reproduce them. We train an inverse network that takes effective moduli and material properties as input and predicts the four unknown interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. A physics-informed loss ensures that the predicted parameters, when passed through the EGIM model, reconstruct the target properties.
+This section describes the neural network architecture used for the main problem of the present work: given the effective properties produced by the three-layered interphase model, find the EGIM interface parameters that reproduce them. We train an inverse network that takes effective moduli and material properties as input and predicts the four unknown interface parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, and $\bar{\alpha}$. A physics-informed loss ensures that the predicted parameters, when passed through the EGIM model, reconstruct the target properties.
 
 % -------------------------------------------------------------------
 \subsection{Inverse Parameter Identification Network}
@@ -2971,7 +2970,7 @@ The network has three fully-connected hidden layers with 256~neurons each, tanh 
 \end{figure}
 
 \paragraph{Training data generation.}
-We generate $200\,000$~samples by sampling the EGIM parameter space. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10; log-uniform sampling is necessary because the stiffness ratios spans between 0.05 and 10 and uniform sampling would severely under-represent soft inclusions. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$ to reduce prediction errors in extreme configurations. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
+We generate $200\,000$~samples(CCA) by sampling the EGIM parameter space. Material properties are drawn log-uniformly over $\kappa^{(1)} \in [10, 2500]$ and $\mu^{(1)} \in [5, 1500]$ to cover stiffness ratios from 0.05 to~10; log-uniform sampling is necessary because the stiffness ratios spans between 0.05 and 10 and uniform sampling would severely under-represent soft inclusions. Volume fractions are sampled with 30\% of points concentrated near the edges of $[0.05, 0.55]$ to reduce prediction errors in extreme configurations. For each sample, the EGIM forward model computes the corresponding effective properties, which become the network inputs. Samples producing non-physical results are discarded.
 
 \paragraph{Loss function.}
 The training loss combines a data term and a physics term. The data term is a mean squared error between predicted and true interface parameters, with $\bar{k}$ scaled down by a factor of 1000 to balance its larger magnitude. The physics term passes the predicted parameters through the EGIM forward model and computes the relative error against the target effective properties, enforcing forward-model self-consistency at every training step. An adaptive weighting scheme inspired by ReLoBRaLo~\cite{Bischof2021} adjusts the relative contribution of each term based on convergence rates, preventing either term from dominating~\cite{Krishnapriyan2021}. We train with AdamW~\cite{Loshchilov2019} ($\eta = 10^{-3}$, weight decay~$10^{-4}$), cosine annealing~\cite{Loshchilov2017}, batch size~512, and gradient clipping at 1.0 for 500~epochs.
@@ -3520,7 +3519,7 @@ To map the region where the two models agree, we conduct a sweep over six stiffn
 
 The persistence of the $G_{\text{tr}}$ gap points to a fundamental limitation of the zero-thickness approximation. We offer the following physical explanation.
 
-The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 and mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this volumetric response into jump and average conditions at a single surface.
+The transverse shear BVP (Section~\ref{subsec:fiber_bvp}, BVP~2) involves mode-2 mode-4 radial displacement patterns whose amplitudes vary across the coating layers. Within a finite-thickness interphase, each coating layer develops its own stress distribution, and the interaction between mode-2 and mode-4 amplitudes creates a coupling that depends on the radial extent of each layer. The zero-thickness interface collapses this finite thickness response into jump and average conditions at a single surface.
 
 In contrast, the axial shear BVP (BVP~3) and the in-plane bulk BVP (BVP~1) involves a single radial mode. These single-mode problems are well represented by interface conditions. The worked examples support this interpretation: $K_{\text{tr}}$ and $G_{\text{ax}}$ errors remain moderate in the optimiser column of Table~\ref{tab:cca_worked_examples}, whereas $G_{\text{tr}}$ is systematically elevated across all configurations.
 
@@ -3534,10 +3533,10 @@ This finding explains why the inverse PINN fails in Section~\ref{subsec:cca_pinn
 The results of this chapter admit a clear reading once the role of geometry is taken into account.
 
 \paragraph{Why the interface works for CSA.}
-Particle-reinforced composites present the inverse PINN with a tractable problem. The two CSA boundary value problems each has one radial displacement mode, and the Extended Interface conditions relating displacement jumps to traction averages at a single surface capture this radial symmetry adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
+Particle-reinforced composites present the inverse PINN with a tractable problem. The spherical symmetry of the CSA boundary value problems constrains the displacement fields enough that the Extended Interface conditions capture the through-thickness response adequately. The worked examples confirm this for both soft and stiff particles: the recovered parameters $\bar{k}$, $\bar{\lambda}$, $\bar{\mu}$, $\bar{\alpha}$ are physically sensible, and reconstruction errors stay below~$2\,\%$ for interpolated coating cases. The one failed case involves an out-of-distribution coating stiffness a distributional issue, not a model one. For CSA geometries, the inverse PINN gives a reliable mapping from effective properties to interpretable interface parameters.
 
 \paragraph{Why the interface fails for CCA.}
-Fibre-reinforced composites are a different matter. As discussed in Section~\ref{subsec:ei_interpretation}, the transverse shear BVP couples mode-2 and mode-4 radial displacement patterns across the finite-thickness coating layers, and the zero-thickness interface cannot encode this volumetric mode interaction. The consequence is the  $G_{\text{tr}}$ gap that no parameter tuning can eliminate.
+Fibre-reinforced composites are a different matter. As discussed in Section~\ref{subsec:ei_interpretation}, the shear BVP couples mode-2 and mode-4 radial displacement patterns across the finite-thickness coating layers, and the zero-thickness interface cannot encode this finite thickness mode interaction.. The consequence is the  $G_{\text{tr}}$ gap that no parameter tuning can eliminate.
 
 Two independent lines of evidence support this conclusion. The per-configuration optimiser and the inverse PINN, despite their quite different properties, agree on the failure pattern across nearly all tested configurations. The stiffness ratio--volume fraction sweep (Figure~\ref{fig:ei_heatmap}) makes the scope of this limitation plain: the interface model passes the~$5\,\%$ threshold only at low stiffness contrast and low volume fraction precisely the regime where the interphase effect is itself small and an interface approximation is least needed.
 
@@ -3570,9 +3569,9 @@ This thesis has developed and evaluated a computational framework for predicting
 
 The framework has several limitations that should be considered when interpreting the results.
 
-The inverse PINN approach is limited to CSA composites. For CCA composites, the Extended Interface model cannot represent the transverse shear response, making inverse parameter identification through that model structurally impossible. Alternative interface theories that retain volumetric information could potentially bridge this gap, but such theories are beyond the scope of this work.
+The inverse PINN approach is limited to CSA composites. For CCA composites, the Extended Interface model cannot represent the transverse shear response, making inverse parameter identification through that model structurally impossible. Alternative interface theories that retain both volumetric and deviatoric information could potentially bridge this gap, but such theories are beyond the scope of this work.
 
-The neural network depends on the quality and coverage of the training data. The training set is generated from the EGIM forward model, and the network's ability to generalise depends on the overlap between the EGIM parameter space and the actual interphase-to-interface mapping. In practice, any deployment should include a check that the query point falls within the training distribution.
+The neural network depends on the quality and coverage of the training data. The training set is generated from the EGIM forward model, and the network's ability to generalise depends on how well the EGIM parameter ranges cover the physically relevant region. In practice, any deployment should include a check that the query point falls within the training distribution.
 
 All results assume linear elastic constituent behaviour, perfect bonding between phases, and spherical or cylindrical inclusion geometries. Extensions to nonlinear materials, imperfect interfaces, or non-canonical geometries would require new training datasets and potentially modified network architectures.
 
@@ -3581,13 +3580,13 @@ All results assume linear elastic constituent behaviour, perfect bonding between
 Several directions for future research emerge from this work:
 
 \begin{itemize}
-    \item \textbf{Higher-order interface theories for CCA.} The $G_{\text{tr}}$ gap identified in this thesis calls for interface models that retain some volumetric information from the interphase. Second-gradient or micromorphic interface theories could potentially capture the mode-2/mode-4 coupling that the zero-thickness approximation misses.
+    \item \textbf{Higher-order interface theories for CCA.} The $G_{\text{tr}}$ gap identified in this thesis calls for interface models that retain the transverse shear response of the interphase. Second-gradient or micromorphic interface theories could potentially capture the transverse–axial shear coupling that the zero-thickness approximation misses.
 
     \item \textbf{Extension to nonlinear and viscoelastic constituents.} The current framework assumes linear elastic behaviour. Many interphase materials (e.g.\ polymer coatings, oxide layers) exhibit rate-dependent or nonlinear responses that would require reformulating the boundary value problems and retraining the neural networks.
 
     \item \textbf{Integration with finite element methods.} The interface parameters recovered by the inverse PINN could serve as inputs to constitutive models within multiscale FEM simulations, providing effective properties at each integration point without solving the micro-scale BVPs. This would enable large-scale parametric studies of composite structures with graded interphases.
 
-    \item \textbf{Experimental validation.} Comparing the predicted effective properties against nanoindentation or resonant ultrasound spectroscopy measurements would establish the practical accuracy of the framework beyond the analytical benchmarks used in this thesis.
+    \item \textbf{Experimental validation.} Comparing the predicted effective properties against experimental measurements from nanoindentation or resonant ultrasound spectroscopy would establish the practical accuracy of the framework beyond the analytical benchmarks used in this thesis.
 
 \end{itemize}
 
