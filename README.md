@@ -10,7 +10,7 @@ LaTeX source for my MSc thesis at FAU, Lehrstuhl für Technische Mechanik (LTM).
 **Supervisor:** Soheil Firooz, M.Sc.
 **Institution:** Lehrstuhl für Technische Mechanik (LTM), Friedrich-Alexander-Universität Erlangen-Nürnberg
 **Year:** 2026
-**Status:** Defended March 2026
+**Status:** Submitted February 2026, defended March 2026
 
 ## What this thesis is about
 
